@@ -1,10 +1,14 @@
 package org.Flashcard.models;
 
+import java.util.List;
+
 public class Deck {
     private int id;
     private String title;
-    private int userId; // owner of the deck
+    private int userId; // owner of the deck    //TODO reverse dependency
     private int tagId;  // associated tag
+    private List<FlashCard> cards;    //TODO needs to be initiliased
+
 
     // Constructors
     public Deck() {}
@@ -34,6 +38,10 @@ public class Deck {
 
     public int getTagId() { return tagId; }
     public void setTagId(int tagId) { this.tagId = tagId; }
+
+    public List<FlashCard> getCards() {
+        return cards;
+    }
 
     @Override
     public String toString() {
