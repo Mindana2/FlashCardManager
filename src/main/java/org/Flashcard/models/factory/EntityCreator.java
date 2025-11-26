@@ -1,4 +1,5 @@
 package org.Flashcard.models.factory;
 
-public class EntityCreator {
+public abstract class EntityCreator {
+    //public abstract void create(FactoryMethod method);
 }

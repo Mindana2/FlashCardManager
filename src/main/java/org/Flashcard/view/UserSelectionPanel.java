@@ -1,7 +1,7 @@
 package org.Flashcard.view;
 
-import org.Flashcard.models.User;
-import org.Flashcard.models.Deck;
+import org.Flashcard.models.dataClasses.User;
+import org.Flashcard.models.dataClasses.Deck;
 import org.Flashcard.repositories.*;
 
 import javax.swing.*;

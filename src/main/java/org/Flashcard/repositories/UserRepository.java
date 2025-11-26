@@ -1,6 +1,6 @@
 package org.Flashcard.repositories;
 
-import org.Flashcard.models.User;
+import org.Flashcard.models.dataClasses.User;
 
 import java.sql.*;
 import java.util.ArrayList;

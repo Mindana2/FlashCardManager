@@ -1,6 +1,6 @@
 package org.Flashcard.models.ratingStrategy;
 
-public class StrategyMedium implements RatingStrategy {
+public class StrategyAgain implements RatingStrategy {
     @Override
     public void calculateNextReviewDate(RatingStrategy ratingStrategy) {
         //TODO

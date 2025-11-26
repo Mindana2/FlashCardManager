@@ -1,7 +1,10 @@
 package org.Flashcard.tests;
 
 
-import org.Flashcard.models.*;
+import org.Flashcard.models.dataClasses.Deck;
+import org.Flashcard.models.dataClasses.FlashCard;
+import org.Flashcard.models.dataClasses.Tag;
+import org.Flashcard.models.dataClasses.User;
 import org.Flashcard.repositories.*;
 
 import java.sql.SQLException;

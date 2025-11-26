@@ -1,4 +1,4 @@
-package org.Flashcard.models;
+package org.Flashcard.models.dataClasses;
 
 import java.time.LocalDate;
 
