@@ -1,10 +1,14 @@
 package org.Flashcard.models.ratingStrategy;
 
-public class StrategyAgain implements RatingStrategy {
+import org.Flashcard.models.dataClasses.FlashCard;
 
+public class StrategyAgain implements RatingStrategy {
     @Override
     public int calculateNextReviewDate() {
         return 1;
         //TODO
+    }
+    public void setRating(FlashCard card){
+
     }
 }
