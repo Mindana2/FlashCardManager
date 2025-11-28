@@ -44,8 +44,11 @@ public class StudyController {
         currentSession = new StudySession(currentDeck, currentUser, algorithm);
     }
     public void applyRating(String rating,int deckID, int cardID) throws SQLException {
+        //Hämtar flashcard från FlashCardRepository med cardID
         FlashCard flashCard = flashCardRepository.findByDeckId(deckID).get(cardID);
+        //Väljer strategi beroende på vad viewn skickar för rating
         ratingContext.setStrategy(strategyFactory.createStrategy(rating));
+        //Sätter ny rating på kortet
         ratingContext.executeStrategy(flashCard);
     }
     public FlashCardDTO nextCard(){
