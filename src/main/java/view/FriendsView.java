@@ -1,4 +1,6 @@
 package view;
 
-public class FriendsView {
+import javax.swing.*;
+
+public class FriendsView extends JPanel {
 }

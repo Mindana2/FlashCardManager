@@ -1,4 +1,6 @@
 package view;
 
-public class MyDecksView {
+import javax.swing.*;
+
+public class MyDecksView extends JPanel {
 }

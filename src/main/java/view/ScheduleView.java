@@ -1,4 +1,6 @@
 package view;
 
-public class ScheduleView {
+import javax.swing.*;
+
+public class ScheduleView extends JPanel {
 }

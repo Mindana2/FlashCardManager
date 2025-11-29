@@ -1,7 +1,5 @@
-package View.components;
+package view.components;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 

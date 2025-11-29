@@ -1,4 +1,6 @@
 package view;
 
-public class NavbarView {
+import javax.swing.*;
+
+public class NavbarView extends JPanel {
 }

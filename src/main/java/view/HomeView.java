@@ -1,4 +1,6 @@
 package view;
 
-public class HomeView {
+import javax.swing.*;
+
+public class HomeView extends JPanel {
 }

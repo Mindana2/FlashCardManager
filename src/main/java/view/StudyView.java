@@ -1,4 +1,6 @@
 package view;
 
-public class StudyView {
+import javax.swing.*;
+
+public class StudyView extends JPanel {
 }

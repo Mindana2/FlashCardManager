@@ -1,4 +1,6 @@
 package view;
 
-public class SignInView {
+import javax.swing.*;
+
+public class SignInView extends JPanel {
 }

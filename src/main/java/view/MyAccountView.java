@@ -1,4 +1,6 @@
 package view;
 
-public class MyAccountView {
+import javax.swing.*;
+
+public class MyAccountView extends JPanel {
 }
