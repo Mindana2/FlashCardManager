@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
 
         // Frame settings
         setTitle("Flashcard APP");
-        setSize(1200, 800);
+        setSize(1920, 1080);
         setLocationRelativeTo(null); // Center the frame on the screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -97,6 +97,7 @@ public class MainFrame extends JFrame {
     // Ändrar view helt enkelt i contentPanel
     public void showPage(String pageName) {
         cardLayout.show(contentPanel, pageName);
+        navbarView.highlight(pageName); // Highlight the active page in the navbar
     }
 
     public void setNavbarListener(){
