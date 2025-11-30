@@ -5,7 +5,7 @@ import java.util.List;
 public class Deck {
     private int id;
     private String title;
-    private int userId; // owner of the deck    //TODO reverse dependency
+    private int ownerUserId; // owner of the deck    //TODO reverse dependency
     private int tagId;  // associated tag
     private List<FlashCard> cards;    //TODO needs to be initiliased
 
@@ -13,16 +13,16 @@ public class Deck {
     // Constructors
     public Deck() {}
 
-    public Deck(int id, String title, int userId, int tagId) {
+    public Deck(int id, String title, int ownerUserId, int tagId) {
         this.id = id;
         this.title = title;
-        this.userId = userId;
+        this.ownerUserId = ownerUserId;
         this.tagId = tagId;
     }
 
-    public Deck(String title, int userId, int tagId) {
+    public Deck(String title, int ownerUserId, int tagId) {
         this.title = title;
-        this.userId = userId;
+        this.ownerUserId = ownerUserId;
         this.tagId = tagId;
     }
 
@@ -33,8 +33,8 @@ public class Deck {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public int getOwnerUserId() { return ownerUserId; }
+    public void setUserId(int userId) { this.ownerUserId = userId; }
 
     public int getTagId() { return tagId; }
     public void setTagId(int tagId) { this.tagId = tagId; }
@@ -45,6 +45,6 @@ public class Deck {
 
     @Override
     public String toString() {
-        return "Deck{id=" + id + ", title='" + title + "', userId=" + userId + ", tagId=" + tagId + "}";
+        return "Deck{id=" + id + ", title='" + title + "', userId=" + ownerUserId + ", tagId=" + tagId + "}";
     }
 }

@@ -18,7 +18,7 @@ public class DeckRepository extends BaseRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, deck.getTitle());
-            stmt.setInt(2, deck.getUserId());
+            stmt.setInt(2, deck.getOwnerUserId());
             stmt.setInt(3, deck.getTagId());
 
             ResultSet rs = stmt.executeQuery();

@@ -33,7 +33,10 @@ public class FlashCardRepository extends BaseRepository {
             stmt.setInt(1, deckId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                cards.add(new FlashCard(rs.getInt("id"), rs.getString("front"), rs.getString("back"), rs.getInt("deck_id")));
+                cards.add(new FlashCard(rs.getInt("id"),
+                        rs.getString("front"),
+                        rs.getString("back"),
+                        rs.getInt("deck_id"))); //Add foreign key for state_id from CardLearningRepo
             }
         }
         return cards;
