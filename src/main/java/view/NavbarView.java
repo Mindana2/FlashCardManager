@@ -11,6 +11,8 @@ public class NavbarView extends JPanel {
     private JButton decksBtn;
     private JButton scheduleBtn;
     private JButton signinBtn;
+    private static final Font ACTIVE = Theme.NORMAL.deriveFont(Font.BOLD);
+
 
     // Search box
     private SearchBarView searchBox;
@@ -38,7 +40,7 @@ public class NavbarView extends JPanel {
     private void initComponents(){
         homeBtn = new JButton("Home");
         decksBtn = new JButton("My Decks");
-        scheduleBtn = new JButton("My Schedule");
+        scheduleBtn = new JButton("Schedule");
         signinBtn = new JButton("Sign In");
 
         searchBox = new SearchBarView(200,10); // width 200px
@@ -85,6 +87,8 @@ public class NavbarView extends JPanel {
         btn.setFocusPainted(false);
         btn.setFont(Theme.NORMAL);
         btn.setContentAreaFilled(false);
+        btn.setPreferredSize(new Dimension(120, 32));
+
 
         // Hover effect
         btn.addChangeListener(e -> {
@@ -109,14 +113,19 @@ public class NavbarView extends JPanel {
 
     // Metod which highlights the active button
     public void highlight(String pageName) {
-        resetButtonStyles();
+        homeBtn.setFont(Theme.NORMAL);
+        decksBtn.setFont(Theme.NORMAL);
+        scheduleBtn.setFont(Theme.NORMAL);
+        signinBtn.setFont(Theme.NORMAL);
+
         switch (pageName) {
-            case "Home" -> homeBtn.setFont(Theme.TITLE);
-            case "MyDecks" -> decksBtn.setFont(Theme.TITLE);
-            case "Schedule" -> scheduleBtn.setFont(Theme.TITLE);
-            case "SignIn" -> signinBtn.setFont(Theme.TITLE);
+            case "Home" -> homeBtn.setFont(ACTIVE);
+            case "MyDecks" -> decksBtn.setFont(ACTIVE);
+            case "Schedule" -> scheduleBtn.setFont(ACTIVE);
+            case "SignIn" -> signinBtn.setFont(ACTIVE);
         }
     }
+
 
     private void resetButtonStyles() {
         homeBtn.setFont(Theme.NORMAL);

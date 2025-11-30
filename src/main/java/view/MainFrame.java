@@ -2,25 +2,15 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.NavigableMap;
-import java.util.Set;
-
 
 public class MainFrame extends JFrame {
-    // Attributes that define the main frame can be added here
-    // Navigering
-    // Card layout to switch between different views
-    // Card layout and content panel work together to manage different views in the main frame
+
     private CardLayout cardLayout;
     private JPanel contentPanel;
 
-    // Always-visible components
     private NavbarView navbarView;
     private FriendsView friendsView;
-    private boolean friendsVisible = true;
 
-
-    // Pages
     private HomeView homeView;
     private MyDecksView myDecksView;
     private StudyView studyView;
@@ -28,80 +18,111 @@ public class MainFrame extends JFrame {
     private MyAccountView myAccountView;
     private SignInView signInView;
 
-    // Overlay (for popup blur)
-    private JPanel overlayLayer;   // används för blur eller popup-darkening
+    private JLayeredPane layeredPane;      // transparent overlay container
+    private JPanel overlayLayer;           // semi-transparent overlay
+    private JPanel backgroundPanel;        // REAL background (fixar vit-buggen)
 
-    public MainFrame(){
+    public MainFrame() {
         initComponents();
-        LayoutComponents();
-        showPage("Home"); // Show home view by default
+        layoutComponents();
+        showPage("Home");
 
-        // Frame settings
         setTitle("Flashcard APP");
         setSize(1920, 1080);
-        setLocationRelativeTo(null); // Center the frame on the screen
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         setNavbarListener();
-
     }
 
     private void initComponents() {
-        // init card layout + contentPanel
+
+        // --------- CARD LAYOUT PANEL ---------
         cardLayout = new CardLayout();
         contentPanel = new JPanel(cardLayout);
         contentPanel.setBackground(Theme.BG);
 
-
-
-        //  init all views/pages
+        // --------- ALLA VIEWS ---------
         homeView = new HomeView();
         myDecksView = new MyDecksView();
         studyView = new StudyView();
         scheduleView = new ScheduleView();
         myAccountView = new MyAccountView();
         signInView = new SignInView();
+
         navbarView = new NavbarView();
         friendsView = new FriendsView();
 
-        // init overlay layer
-        overlayLayer = new JPanel();
-        overlayLayer.setOpaque(false); // Start as transparent
-        overlayLayer.setLayout(new BorderLayout());
-
-
-        // add views to content panel with unique identifiers
         contentPanel.add(homeView, "Home");
         contentPanel.add(myDecksView, "MyDecks");
-        //contentPanel.add(studyView, "Study");
         contentPanel.add(scheduleView, "Schedule");
         contentPanel.add(myAccountView, "MyAccount");
         contentPanel.add(signInView, "SignIn");
+
+        // --------- OVERLAY LAYER ---------
+        overlayLayer = new JPanel();
+        overlayLayer.setOpaque(false);
+        overlayLayer.setLayout(new BorderLayout());
+
+        // --------- JLayeredPane (TRANSPARENT!) ---------
+        layeredPane = new JLayeredPane();
+        layeredPane.setLayout(new BorderLayout());
+
+        // Lägg båda i CENTER med korrekt layer
+        layeredPane.add(contentPanel, BorderLayout.CENTER, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(overlayLayer, BorderLayout.CENTER, JLayeredPane.PALETTE_LAYER);
+
+
+        backgroundPanel = new JPanel(new BorderLayout());
+        backgroundPanel.setBackground(Theme.BG);  // ← Detta tar bort vit bakgrund
     }
 
-    // Layout setup
-    private void LayoutComponents(){
-        // Main frame layout setup
+    private void layoutComponents() {
+
         setLayout(new BorderLayout());
-        // add navbar to the top
+
+        // Navbar alltid högst upp
         add(navbarView, BorderLayout.NORTH);
-        // add friends view to the left/west
+
+        // FriendsView på vänster sida
         add(friendsView, BorderLayout.WEST);
-        //content panel in center
-        add(contentPanel, BorderLayout.CENTER);
-        // add overlay layer on top of content panel
-        add(overlayLayer, BorderLayout.CENTER);
+
+        // Lägg layeredPane i backgroundPanel
+        backgroundPanel.add(layeredPane, BorderLayout.CENTER);
+
+        // Lägg backgroundPanel i fönstret
+        add(backgroundPanel, BorderLayout.CENTER);
     }
 
-    // Methods to switch views, toggle friends view, and manage overlay can be added here
-    // Ändrar view helt enkelt i contentPanel
+    // -------- PAGE SWITCHING --------
     public void showPage(String pageName) {
         cardLayout.show(contentPanel, pageName);
-        navbarView.highlight(pageName); // Highlight the active page in the navbar
+
+        if ("Schedule".equals(pageName)) {
+            friendsView.setVisible(false);
+        } else {
+            friendsView.setVisible(true);
+        }
+
+        navbarView.highlight(pageName);
+
+        revalidate();
+        repaint();
     }
 
-    public void setNavbarListener(){
+    private void setNavbarListener() {
         navbarView.setOnNavigate(this::showPage);
     }
 
+    // -------- OVERLAY CONTROL (popup blur etc.) --------
+    public void showOverlay(Color transparentDark) {
+        overlayLayer.setOpaque(true);
+        overlayLayer.setBackground(transparentDark);
+        overlayLayer.repaint();
+    }
+
+    public void hideOverlay() {
+        overlayLayer.setOpaque(false);
+        overlayLayer.repaint();
+    }
 }
