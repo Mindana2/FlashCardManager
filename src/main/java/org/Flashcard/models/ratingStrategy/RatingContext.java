@@ -2,22 +2,19 @@ package org.Flashcard.models.ratingStrategy;
 
 import org.Flashcard.models.dataClasses.FlashCard;
 
-public class RatingContext {
-    private RatingStrategy strategy;
+public final class RatingContext {
 
-    public RatingContext() {
-        //Default rating på kortet blir null, men kommer ändras under applikationens gång
-        this.strategy = null;
-    }
-    //Väljer strategi
-    public void setStrategy(RatingStrategy strategy){
-        this.strategy = strategy;
+    private RatingContext() {
     }
 
     //Kallar på strategins metoder
-    public void executeStrategy(FlashCard flashCard) {
-        strategy.calculateNextReviewDate(flashCard);
-        strategy.setRating(flashCard);
+    public static void executeStrategy(FlashCard flashCard, RatingStrategy ratingStrategy) {
+
+        if (ratingStrategy == null) {
+            throw new IllegalArgumentException("ratingStrategy cannot be null");
+        }
+        ratingStrategy.calculateNextReviewDate(flashCard);
+        ratingStrategy.updateReviewDate(flashCard);
     }
 }
 
