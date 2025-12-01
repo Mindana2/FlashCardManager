@@ -8,9 +8,6 @@ public class CardLearningState {
     private LocalDate lastReviewDate;
     private int numberOfTimesViewed;
 
-
-
-
     public CardLearningState(LocalDate nextReviewDate,LocalDate lastReviewDate, int numberOfTimesViewed, int id) {
         this.nextReviewDate = nextReviewDate;
         this.lastReviewDate = lastReviewDate;
@@ -23,7 +20,14 @@ public class CardLearningState {
     }
     public void incrementNumberOfTimesViewed() {
         this.numberOfTimesViewed++;
-
     }
 
+
+    public LocalDate getLastReviewDate() {
+        return lastReviewDate;
+    }
+
+    public void setNextReviewDate(LocalDate newReviewDate) {
+        this.nextReviewDate = newReviewDate;
+    }
 }

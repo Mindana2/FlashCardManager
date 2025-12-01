@@ -2,18 +2,14 @@ package org.Flashcard;
 
 import org.Flashcard.controllers.StudyController;
 import org.Flashcard.controllers.UserController;
-import org.Flashcard.models.ratingStrategy.RatingContext;
-import org.Flashcard.models.ratingStrategy.StrategyFactory;
 import org.Flashcard.repositories.*;
 import org.Flashcard.view.AppWindow;
-import org.Flashcard.view.UserSelectionPanel;
 
 import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            final RatingContext ratingContext = new RatingContext();
 
             //Create repositories
             UserRepository userRepo = new UserRepository();
@@ -27,7 +23,7 @@ public class Main {
                     deckRepo,
                     tagRepo);
 
-            final StudyController studyController = new StudyController(ratingContext,
+            final StudyController studyController = new StudyController(
                     flashCardRepo,
                     deckRepo,
                     userRepo);

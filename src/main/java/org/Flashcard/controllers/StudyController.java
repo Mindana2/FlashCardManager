@@ -18,7 +18,6 @@ import java.sql.SQLException;
 
 
 public class StudyController {
-    private final RatingContext ratingContext;
 
     private final FlashCardRepository flashCardRepository;
     private final DeckRepository deckRepository;
@@ -26,11 +25,9 @@ public class StudyController {
 
     private StudySession currentSession;
 
-    public StudyController(RatingContext ratingContext,
-                           FlashCardRepository flashCardRepository,
+    public StudyController(FlashCardRepository flashCardRepository,
                            DeckRepository deckRepository,
                            UserRepository userRepository) {
-        this.ratingContext = ratingContext;
         this.deckRepository = deckRepository;
         this.userRepository = userRepository;
         this.flashCardRepository = flashCardRepository;
@@ -44,13 +41,13 @@ public class StudyController {
         currentSession = new StudySession(currentDeck, currentUser, algorithm);
         currentSession.startSession();
     }
-    public void applyRating(String rating,int deckID, int cardID) throws SQLException {
+    public void applyRating(String rating, int deckID, int cardID) throws SQLException {
+
         //Hämtar flashcard från FlashCardRepository med cardID
         FlashCard flashCard = flashCardRepository.findByDeckId(deckID).get(cardID);
-        //Väljer strategi beroende på vad viewn skickar för rating
-        ratingContext.setStrategy(StrategyFactory.createStrategy(rating));
+
         //Sätter ny rating på kortet
-        ratingContext.executeStrategy(flashCard);
+        RatingContext.executeStrategy(flashCard, StrategyFactory.createStrategy(rating));
     }
     public FlashCardDTO nextCard(){
         FlashCard flashCard = currentSession.getNextCardAndRemove();
