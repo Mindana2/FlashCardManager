@@ -1,12 +1,15 @@
 package org.flashcard.controllers;
 
+import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.UserDTO;
+import org.flashcard.application.mapper.DeckMapper;
+import org.flashcard.application.mapper.UserMapper;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Tag;
 import org.flashcard.models.dataclasses.User;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.TagRepository;
 import org.flashcard.repositories.UserRepository;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,29 +26,63 @@ public class UserController {
     private final UserRepository userRepo;
     private final DeckRepository deckRepo;
     private final TagRepository tagRepo;
+
+    // Håller koll på den inloggade användaren i minnet (Stateful för Desktop-app)
     private User currentUser;
 
     public UserController(UserRepository userRepo,
-                       DeckRepository deckRepo,
-                       TagRepository tagRepo) {
+                          DeckRepository deckRepo,
+                          TagRepository tagRepo) {
         this.userRepo = userRepo;
         this.deckRepo = deckRepo;
         this.tagRepo = tagRepo;
     }
 
+    // --- Authentication ---
+
     public boolean login(String username, String password) {
         Optional<User> optionalUser = userRepo.findByUsername(username);
 
         if (optionalUser.isEmpty()) {
-            return false; // user not found
+            return false; // Användaren finns inte
         }
 
         User user = optionalUser.get();
+
+        // Hasha inmatat lösenord för att jämföra med det lagrade hashet
         String hashedInput = hashPassword(password);
 
-        return user.getPassword().equals(hashedInput);
+        if (user.getPassword().equals(hashedInput)) {
+            this.currentUser = user; // VIKTIGT: Sätter den inloggade användaren
+            return true;
+        }
+
+        return false; // Fel lösenord
     }
 
+    public void logout() {
+        this.currentUser = null;
+    }
+
+    // Hämtar den inloggade användaren som DTO för Vyn
+    public UserDTO getCurrentUser() {
+        if (currentUser == null) return null;
+        return UserMapper.toDTO(currentUser);
+    }
+
+    // Hjälpmetod för att få ID (används ofta av andra Controllers/Vyer)
+    public Integer getCurrentUserId() {
+        return (currentUser != null) ? currentUser.getId() : null;
+    }
+
+    public void loginByUserId(Integer userId) {
+        // 1. Controllern använder ID:t för att hämta den riktiga Entiteten
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 2. Sätt sessionen
+        this.currentUser = user;
+    }
 
     private String hashPassword(String password) {
         try {
@@ -60,39 +98,36 @@ public class UserController {
         }
     }
 
-
-
     // --- User CRUD ---
 
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;  // auto-login as this user
-    }
-
-    public User getCurrentUser() {
-        return currentUser;
-    }
-
-    public User createUser(String username, String password) {
+    public UserDTO createUser(String username, String password) {
         if (userRepo.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        User user = new User(username, password);
-        return userRepo.save(user);
+        // VIKTIGT: Hasha lösenordet INNAN vi sparar det!
+        String hashedPassword = hashPassword(password);
+
+        User user = new User(username, hashedPassword);
+        User savedUser = userRepo.save(user);
+
+        return UserMapper.toDTO(savedUser);
     }
 
-    public List<User> getAllUsers() {
-        return userRepo.findAll();
+    public List<UserDTO> getAllUsers() {
+        return userRepo.findAll().stream()
+                .map(UserMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public User getUserById(Integer userId) {
+    // Hämtar Entiteten (används internt eller vid behov)
+    public User getUserByIdEntity(Integer userId) {
         return userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    public User updateUser(Integer userId, String newUsername, String newPassword) {
-        User user = getUserById(userId);
+    public UserDTO updateUser(Integer userId, String newUsername, String newPassword) {
+        User user = getUserByIdEntity(userId);
 
         if (newUsername != null && !newUsername.isBlank()) {
             if (!newUsername.equals(user.getUsername()) && userRepo.existsByUsername(newUsername)) {
@@ -102,28 +137,39 @@ public class UserController {
         }
 
         if (newPassword != null && !newPassword.isBlank()) {
-            user.setPassword(newPassword); // assume hashed elsewhere
+            user.setPassword(hashPassword(newPassword));    //Hash password when updating as well
         }
 
-        return userRepo.save(user);
+        User savedUser = userRepo.save(user);
+        return UserMapper.toDTO(savedUser);
     }
 
     public void deleteUser(Integer userId) {
         if (!userRepo.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
         }
-        userRepo.deleteById(userId); // cascades to decks/tags if JPA cascade set
+
+        if (currentUser != null && currentUser.getId().equals(userId)) {
+            this.currentUser = null;
+        }
+        userRepo.deleteById(userId);
     }
 
     // --- User-related queries ---
 
-    public List<Deck> getDecksForUser(Integer userId) {
-        getUserById(userId); // ensure user exists
-        return deckRepo.findByUserId(userId);
+    public List<DeckDTO> getDecksForUser(Integer userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new IllegalArgumentException("User not found");
+        }
+        List<Deck> decks = deckRepo.findByUserId(userId);
+
+        return DeckMapper.toDTOList(decks);
     }
 
     public List<Tag> getTagsForUser(Integer userId) {
-        getUserById(userId); // ensure user exists
+        if (!userRepo.existsById(userId)) {
+            throw new IllegalArgumentException("User not found");
+        }
         return tagRepo.findByUserId(userId);
     }
 

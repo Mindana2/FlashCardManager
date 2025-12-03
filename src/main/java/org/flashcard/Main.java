@@ -33,9 +33,6 @@ public class Main {
             TestFrame frame = new TestFrame(userController, studyController, deckController);
             frame.setVisible(true);
 
-
-
-
         });
     }
 }

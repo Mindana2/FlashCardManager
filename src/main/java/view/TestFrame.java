@@ -1,10 +1,11 @@
 package view;
 
+import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.TagDTO; // Behövs för taggen
+import org.flashcard.application.dto.UserDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.StudyController;
 import org.flashcard.controllers.UserController;
-import org.flashcard.models.dataclasses.Deck;
-import org.flashcard.models.dataclasses.User;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,20 +28,29 @@ public class TestFrame extends JFrame {
         this.studyController = studyController;
         this.deckController = deckController;
 
-        setTitle("Test Frame - Blank Canvas");
+        setTitle("Test Frame - DTO Version");
         setSize(1000, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         initComponents();
         layoutComponents();
-        refreshCurrentUser();
-        refreshDecks();
+
+        // --- VIKTIGT: Logga in FÖRST, sen uppdatera UI ---
+        // För testning hårdkodar vi inloggning av ID 1 här
+        try {
+            userController.loginByUserId(1);
+        } catch (Exception e) {
+            System.out.println("Kunde inte logga in user 1: " + e.getMessage());
+        }
+
+        refreshCurrentUser(); // Nu kommer denna hitta användaren
+        refreshDecks();       // Och denna kommer hitta lekarna
     }
 
     private void initComponents() {
         // Label to display current user
-        userLabel = new JLabel();
+        userLabel = new JLabel("No user");
         userLabel.setFont(new Font("Arial", Font.BOLD, 18));
         userLabel.setForeground(Color.BLACK);
 
@@ -65,8 +75,9 @@ public class TestFrame extends JFrame {
 
     // Call whenever current user changes
     public void refreshCurrentUser() {
-        User currentUser = userController.getUserById(1);
-        userController.setCurrentUser(currentUser);
+        // HÄR VAR FELET: Vi hämtar DTO:n nu, inte Entiteten
+        UserDTO currentUser = userController.getCurrentUser();
+
         if (currentUser != null) {
             userLabel.setText("Current User: " + currentUser.getUsername());
         } else {
@@ -78,11 +89,16 @@ public class TestFrame extends JFrame {
     public void refreshDecks() {
         contentPanel.removeAll();
 
-        User currentUser = userController.getCurrentUser();
-        if (currentUser != null) {
-            List<Deck> decks = deckController.getDecksForUser(currentUser.getId());
+        // Ändrat till UserDTO
+        UserDTO currentUser = userController.getCurrentUser();
 
-            for (Deck deck : decks) {
+        if (currentUser != null) {
+            // Anropa controllern som returnerar List<DeckDTO>
+            // Obs: Kontrollera att metoden heter 'getAllDecksForUser' i din DeckController,
+            // annars 'getDecksForUser'
+            List<DeckDTO> decks = deckController.getAllDecksForUser(currentUser.getId());
+
+            for (DeckDTO deck : decks) {
                 JPanel card = createDeckCard(deck);
                 contentPanel.add(card);
             }
@@ -92,8 +108,8 @@ public class TestFrame extends JFrame {
         contentPanel.repaint();
     }
 
-    // Simple deck card panel
-    private JPanel createDeckCard(Deck deck) {
+    // Simple deck card panel using DTO
+    private JPanel createDeckCard(DeckDTO deck) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 2));
@@ -106,17 +122,26 @@ public class TestFrame extends JFrame {
         card.add(nameLabel, BorderLayout.CENTER);
 
         // Tag at bottom (if it exists)
-        if (deck.getTag() != null) {
-            var tag = deck.getTag();
+        // Nu använder vi DTO:ns nestlade TagDTO
+        if (deck.getTagDTO() != null) {
+            TagDTO tag = deck.getTagDTO();
 
             JLabel tagLabel = new JLabel(tag.getTitle());
             tagLabel.setOpaque(true);
 
+            // Fixa hex-färgen
+            String hex = tag.getColorHex();
+            if (hex != null && !hex.startsWith("#")) {
+                hex = "#" + hex;
+            }
 
-            String hex = tag.getColor();
-            if (!hex.startsWith("#")) hex = "#" + hex;
-            tagLabel.setBackground(Color.decode(hex));
-
+            try {
+                tagLabel.setBackground(Color.decode(hex));
+                // Avgör textfärg baserat på bakgrund (enkelt hack: vit text på mörk)
+                tagLabel.setForeground(Color.BLACK);
+            } catch (Exception e) {
+                tagLabel.setBackground(Color.LIGHT_GRAY); // Fallback
+            }
 
             tagLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
             tagLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -130,6 +155,4 @@ public class TestFrame extends JFrame {
 
         return card;
     }
-
-
 }

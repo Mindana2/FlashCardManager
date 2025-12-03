@@ -11,6 +11,4 @@ public interface TagRepository extends JpaRepository<Tag, Integer> {
 
     // Find all tags for a specific user
     List<Tag> findByUserId(Integer userId);
-
-
 }

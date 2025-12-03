@@ -1,5 +1,6 @@
 package view;
 
+import org.flashcard.application.dto.UserDTO;
 import org.flashcard.controllers.UserController;
 import org.flashcard.models.dataclasses.User;
 
@@ -122,11 +123,11 @@ public class FriendsView extends JPanel {
         listPanel.removeAll(); // clear existing entries
 
         // Fetch all users from controller
-        List<User> users = userController.getAllUsers();
-        User currentUser = userController.getCurrentUser(); // get the currently signed-in user
+        List<UserDTO> users = userController.getAllUsers();
+        UserDTO currentUser = userController.getCurrentUser(); // get the currently signed-in user
 
 
-        for (User user : users) {
+        for (UserDTO user : users) {
             JButton userButton = new JButton(user.getUsername());
             userButton.setFocusPainted(false);
             userButton.setContentAreaFilled(false);
@@ -147,7 +148,7 @@ public class FriendsView extends JPanel {
 
             // When clicked, "sign in" as this user
             userButton.addActionListener(e -> {
-                userController.setCurrentUser(user);
+                userController.loginByUserId(user.getId());
                 JOptionPane.showMessageDialog(this,
                         "You are now signed in as: " + user.getUsername(),
                         "Signed In",
@@ -164,7 +165,7 @@ public class FriendsView extends JPanel {
 
     private void openUserProfile(User user) {
         // Auto-login as this user
-        userController.setCurrentUser(user);
+        userController.loginByUserId(user.getId());
 
         // Optionally, update UI or navigate to Home
         JOptionPane.showMessageDialog(this,

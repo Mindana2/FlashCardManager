@@ -25,7 +25,6 @@ public class StudyController {
     private final FlashcardRepository flashcardRepository;
     private final DeckRepository deckRepository;
     private final UserRepository userRepository;
-    private Deck currentDeck;
 
     private StudySession currentSession;
 
@@ -67,7 +66,14 @@ public class StudyController {
 
     public FlashcardDTO nextCard(){
         Flashcard flashCard = currentSession.getNextCardAndRemove();
-        return FlashcardMapper.toDTO(flashCard);    //Data object with readonly functions for the view
+
+        if (flashCard == null) {
+            return null; // Tells the view that the session is over
+        }
+        return FlashcardMapper.toDTO(flashCard);
+    }
+    public void endSession() {
+        this.currentSession = null;
     }
 
 }

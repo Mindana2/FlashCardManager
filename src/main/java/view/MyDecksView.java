@@ -1,5 +1,6 @@
 package view;
 
+import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.models.dataclasses.Deck;
@@ -50,11 +51,11 @@ public class MyDecksView extends HomeView {
             return;
         }
 
-        List<Deck> decks = deckController.getDecksForUser(currentUser.getId());
+        List<DeckDTO> decks = deckController.getAllDecksForUser(currentUser.getId());
 
         // Convert to simple strings
         List<String> deckNames = decks.stream()
-                .map(Deck::getTitle)
+                .map(DeckDTO::getTitle)
                 .collect(Collectors.toList());
 
         setDecks(deckNames);

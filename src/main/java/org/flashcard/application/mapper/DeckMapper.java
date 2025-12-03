@@ -7,7 +7,7 @@ import org.flashcard.models.dataclasses.Deck;
 import java.util.List;
 
 public class DeckMapper {
-    public static DeckDTO toDTO(Deck deck) {
+    public static DeckDTO toDTO(Deck deck, int dueCount) {
         int cardCount = (deck.getCards() != null) ? deck.getCards().size() : 0;
         TagDTO tagDTO = TagMapper.toDTO(deck.getTag());
 
@@ -15,9 +15,14 @@ public class DeckMapper {
                 deck.getTitle(),
                 deck.getId(),
                 cardCount,
-                tagDTO
+                tagDTO,
+                dueCount
         );
     }
+    public static DeckDTO toDTO(Deck deck) {
+        return toDTO(deck, 0);
+    }
+
     public static List<DeckDTO> toDTOList(List<Deck> decks) {
         return decks.stream().map(DeckMapper::toDTO).toList();
     }
