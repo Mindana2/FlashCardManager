@@ -36,6 +36,12 @@ public class DeckController {
         this.tagRepo = tagRepo;
     }
 
+    // Create Deck
+    // Create Flashcard
+    // Create Tag
+    // Create User
+
+
     // --- Deck CRUD ---
     public DeckDTO createDeck(Integer userId, String title) {
         User user = userRepo.findById(userId)
@@ -43,6 +49,7 @@ public class DeckController {
 
         Deck deck = new Deck(title, user);
         Deck savedDeck = deckRepo.save(deck);
+
         return DeckMapper.toDTO(savedDeck);
     }
 
@@ -55,11 +62,6 @@ public class DeckController {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Check if a tag with the same title already exists for this user
-//        boolean exists = tagRepo.existsByTagTitleAndUserId(title.trim(), user.getId());
-//        if (exists) {
-//            throw new IllegalArgumentException("Tag with this title already exists");
-//        }
 
         Tag tag = new Tag(title.trim(), color, user);
         Tag savedTag = tagRepo.save(tag);

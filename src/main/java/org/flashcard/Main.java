@@ -3,16 +3,12 @@ package org.flashcard;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.StudyController;
 import org.flashcard.controllers.UserController;
-import org.flashcard.models.dataclasses.Deck;
-import org.flashcard.models.dataclasses.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import view.MainFrame;
 import view.TestFrame;
 
 import javax.swing.*;
-import java.util.List;
 
 @SpringBootApplication
 public class Main {
