@@ -1,7 +1,11 @@
 package org.flashcard.application.mapper;
 
+import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.TagDTO;
+import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Tag;
+
+import java.util.List;
 
 public class TagMapper {
     public static TagDTO toDTO(Tag tag) {
@@ -14,4 +18,9 @@ public class TagMapper {
                 tag.getColor()
         );
     }
+
+    public static List<TagDTO> toDTOList(List<Tag> tags) {
+        return tags.stream().map(TagMapper::toDTO).toList();
+    }
 }
+

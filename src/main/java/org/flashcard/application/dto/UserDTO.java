@@ -10,4 +10,9 @@ public class UserDTO {
     }
     public int getId() { return id; }
     public String getUsername() { return username; }
+
+    @Override
+    public String toString() {
+        return username;   // or getUsername()
+    }
 }
