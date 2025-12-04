@@ -29,7 +29,7 @@ public class Flashcard {
     private Deck deck;
 
     // One-to-one relationship with CardLearningState
-    @OneToOne(mappedBy = "flashcard", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "flashcard", cascade = CascadeType.ALL)
     private CardLearningState cardLearningState;
 
     // Constructors

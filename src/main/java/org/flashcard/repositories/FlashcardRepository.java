@@ -13,6 +13,8 @@ public interface FlashcardRepository extends JpaRepository<Flashcard, Integer> {
     // Fetch all flashcards for a specific deck
     List<Flashcard> findByDeckId(Integer deckId);
 
+    long countByDeckId(Integer deckId);
+
     List<Flashcard> findByDeck(Deck deck);  // returns all flashcards for a deck
 
 }

@@ -38,8 +38,10 @@ public class MyDecksViewTest extends JPanel {
         createButton.setFocusPainted(false);
         createButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         createButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        createButton.addActionListener(e -> appFrame.navigateTo("CreateDeck"));
-
+        createButton.addActionListener(e -> {
+            appFrame.getCreateDeckView().resetFormForNewDeck(); // nollställ formuläret
+            appFrame.navigateTo("CreateDeck");
+        });
         headerPanel.add(title, BorderLayout.WEST);
         headerPanel.add(createButton, BorderLayout.EAST);
 
@@ -62,8 +64,7 @@ public class MyDecksViewTest extends JPanel {
         Integer userId = userController.getCurrentUserId();
         if (userId == null) return;
 
-        // Hämta ALLA lekar (via DeckController)
-        // OBS: Se till att du har implementerat getAllDecksForUser i DeckController
+        // Hämta ALLA decks för användaren
         List<DeckDTO> allDecks = deckController.getAllDecksForUser(userId);
 
         if (allDecks.isEmpty()) {
@@ -72,7 +73,8 @@ public class MyDecksViewTest extends JPanel {
             gridPanel.add(emptyLabel);
         } else {
             for (DeckDTO deck : allDecks) {
-                // Skicka med 'all' som strategi när man klickar härifrån
+                // Skicka med deck till DeckCard
+                // DeckCard kan visa totalt antal kort via deck.getCardCount()
                 DeckCard card = new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "all"));
                 gridPanel.add(card);
             }
@@ -81,4 +83,5 @@ public class MyDecksViewTest extends JPanel {
         gridPanel.revalidate();
         gridPanel.repaint();
     }
+
 }

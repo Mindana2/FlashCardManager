@@ -84,12 +84,15 @@ public class DeckController {
     public List<DeckDTO> getAllDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
 
-        // Här bryr vi oss kanske inte om 'dueCount', så vi skickar 0 eller räknar ut det om du vill visa det ändå.
-        // Men viktigast är att vi INTE filtrerar bort några lekar.
         return userDecks.stream()
-                .map(DeckMapper::toDTO)
+                .map(deck -> {
+                    // Räkna antal kort via repository istället för deck.getCards()
+                    long cardCount = flashcardRepo.countByDeckId(deck.getId());
+                    return DeckMapper.toDTO(deck, (int) cardCount);
+                })
                 .collect(Collectors.toList());
     }
+
 
     public DeckDTO getDeckById(Integer deckId) {
         Deck deck = deckRepo.findById(deckId)
@@ -158,12 +161,17 @@ public class DeckController {
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
         Flashcard card = new Flashcard(front, back, deck);
+        Flashcard savedCard = flashcardRepo.save(card); // trigger skapar CardLearningState automatiskt
 
-        card.setCardLearningState(new CardLearningState(card));
-        Flashcard savedCard = flashcardRepo.save(card);
-
-        return FlashcardMapper.toDTO(savedCard);    //Convert to DTO
+        return FlashcardMapper.toDTO(savedCard);
     }
+
+
+    public boolean deckExists(Integer userId, String title) {
+        return deckRepo.existsByUserIdAndTitle(userId, title);
+    }
+
+
 
     public List<FlashcardDTO> getFlashcardsForDeck(Integer deckId) {
         List<Flashcard> cards = flashcardRepo.findByDeckId(deckId);

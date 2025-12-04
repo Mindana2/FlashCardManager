@@ -8,12 +8,14 @@ import java.time.LocalDate;
 public class CardLearningState {
 
     @Id
-    private Integer flashcardId; // shared PK with Flashcard
+    private Integer flashcardId; // samma som flashcard.id
 
     @OneToOne
-    @MapsId // Use flashcardId as both PK and FK
-    @JoinColumn(name = "flashcardId")
+    @JoinColumn(name = "flashcard_id")
+    @MapsId // ← viktigt: betyder att CardLearningState använder samma id som Flashcard
     private Flashcard flashcard;
+
+
 
     private LocalDate lastReviewDate;
     private LocalDate nextReviewDate;

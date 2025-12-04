@@ -40,6 +40,7 @@ public class CreateDeckViewTest extends JPanel {
         initComponents();
     }
 
+
     private void initComponents() {
         // --- Header ---
         headerLabel = new JLabel("Skapa ny lek");
@@ -131,9 +132,9 @@ public class CreateDeckViewTest extends JPanel {
         }
     }
 
+
     private void createDeck() {
-        String title = titleField.getText();
-        String tagName = tagField.getText();
+        String title = titleField.getText().trim();
         Integer userId = userController.getCurrentUserId();
 
         if (title.isBlank()) {
@@ -141,9 +142,36 @@ public class CreateDeckViewTest extends JPanel {
             return;
         }
 
+        if (userId == null) {
+            JOptionPane.showMessageDialog(this, "Ingen användare inloggad!");
+            return;
+        }
+
+        // --- NYTT: Kontrollera om deck med samma namn redan finns ---
+        if (deckController.deckExists(userId, title)) {
+            JOptionPane.showMessageDialog(this, "Du har redan en lek med detta namn!");
+            return;
+        }
+
+
+
         try {
-            // Anropa Controller (Den uppdaterade metoden som hanterar tagg-namn)
-            createdDeck = deckController.createDeck(userId, title, 1); // Default färg
+            // Skapa deck
+            createdDeck = deckController.createDeck(userId, title);
+
+            // Hantera tagg (om användaren skrev något)
+            String tagName = tagField.getText().trim();
+            if (!tagName.isBlank()) {
+                String defaultColorHex = "808080";
+                try {
+                    var tagDto = deckController.createTag(userId, tagName, defaultColorHex);
+                    deckController.assignTagToDeck(createdDeck.getId(), tagDto.getId());
+                    // Hämta uppdaterad deck med tagg
+                    createdDeck = deckController.getDeckById(createdDeck.getId());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Deck skapad men tagg kunde ej läggas till: " + ex.getMessage());
+                }
+            }
 
             // Uppdatera UI för att lägga till kort
             headerLabel.setText("Lägg till kort i: " + createdDeck.getTitle());
@@ -156,6 +184,23 @@ public class CreateDeckViewTest extends JPanel {
             JOptionPane.showMessageDialog(this, "Fel: " + e.getMessage());
         }
     }
+    public void resetFormForNewDeck() {
+        createdDeck = null;          // Nollställ det gamla decket
+        titleField.setText("");
+        tagField.setText("");
+        frontField.setText("");
+        backField.setText("");
+        statusLabel.setText(" ");
+
+        headerLabel.setText("Skapa ny lek");
+        mainActionButton.setText("Skapa Lek");
+        finishButton.setVisible(false);
+        toggleCardFields(false);
+    }
+
+
+
+
 
     private void addCard() {
         String front = frontField.getText();
@@ -166,19 +211,30 @@ public class CreateDeckViewTest extends JPanel {
             return;
         }
 
+        if (createdDeck == null) {
+            JOptionPane.showMessageDialog(this, "Ingen lek vald att lägga till kort i.");
+            return;
+        }
+
         try {
             deckController.addFlashcard(createdDeck.getId(), front, back);
+
+            // Hämta uppdaterad deck eller lista med kort så vi får korrekt antal
+            createdDeck = deckController.getDeckById(createdDeck.getId());
+            int count = createdDeck.getCardCount();
+
 
             // Rensa fält och ge feedback
             frontField.setText("");
             backField.setText("");
             frontField.requestFocus();
-            statusLabel.setText("Kort tillagt! (" + (createdDeck.getCardCount() + 1) + " totalt)"); // (Enkelt hack för räknare)
+            statusLabel.setText("Kort tillagt! (" + count + " totalt)");
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Kunde inte spara kort: " + e.getMessage());
         }
     }
+
 
     private void resetAndGoBack() {
         // Nollställ formuläret

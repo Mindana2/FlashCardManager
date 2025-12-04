@@ -83,6 +83,10 @@ public class AppFrame extends JFrame {
 
         cardLayout.show(mainContentPanel, viewName);
     }
+    public CreateDeckViewTest getCreateDeckView() {
+        return createDeckView; // din instans av CreateDeckViewTest
+    }
+
 
     // Uppdaterad metod: Tar emot 'strategy' ("today" eller "all")
     public void startStudySession(int deckId, String strategy) {

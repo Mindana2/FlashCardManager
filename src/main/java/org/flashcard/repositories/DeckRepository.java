@@ -14,4 +14,7 @@ public interface DeckRepository extends JpaRepository<Deck, Integer> {
 
     // Optional: find a deck by user and title
     Deck findByUserIdAndTitle(Integer userId, String title);
+
+    boolean existsByUserIdAndTitle(Integer userId, String title);
+
 }
