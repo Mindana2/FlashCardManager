@@ -27,11 +27,19 @@ public class DeckCard extends JPanel {
             JLabel tagLabel = new JLabel(deck.getTagDTO().getTitle());
             tagLabel.setOpaque(true);
             try {
-                tagLabel.setBackground(Color.decode(deck.getTagDTO().getColorHex()));
-                tagLabel.setForeground(Color.WHITE); // Antag mörk färg för enkelhet
+                String rawHex = deck.getTagDTO().getColorHex();
+                if (rawHex == null) rawHex = "808080";
+                String normalized = rawHex.startsWith("#") ? rawHex : ("#" + rawHex);
+                Color bg = Color.decode(normalized);
+                tagLabel.setBackground(bg);
+
+                double luminance = (0.299 * bg.getRed() + 0.587 * bg.getGreen() + 0.114 * bg.getBlue()) / 255;
+                tagLabel.setForeground(luminance > 0.6 ? Color.BLACK : Color.WHITE);
             } catch (Exception e) {
                 tagLabel.setBackground(Color.GRAY);
+                tagLabel.setForeground(Color.WHITE);
             }
+
             tagLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
             tagLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
             tagPanel.add(tagLabel);

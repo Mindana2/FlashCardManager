@@ -39,9 +39,11 @@ public class MyDecksViewTest extends JPanel {
         createButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         createButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         createButton.addActionListener(e -> {
-            appFrame.getCreateDeckView().resetFormForNewDeck(); // nollställ formuläret
+            // Nollställ create-deck-form och navigera
+            appFrame.getCreateDeckView().resetFormForNewDeck();
             appFrame.navigateTo("CreateDeck");
         });
+
         headerPanel.add(title, BorderLayout.WEST);
         headerPanel.add(createButton, BorderLayout.EAST);
 
@@ -73,15 +75,44 @@ public class MyDecksViewTest extends JPanel {
             gridPanel.add(emptyLabel);
         } else {
             for (DeckDTO deck : allDecks) {
-                // Skicka med deck till DeckCard
-                // DeckCard kan visa totalt antal kort via deck.getCardCount()
+                // wrapper-panel: DeckCard + liten knapprad under
+                JPanel wrapper = new JPanel();
+                wrapper.setLayout(new BorderLayout());
+                wrapper.setOpaque(false);
+
+                // DeckCard (visuellt)
                 DeckCard card = new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "all"));
-                gridPanel.add(card);
+                wrapper.add(card, BorderLayout.CENTER);
+
+                // Buttons panel (Edit, kanske framtida andra knappar)
+                JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 6));
+                btnRow.setBackground(new Color(245, 245, 245));
+
+                JButton editBtn = new JButton("Redigera");
+                editBtn.setPreferredSize(new Dimension(90, 28));
+                editBtn.setBackground(new Color(70, 130, 180));
+                editBtn.setForeground(Color.WHITE);
+                editBtn.setFocusPainted(false);
+                editBtn.addActionListener(e -> {
+                    // Ladda deck i EditDeckView och navigera
+                    try {
+                        appFrame.getEditDeckView().loadDeck(deck.getId());
+                        appFrame.navigateTo("EditDeck");
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(this, "Kunde inte öppna redigeringsvyn: " + ex.getMessage());
+                    }
+                });
+
+                btnRow.add(editBtn);
+
+                // Lägg till knappraden under kortet
+                wrapper.add(btnRow, BorderLayout.SOUTH);
+
+                gridPanel.add(wrapper);
             }
         }
 
         gridPanel.revalidate();
         gridPanel.repaint();
     }
-
 }

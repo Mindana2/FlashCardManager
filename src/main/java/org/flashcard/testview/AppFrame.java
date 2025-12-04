@@ -24,6 +24,7 @@ public class AppFrame extends JFrame {
     private MyDecksViewTest myDecksView; // Inte längre placeholder
     private CreateDeckViewTest createDeckView; // NY
     private StudyViewTest studyView;
+    private EditDeckView editDeckView;
 
     public AppFrame(UserController userController, StudyController studyController, DeckController deckController) {
         this.userController = userController;
@@ -65,11 +66,13 @@ public class AppFrame extends JFrame {
         myDecksView = new MyDecksViewTest(deckController, userController, this); // Nu riktig klass
         createDeckView = new CreateDeckViewTest(deckController, userController, this); // NY
         studyView = new StudyViewTest(studyController, this);
+        editDeckView = new EditDeckView(deckController, userController, this);
 
         mainContentPanel.add(homeView, "Home");
         mainContentPanel.add(myDecksView, "MyDecks");
         mainContentPanel.add(createDeckView, "CreateDeck"); // Lägg till i layouten
         mainContentPanel.add(studyView, "Study");
+        mainContentPanel.add(editDeckView, "EditDeck");
 
         add(mainContentPanel, BorderLayout.CENTER);
 
@@ -87,6 +90,7 @@ public class AppFrame extends JFrame {
         return createDeckView; // din instans av CreateDeckViewTest
     }
 
+    public EditDeckView getEditDeckView() { return editDeckView; }
 
     // Uppdaterad metod: Tar emot 'strategy' ("today" eller "all")
     public void startStudySession(int deckId, String strategy) {
