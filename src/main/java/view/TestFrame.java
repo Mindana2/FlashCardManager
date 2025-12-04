@@ -29,7 +29,7 @@ public class TestFrame extends JFrame {
         this.deckController = deckController;
 
         setTitle("Test Frame - DTO Version");
-        setSize(1000, 700);
+        setSize(1920, 1080);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -57,20 +57,79 @@ public class TestFrame extends JFrame {
         // Main content panel
         contentPanel = new JPanel();
         contentPanel.setBackground(Color.DARK_GRAY);
-        contentPanel.setLayout(new GridLayout(0, 3, 20, 20)); // grid: 3 columns, rows auto
+        contentPanel.setLayout(new FlowLayout(FlowLayout.LEFT,20,20)); // grid: 3 columns, rows auto
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
     private void layoutComponents() {
         setLayout(new BorderLayout());
 
-        // Add user label at the top
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         headerPanel.setBackground(Color.LIGHT_GRAY);
         headerPanel.add(userLabel);
 
+        // NEW: Switch User button
+        JButton switchUserButton = new JButton("Switch User");
+        switchUserButton.addActionListener(e -> openSwitchUserDialog());
+        headerPanel.add(switchUserButton);
+
+        // NEW: Add Deck button
+        JButton addDeckButton = new JButton("Add Deck");
+        addDeckButton.addActionListener(e -> openAddDeckDialog());
+        headerPanel.add(addDeckButton);
+
+
         add(headerPanel, BorderLayout.NORTH);
-        add(new JScrollPane(contentPanel), BorderLayout.CENTER); // scroll if many decks
+        add(new JScrollPane(contentPanel), BorderLayout.CENTER);
+    }
+
+    private void openSwitchUserDialog() {
+        // Fetch all users via your UserController
+        List<UserDTO> users = userController.getAllUsers();
+        // If method is different (like findAllUsers), tell me and I’ll adapt.
+
+        if (users == null || users.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "No users found in system.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // ComboBox model
+        JComboBox<UserDTO> userCombo = new JComboBox<>(users.toArray(new UserDTO[0]));
+
+        // Show dialog
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        panel.add(new JLabel("Select user to log in as:"));
+        panel.add(userCombo);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Switch User",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result == JOptionPane.OK_OPTION) {
+            UserDTO selectedUser = (UserDTO) userCombo.getSelectedItem();
+
+            if (selectedUser != null) {
+                try {
+                    userController.loginByUserId(selectedUser.getId());
+
+                    refreshCurrentUser();
+                    refreshDecks();
+
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this,
+                            "Could not switch user: " + ex.getMessage(),
+                            "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
     }
 
     // Call whenever current user changes
@@ -84,6 +143,111 @@ public class TestFrame extends JFrame {
             userLabel.setText("No user logged in");
         }
     }
+
+    private void openAddDeckDialog() {
+
+        UserDTO currentUser = userController.getCurrentUser();
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(this,
+                    "No user logged in.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Fetch tags
+        List<TagDTO> tags = userController.getTagsForUser(currentUser.getId()); // or tagController if separate
+
+        // Components for dialog
+        JTextField titleField = new JTextField(15);
+        JComboBox<TagDTO> tagCombo = new JComboBox<>();
+
+        tagCombo.addItem(null); // “no tag”
+        for (TagDTO t : tags) tagCombo.addItem(t);
+
+        // Set renderer to display "No Tag" when item is null
+        tagCombo.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value == null) {
+                    setText("No Tag");
+                } else if (value instanceof TagDTO) {
+                    setText(((TagDTO) value).getTitle());
+                }
+                return this;
+            }
+        });
+
+        JTextField newTagField = new JTextField(10);
+        JTextField newTagColorField = new JTextField("#cccccc", 7);
+
+        JPanel panel = new JPanel(new GridLayout(0, 2, 5, 5));
+        panel.add(new JLabel("Deck name:"));
+        panel.add(titleField);
+
+        panel.add(new JLabel("Existing tag:"));
+        panel.add(tagCombo);
+
+        panel.add(new JLabel("OR new tag name:"));
+        panel.add(newTagField);
+
+        panel.add(new JLabel("New tag color hex:"));
+        panel.add(newTagColorField);
+
+        int result = JOptionPane.showConfirmDialog(
+                this,
+                panel,
+                "Create New Deck",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (result != JOptionPane.OK_OPTION) return;
+
+        String deckTitle = titleField.getText().trim();
+        if (deckTitle.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Deck must have a title.",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+
+
+        TagDTO chosenTag = (TagDTO) tagCombo.getSelectedItem();
+        TagDTO newTag = null;
+
+// User typed a new tag name → create new tag
+        if (!newTagField.getText().trim().isEmpty()) {
+            String hex = newTagColorField.getText().trim();
+            if (hex.startsWith("#")) hex = hex.substring(1);
+            newTag = deckController.createTag(currentUser.getId(), newTagField.getText().trim(), hex);
+        }
+
+// Decide which tag to attach
+        TagDTO tagToUse = newTag != null ? newTag : chosenTag;
+        Integer tagId = tagToUse != null ? tagToUse.getId() : null;
+
+// Create the deck with the resolved tag
+
+
+        try {
+            DeckDTO newDeck = deckController.createDeck(currentUser.getId(), deckTitle);
+            deckController.assignTagToDeck(newDeck.getId(), tagId);
+
+            refreshDecks();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
+                    "Could not create deck: " + ex.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
     // Display all decks for current user in contentPanel
     public void refreshDecks() {

@@ -1,6 +1,8 @@
 package org.flashcard.models.dataclasses;
 
 import jakarta.persistence.*;
+import org.flashcard.controllers.UserController;
+
 import java.time.LocalDate;
 
 @Entity
@@ -32,6 +34,7 @@ public class Flashcard {
 
     // Constructors
     public Flashcard() {}
+
 
     public Flashcard(String front, String back, Deck deck) {
         if (front == null || front.isBlank()) throw new IllegalArgumentException("Front text required");

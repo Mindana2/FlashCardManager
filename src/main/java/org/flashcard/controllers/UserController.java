@@ -1,8 +1,10 @@
 package org.flashcard.controllers;
 
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.TagDTO;
 import org.flashcard.application.dto.UserDTO;
 import org.flashcard.application.mapper.DeckMapper;
+import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.application.mapper.UserMapper;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Tag;
@@ -160,11 +162,13 @@ public class UserController {
         return DeckMapper.toDTOList(decks);
     }
 
-    public List<Tag> getTagsForUser(Integer userId) {
+    public List<TagDTO> getTagsForUser(Integer userId) {
         if (!userRepo.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
         }
-        return tagRepo.findByUserId(userId);
+        List<Tag> tags = tagRepo.findByUserId(userId);
+
+        return TagMapper.toDTOList(tags);
     }
 
     public String getTagText(Integer tagId) {

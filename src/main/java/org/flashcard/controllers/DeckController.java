@@ -2,8 +2,10 @@ package org.flashcard.controllers;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
+import org.flashcard.application.dto.TagDTO;
 import org.flashcard.application.mapper.DeckMapper;
 import org.flashcard.application.mapper.FlashcardMapper;
+import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
@@ -34,22 +36,48 @@ public class DeckController {
         this.tagRepo = tagRepo;
     }
 
+    // Create Deck
+    // Create Flashcard
+    // Create Tag
+    // Create User
+
+
     // --- Deck CRUD ---
-    public DeckDTO createDeck(Integer userId, String title, Integer tagId) {
+    public DeckDTO createDeck(Integer userId, String title) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Tag tag = null;
-        if (tagId != null) {
-            tag = tagRepo.findById(tagId)
-                    .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
+        Deck deck = new Deck(title, user);
+        Deck savedDeck = deckRepo.save(deck);
+
+        return DeckMapper.toDTO(savedDeck);
+    }
+
+    public TagDTO createTag(Integer userId, String title, String color) {
+
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tag title cannot be empty");
         }
 
-        Deck deck = new Deck(title, user);
-        deck.setTag(tag);
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        Deck savedDeck = deckRepo.save(deck);
-        return DeckMapper.toDTO(savedDeck);
+
+        Tag tag = new Tag(title.trim(), color, user);
+        Tag savedTag = tagRepo.save(tag);
+        return TagMapper.toDTO(savedTag);
+    }
+
+
+    public TagDTO assignTagToDeck(Integer deckId, Integer tagId) {
+        Deck deck = deckRepo.findById(deckId)
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
+
+        Tag tag = tagRepo.findById(tagId)
+                .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
+
+        deck.setTag(tag);
+        return TagMapper.toDTO(tag);
     }
 
     // Används av MyDecksView

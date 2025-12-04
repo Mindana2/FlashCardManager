@@ -15,4 +15,11 @@ public class TagDTO {
     public String getTitle() { return title; }
     public String getColorHex() { return colorHex; }
     public int getId() { return id; }
+
+    @Override
+    public String toString() {
+        return title;   // or getUsername()
+    }
+
+
 }
