@@ -5,6 +5,14 @@ import org.flashcard.models.dataclasses.Flashcard;
 import org.flashcard.models.dataclasses.User;
 
 import java.util.List;
+/*
+ * This package is responsible for dividing flashcards into sub-decks:
+ * Flashcards that are due today or sooner get sorted into one 'pile'.
+ * While the option to study all cards remains with StudyAllAlgorithm.
+ *
+ * This package is also responsible for creating a study session.
+ *
+ */
 
 public class StudySession {
     private List<Flashcard> cards;

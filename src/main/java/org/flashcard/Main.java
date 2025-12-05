@@ -29,8 +29,7 @@ public class Main {
             DeckController deckController = context.getBean(DeckController.class);
             StudyController studyController = context.getBean(StudyController.class);
 
-
-            //MainFrame frame = new MainFrame(userController, studyController, deckController);
+            // Start View
             AppFrame frame = new AppFrame(userController, studyController, deckController);
             frame.setVisible(true);
 

@@ -6,7 +6,7 @@ import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Tag;
 
 import java.util.List;
-
+//Our Mapper classes converts our data classes to DTOs
 public class TagMapper {
     public static TagDTO toDTO(Tag tag) {
         if (tag == null) {

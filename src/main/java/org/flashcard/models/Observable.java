@@ -2,6 +2,7 @@ package org.flashcard.models;
 
 import java.util.ArrayList;
 
+//TODO Implement observer pattern for view classes.
 public class Observable<T> {
     private ArrayList<Observer<T>> listeners;
 

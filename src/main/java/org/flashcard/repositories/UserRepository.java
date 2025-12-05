@@ -6,19 +6,21 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/*
+ * This interface is a Spring Data JPA repository for the Deck entity.
+ *
+ * This is where a lot of magic happens with Spring Data JPA:
+ *
+ * @Repository marks this interface as a Spring-managed repository.
+ * Spring automatically detects it and provides an implementation at runtime.
+ *
+ * The repository automatically provides access to standard CRUD operations:
+ *   save(), findById(), findAll(), delete(), etc., without writing any SQL.
+ *
+ * Very cool
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-
-// Vi använder Spring JPA som är en smart implentation av Repositories. Den kommer med inbyggda
-// funtionener som står nedan:
-
-// save(User user)                  - Inserts a new row if the entity is new, or updates an existing row if it has an ID
-// findById(ID id)                  - Finds a row in the database by primary key and returns it as Optional<User>
-// findAll()                        - Retrieves all rows from the table as a list of User objects
-// delete(User user)                - Deletes the corresponding row from the database
-// existsById(ID id)                - Checks whether a row exists with the given primary key
-// findByUsername(String username)  - Automatically implemented by Spring Data JPA to find a user by username
-// existsByUsername(String username)- Automatically implemented to check if a user exists with the given username
 
     // Find a user by username
     Optional<User> findByUsername(String username);

@@ -4,7 +4,19 @@ import jakarta.persistence.*;
 import org.flashcard.controllers.UserController;
 
 import java.time.LocalDate;
-
+/* Our dataclasses also take use of Spring Framework.
+ *
+ * @Entity denotes that this class represents the "Flashcards" table in the database.
+ *
+ * Spring can then use this class to map between Java objects and database rows:
+ *
+ * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
+ *   1. Reads these annotations to know the table and columns.
+ *   2. Generates the appropriate SQL.
+ *   3. Maps database rows to Flashcard objects and vice versa.
+ *
+ * This helps us reduce the amount of boilerplate SQL we need to write.
+ */
 @Entity
 @Table(name = "Flashcards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"deckId", "front"})}) // prevent duplicate fronts in a deck
