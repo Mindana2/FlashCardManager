@@ -43,8 +43,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                <mainClass>org.flashcard.Main</mainClass>
+                </configuration>
+
             </plugin>
         </plugins>
     </build>
+
 
 </project>
