@@ -7,7 +7,7 @@ import org.flashcard.controllers.observer.Observer;  // NEW
 import javax.swing.*;
 import java.awt.*;
 
-public class StudyViewTest extends JPanel implements Observer<FlashcardDTO> {
+public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
     private final StudyController studyController;
     private final AppFrame appFrame;
@@ -28,7 +28,7 @@ public class StudyViewTest extends JPanel implements Observer<FlashcardDTO> {
         }
     };
 
-    public StudyViewTest(StudyController studyController, AppFrame appFrame) {
+    public StudyView(StudyController studyController, AppFrame appFrame) {
         this.studyController = studyController;
         this.appFrame = appFrame;
 

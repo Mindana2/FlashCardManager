@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateDeckViewTest extends JPanel {
+public class CreateDeckView extends JPanel {
 
     private final DeckController deckController;
     private final UserController userController;
@@ -39,7 +39,7 @@ public class CreateDeckViewTest extends JPanel {
     private JLabel statusLabel;
     private JLabel headerLabel;
 
-    public CreateDeckViewTest(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public CreateDeckView(DeckController deckController, UserController userController, AppFrame appFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.appFrame = appFrame;

@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class MyDecksViewTest extends JPanel implements Observer<List<DeckDTO>> {
+public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
 
     private final DeckController deckController;
     private final UserController userController;
@@ -17,7 +17,7 @@ public class MyDecksViewTest extends JPanel implements Observer<List<DeckDTO>> {
 
     private JPanel gridPanel;
 
-    public MyDecksViewTest(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public MyDecksView(DeckController deckController, UserController userController, AppFrame appFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.appFrame = appFrame;
