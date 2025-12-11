@@ -26,9 +26,9 @@ SET client_min_messages TO NOTICE;
 -- Test queries
 SELECT * FROM Users;
 SELECT * FROM Decks;
-SELECT * FROM Tags;
-SELECT * FROM FlashCards;
+--SELECT * FROM Tags;
+--SELECT * FROM FlashCards;
 
-SELECT * FROM user_decks WHERE user_id = 1;  -- Alice decks
+--SELECT * FROM user_decks WHERE user_id = 1;  -- Alice decks
 
-SELECT * FROM flashcards_full WHERE user_id = 1; -- Alice flashcards
+--SELECT * FROM flashcards_learning_minimal;

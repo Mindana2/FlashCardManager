@@ -54,14 +54,13 @@ public class UserController {
 
     // ---User CRUD---
 
-    public UserDTO createUser(String username, String password) {
+    public UserDTO createUser(String username) {
         if (userRepo.existsByUsername(username)) {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        String hashedPassword = hashPassword(password);
 
-        User user = new User(username, hashedPassword);
+        User user = new User(username);
         User savedUser = userRepo.save(user);
 
         return UserMapper.toDTO(savedUser);
@@ -77,24 +76,6 @@ public class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    public UserDTO updateUser(Integer userId, String newUsername, String newPassword) {
-        User user = getUserByIdEntity(userId);
-
-        if (newUsername != null && !newUsername.isBlank()) {
-            if (!newUsername.equals(user.getUsername()) && userRepo.existsByUsername(newUsername)) {
-                throw new IllegalArgumentException("Username already exists");
-            }
-            user.setUsername(newUsername);
-        }
-
-        if (newPassword != null && !newPassword.isBlank()) {
-            user.setPassword(hashPassword(newPassword));    //Hash password when updating as well
-        }
-
-        User savedUser = userRepo.save(user);
-        return UserMapper.toDTO(savedUser);
-    }
-
     public void deleteUser(Integer userId) {
         if (!userRepo.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
@@ -106,29 +87,6 @@ public class UserController {
         userRepo.deleteById(userId);
     }
 
-    public boolean login(String username, String password) {
-        Optional<User> optionalUser = userRepo.findByUsername(username);
-
-        if (optionalUser.isEmpty()) {   //User does not exist
-            return false;
-        }
-
-        User user = optionalUser.get();
-
-
-        String hashedInput = hashPassword(password);
-
-        if (user.getPassword().equals(hashedInput)) {
-            this.currentUser = user;
-            return true;
-        }
-
-        return false;
-    }
-
-    public void logout() {
-        this.currentUser = null;
-    }
 
     public UserDTO getCurrentUser() {
         if (currentUser == null) return null;
@@ -146,19 +104,6 @@ public class UserController {
         this.currentUser = user;
     }
 
-    private String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashed = md.digest(password.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashed) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 not supported", e);
-        }
-    }
 
     // --- User CRUD ---
 

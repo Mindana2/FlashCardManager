@@ -1,6 +1,8 @@
 package org.flashcard.models.dataclasses;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 /* Our dataclasses also take use of Spring Framework.
  *
@@ -25,17 +27,20 @@ import java.time.LocalDate;
 public class CardLearningState {
 
     @Id
-    private Integer flashcardId; // samma som flashcard.id
+    private Integer flashcardId;
 
     @OneToOne
     @JoinColumn(name = "flashcard_id")
-    @MapsId // ← viktigt: betyder att CardLearningState använder samma id som Flashcard
+    @MapsId
     private Flashcard flashcard;
-
-
 
     private LocalDate lastReviewDate;
     private LocalDate nextReviewDate;
+
+
+    @Column(nullable = false)
+    private BigDecimal intervalBetweenReviews = BigDecimal.valueOf(1.0);
+
 
     @Column(nullable = false)
     private Integer numberOfTimesViewed = 0;
@@ -48,6 +53,8 @@ public class CardLearningState {
         this.numberOfTimesViewed = 0;
     }
 
+
+    //TODO uppdatera så att nya intervalBetweenRevies funkar
     public void updateDates(long daysToAdd) {
         this.lastReviewDate = LocalDate.now();
         this.nextReviewDate = LocalDate.now().plusDays(daysToAdd);
@@ -67,6 +74,9 @@ public class CardLearningState {
     public LocalDate getNextReviewDate() { return nextReviewDate; }
     public void setNextReviewDate(LocalDate nextReviewDate) { this.nextReviewDate = nextReviewDate; }
 
+    public BigDecimal getIntervalBetweenReviews() { return intervalBetweenReviews; }
+    public void setIntervalBetweenReviews(BigDecimal intervalBetweenReviews) { this.intervalBetweenReviews = intervalBetweenReviews; }
+
     public Integer getNumberOfTimesViewed() { return numberOfTimesViewed; }
     public void setNumberOfTimesViewed(Integer numberOfTimesViewed) { this.numberOfTimesViewed = numberOfTimesViewed; }
 
@@ -76,9 +86,12 @@ public class CardLearningState {
 
     @Override
     public String toString() {
-        return "CardLearningState{flashcardId=" + flashcardId +
+        return "CardLearningState{" +
+                "flashcardId=" + flashcardId +
                 ", lastReviewDate=" + lastReviewDate +
                 ", nextReviewDate=" + nextReviewDate +
-                ", numberOfTimesViewed=" + numberOfTimesViewed + "}";
+                ", intervalBetweenReviews=" + intervalBetweenReviews +
+                ", numberOfTimesViewed=" + numberOfTimesViewed +
+                '}';
     }
 }
