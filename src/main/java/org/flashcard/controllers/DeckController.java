@@ -9,6 +9,7 @@ import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.progress.FlashcardProgression;
+import org.flashcard.models.ratingstrategy.BaseIntervalStrategy;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
@@ -245,10 +246,9 @@ public class DeckController {
     public long showEstimatedDate(String rating, int cardID){
         Flashcard flashcard = flashcardRepo.findById(cardID)
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-
+        RatingStrategy strategy = StrategyFactory.createStrategy(rating);
 
         CardLearningState state = flashcard.getCardLearningState();
-
-        return FlashcardProgression.estimateDate(rating, state);
+        return FlashcardProgression.estimateDate(strategy, state);
     }
 }

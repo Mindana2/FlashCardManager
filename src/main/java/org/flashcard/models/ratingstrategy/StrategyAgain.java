@@ -9,4 +9,9 @@ public class StrategyAgain implements RatingStrategy {
         flashCard.getCardLearningState().updateDates(0); // 0 days, show again today
     }
 
+    @Override
+    public double getMultiplier() {
+        return 0;
+    }
+
 }

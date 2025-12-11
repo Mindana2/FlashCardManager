@@ -1,13 +1,15 @@
 package org.flashcard.testview;
 
+
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.StudyController;
 import org.flashcard.controllers.observer.Observer;  // NEW
-import org.flashcard.models.dataclasses.Deck;
+
 
 import javax.swing.*;
 import java.awt.*;
+
 
 public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
@@ -24,7 +26,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
 
     private FlashcardDTO currentCard;
-    private String currentStrategy; // "today" eller "all"
+    private String currentMode; // "today" eller "all"
 
     // Observer for session finished
     private final Observer<Boolean> finishedListener = finished -> {
@@ -71,10 +73,13 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         showAnswerButton.addActionListener(e -> showBack());
 
         // Rating Panel (För 'today' mode)
-        JPanel ratingWrapper = new JPanel(new GridBagLayout());
-        intervalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        GridBagConstraints constraints = new GridBagConstraints();
-        updateIntervals();
+        JPanel ratingWrapper = new JPanel();
+        ratingWrapper.setLayout(new BoxLayout(ratingWrapper, BoxLayout.Y_AXIS));
+
+        intervalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 95, 0));
+        intervalPanel.setVisible(false);
+
+
         ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         ratingPanel.setVisible(false);
 
@@ -110,8 +115,8 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         ratingPanel.add(btn);
     }
 
-    public void initSession(String strategy) {
-        this.currentStrategy = strategy;
+    public void initSession(String currentMode) {
+        this.currentMode = currentMode;
 
         // Previously you called loadNextCard() here, now StudyController does it
     }
@@ -129,11 +134,13 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
             handleSessionFinished();
             return;
         }
+        updateIntervals();
 
         cardTextArea.setText(card.getFront());
 
         showAnswerButton.setVisible(true);
         ratingPanel.setVisible(false);
+        intervalPanel.setVisible(false);
         nextButton.setVisible(false);
 
         controlsPanel.revalidate();
@@ -148,11 +155,12 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
             showAnswerButton.setVisible(false);
 
-            // Visa rätt kontroller baserat på strategi
-            if ("all".equalsIgnoreCase(currentStrategy)) {
+            // Visa rätt kontroller baserat på mode
+            if ("all".equalsIgnoreCase(currentMode)) {
                 nextButton.setVisible(true);
             } else {
                 ratingPanel.setVisible(true);
+                intervalPanel.setVisible(true);
             }
         }
     }
@@ -167,10 +175,12 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
     }
     private void updateIntervals() {
         intervalPanel.removeAll();
-        intervalPanel.setOpaque(true);
-        intervalPanel.setBackground(Color.red);
+
         if (currentCard != null) {
-            intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("again", currentCard.getId()))));
+            intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("again", currentCard.getId())) + "d"));
+            intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("hard", currentCard.getId())) + "d"));
+            intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("medium", currentCard.getId())) + "d"));
+            intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("easy", currentCard.getId())) + "d"));
 
 
             intervalPanel.revalidate();
