@@ -2,11 +2,12 @@ package org.flashcard.testview;
 
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.StudyController;
+import org.flashcard.controllers.observer.Observer;  // NEW
 
 import javax.swing.*;
 import java.awt.*;
 
-public class StudyViewTest extends JPanel {
+public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
     private final StudyController studyController;
     private final AppFrame appFrame;
@@ -15,20 +16,32 @@ public class StudyViewTest extends JPanel {
     private JPanel controlsPanel;
     private JButton showAnswerButton;
     private JPanel ratingPanel;
-    private JButton nextButton; // NY: För Study All mode
+    private JButton nextButton;
 
     private FlashcardDTO currentCard;
-    private String currentStrategy; // "today" eller "all"
+    private String currentStrategy;
 
-    public StudyViewTest(StudyController studyController, AppFrame appFrame) {
+    // Observer for session finished
+    private final Observer<Boolean> finishedListener = finished -> {
+        if (finished != null && finished) {
+            handleSessionFinished();
+        }
+    };
+
+    public StudyView(StudyController studyController, AppFrame appFrame) {
         this.studyController = studyController;
         this.appFrame = appFrame;
+
+        // Register observers
+        studyController.getCurrentCardObservable().addListener(this);
+        studyController.getSessionFinishedObservable().addListener(finishedListener);
+
         setLayout(new BorderLayout());
         initComponents();
     }
 
     private void initComponents() {
-        // --- Card Area ---
+
         cardTextArea = new JTextArea();
         cardTextArea.setFont(new Font("SansSerif", Font.PLAIN, 24));
         cardTextArea.setLineWrap(true);
@@ -42,30 +55,28 @@ public class StudyViewTest extends JPanel {
 
         add(cardContainer, BorderLayout.CENTER);
 
-        // --- Controls Area ---
         controlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         controlsPanel.setPreferredSize(new Dimension(800, 100));
 
-        showAnswerButton = new JButton("Visa Svar");
+        showAnswerButton = new JButton("Show Answer");
         showAnswerButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         showAnswerButton.setPreferredSize(new Dimension(200, 50));
         showAnswerButton.addActionListener(e -> showBack());
 
-        // Rating Panel (För 'today' mode)
         ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         ratingPanel.setVisible(false);
+
         createRatingButton("Again", "again", new Color(255, 80, 80));
         createRatingButton("Hard", "hard", new Color(255, 165, 0));
         createRatingButton("Medium", "medium", new Color(70, 130, 180));
         createRatingButton("Easy", "easy", new Color(60, 179, 113));
 
-        // Next Button (För 'all' mode)
-        nextButton = new JButton("Nästa Kort ->");
+        nextButton = new JButton("Next Card ->");
         nextButton.setPreferredSize(new Dimension(200, 50));
         nextButton.setBackground(new Color(60, 120, 240));
         nextButton.setForeground(Color.WHITE);
         nextButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        nextButton.addActionListener(e -> loadNextCard()); // Bara ladda nästa, ingen rating
+        nextButton.addActionListener(e -> studyController.nextCard());
         nextButton.setVisible(false);
 
         controlsPanel.add(showAnswerButton);
@@ -87,23 +98,29 @@ public class StudyViewTest extends JPanel {
 
     public void initSession(String strategy) {
         this.currentStrategy = strategy;
-        loadNextCard();
+
+        // Previously you called loadNextCard() here, now StudyController does it
     }
 
-    private void loadNextCard() {
-        currentCard = studyController.nextCard();
+    // Observer callback for new card
+    @Override
+    public void notify(FlashcardDTO card) {
+        SwingUtilities.invokeLater(() -> showNewCard(card));
+    }
 
-        if (currentCard == null) {
-            JOptionPane.showMessageDialog(this, "Passet är slut!");
-            appFrame.navigateTo("Home"); // Gå tillbaka dit vi kom ifrån egentligen
+    private void showNewCard(FlashcardDTO card) {
+        this.currentCard = card;
+
+        if (card == null) {
+            handleSessionFinished();
             return;
         }
 
-        cardTextArea.setText(currentCard.getFront());
+        cardTextArea.setText(card.getFront());
 
         showAnswerButton.setVisible(true);
         ratingPanel.setVisible(false);
-        nextButton.setVisible(false); // Dölj alltid först
+        nextButton.setVisible(false);
 
         controlsPanel.revalidate();
         controlsPanel.repaint();
@@ -111,10 +128,12 @@ public class StudyViewTest extends JPanel {
 
     private void showBack() {
         if (currentCard != null) {
-            cardTextArea.setText(currentCard.getFront() + "\n\n----------------\n\n" + currentCard.getBack());
+            cardTextArea.setText(currentCard.getFront()
+                    + "\n\n----------------\n\n"
+                    + currentCard.getBack());
+
             showAnswerButton.setVisible(false);
 
-            // Visa rätt kontroller baserat på strategi
             if ("all".equalsIgnoreCase(currentStrategy)) {
                 nextButton.setVisible(true);
             } else {
@@ -126,9 +145,15 @@ public class StudyViewTest extends JPanel {
     private void applyRating(String rating) {
         try {
             studyController.applyRating(rating, currentCard.getId());
-            loadNextCard();
+            studyController.nextCard();  // Observer will handle UI update
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Fel vid rating: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error while rating: " + e.getMessage());
         }
+    }
+
+    // Called when sessionFinishedObservable fires
+    private void handleSessionFinished() {
+        JOptionPane.showMessageDialog(this, "The session is over!");
+        appFrame.navigateTo("Home");
     }
 }

@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 
-public class CreateDeckViewTest extends JPanel {
+public class CreateDeckView extends JPanel {
 
     private final DeckController deckController;
     private final UserController userController;
@@ -39,7 +39,7 @@ public class CreateDeckViewTest extends JPanel {
     private JLabel statusLabel;
     private JLabel headerLabel;
 
-    public CreateDeckViewTest(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public CreateDeckView(DeckController deckController, UserController userController, AppFrame appFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.appFrame = appFrame;
@@ -52,7 +52,7 @@ public class CreateDeckViewTest extends JPanel {
 
     private void initComponents() {
 
-        headerLabel = new JLabel("Skapa ny lek");
+        headerLabel = new JLabel("Create new Deck");
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 24));
         headerLabel.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
         headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -63,14 +63,14 @@ public class CreateDeckViewTest extends JPanel {
         formPanel.setBackground(Color.WHITE);
         formPanel.setBorder(BorderFactory.createEmptyBorder(0, 100, 0, 100));
 
-        titleField = createLabeledField("Titel på leken:", formPanel);
+        titleField = createLabeledField("Deck Title:", formPanel);
 
         JPanel tagPanel = new JPanel();
         tagPanel.setLayout(new BoxLayout(tagPanel, BoxLayout.Y_AXIS));
         tagPanel.setBackground(Color.WHITE);
         tagPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
-        JLabel tagLabel = new JLabel("Tagg:");
+        JLabel tagLabel = new JLabel("Tag:");
         tagLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         tagLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         tagPanel.add(tagLabel);
@@ -79,7 +79,7 @@ public class CreateDeckViewTest extends JPanel {
         existingTagsCombo = new JComboBox<>();
         existingTagsCombo.setMaximumSize(new Dimension(500, 32));
         existingTagsCombo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        existingTagsCombo.addItem("-- Ny tagg --");
+        existingTagsCombo.addItem("-- New Tag --");
         existingTagsCombo.addActionListener(e -> onTagSelectionChanged());
         tagPanel.add(existingTagsCombo);
         tagPanel.add(Box.createVerticalStrut(8));
@@ -95,7 +95,7 @@ public class CreateDeckViewTest extends JPanel {
         colorRow.setBackground(Color.WHITE);
         colorRow.setMaximumSize(new Dimension(500, 36));
 
-        colorChooserButton = new JButton("Välj färg");
+        colorChooserButton = new JButton("Choose Color");
         colorChooserButton.setBackground(selectedTagColor);
         colorChooserButton.setForeground(contrastColorFor(selectedTagColor));
         colorChooserButton.addActionListener(e -> openColorChooser());
@@ -108,27 +108,27 @@ public class CreateDeckViewTest extends JPanel {
         tagPanel.add(colorRow);
         formPanel.add(tagPanel);
 
-        frontField = createLabeledField("Framsida (Fråga):", formPanel);
-        backField = createLabeledField("Baksida (Svar):", formPanel);
+        frontField = createLabeledField("Front Side (Question):", formPanel);
+        backField = createLabeledField("Back Side (Answer):", formPanel);
         toggleCardFields(false);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         buttonPanel.setBackground(Color.WHITE);
 
-        mainActionButton = new JButton("Skapa Lek");
+        mainActionButton = new JButton("Create Deck");
         mainActionButton.setPreferredSize(new Dimension(150, 40));
         mainActionButton.setBackground(new Color(65, 105, 225));
         mainActionButton.setForeground(Color.WHITE);
         mainActionButton.setFocusPainted(false);
         mainActionButton.addActionListener(e -> handleMainAction());
 
-        finishButton = new JButton("Klar (Tillbaka)");
+        finishButton = new JButton("Done (Back to My Decks)");
         finishButton.setPreferredSize(new Dimension(150, 40));
         finishButton.addActionListener(e -> resetAndGoBack());
         finishButton.setVisible(false);
 
         // Cancel (Avbryt) button
-        cancelButton = new JButton("Avbryt");
+        cancelButton = new JButton("Close");
         cancelButton.setPreferredSize(new Dimension(150, 40));
         cancelButton.setBackground(new Color(200, 60, 60));
         cancelButton.setForeground(Color.WHITE);
@@ -174,7 +174,7 @@ public class CreateDeckViewTest extends JPanel {
 
     private void onTagSelectionChanged() {
         Object sel = existingTagsCombo.getSelectedItem();
-        boolean creatingNew = (sel == null || sel instanceof String && ((String) sel).equals("-- Ny tagg --"));
+        boolean creatingNew = (sel == null || sel instanceof String && ((String) sel).equals("-- New Tag --"));
         newTagField.setVisible(creatingNew);
         colorChooserButton.setVisible(creatingNew);
         revalidate();
@@ -182,7 +182,7 @@ public class CreateDeckViewTest extends JPanel {
     }
 
     private void openColorChooser() {
-        Color c = JColorChooser.showDialog(this, "Välj taggfärg", selectedTagColor);
+        Color c = JColorChooser.showDialog(this, "Choose Tag Color", selectedTagColor);
         if (c != null) {
             selectedTagColor = c;
             colorChooserButton.setBackground(selectedTagColor);
@@ -198,7 +198,7 @@ public class CreateDeckViewTest extends JPanel {
     private void loadTagsForCurrentUser() {
         Integer userId = userController.getCurrentUserId();
         existingTagsCombo.removeAllItems();
-        existingTagsCombo.addItem("-- Ny tagg --");
+        existingTagsCombo.addItem("-- New Tag --");
 
         if (userId == null) return;
         try {
@@ -207,7 +207,7 @@ public class CreateDeckViewTest extends JPanel {
                 existingTagsCombo.addItem(t);
             }
         } catch (Exception e) {
-            System.err.println("Kunde inte läsa taggar: " + e.getMessage());
+            System.err.println("Can't read the Tag: " + e.getMessage());
         }
         onTagSelectionChanged();
     }
@@ -238,18 +238,18 @@ public class CreateDeckViewTest extends JPanel {
         Integer userId = userController.getCurrentUserId();
 
         if (title.isBlank()) {
-            showStyledMessage("Fel", "Du måste ange en titel!", JOptionPane.WARNING_MESSAGE);
+            showStyledMessage("Wrong", "You must assign a title!", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (userId == null) {
-            showStyledMessage("Fel", "Ingen användare inloggad!", JOptionPane.WARNING_MESSAGE);
+            showStyledMessage("Wrong", "No User loggedIn", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (deckController.deckExists(userId, title)) {
             // Nice styled message instead of raw SQL/text
-            showStyledMessage("Du har redan en lek med detta namn!", "Du har redan en lek med detta namn!", JOptionPane.INFORMATION_MESSAGE);
+            showStyledMessage("You have already a Deck with this name!", "You have already a Deck with this name!", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
@@ -257,7 +257,7 @@ public class CreateDeckViewTest extends JPanel {
             createdDeck = deckController.createDeck(userId, title);
 
             Object sel = existingTagsCombo.getSelectedItem();
-            if (sel == null || (sel instanceof String && ((String) sel).equals("-- Ny tagg --"))) {
+            if (sel == null || (sel instanceof String && ((String) sel).equals("-- New Tag --"))) {
                 String newTagName = newTagField.getText().trim();
                 if (!newTagName.isBlank()) {
                     String hex = String.format(Locale.ROOT, "%02x%02x%02x",
@@ -268,7 +268,7 @@ public class CreateDeckViewTest extends JPanel {
                         createdDeck = deckController.getDeckById(createdDeck.getId());
                         loadTagsForCurrentUser();
                     } catch (Exception ex) {
-                        showStyledMessage("Varning", "Deck skapad men tagg kunde ej läggas till: " + ex.getMessage(), JOptionPane.WARNING_MESSAGE);
+                        showStyledMessage("Warning", "Created Deck but couldn't assign a tag " + ex.getMessage(), JOptionPane.WARNING_MESSAGE);
                     }
                 }
             } else if (sel instanceof TagDTO) {
@@ -277,18 +277,18 @@ public class CreateDeckViewTest extends JPanel {
                     deckController.assignTagToDeck(createdDeck.getId(), t.getId());
                     createdDeck = deckController.getDeckById(createdDeck.getId());
                 } catch (Exception ex) {
-                    showStyledMessage("Varning", "Lek skapad men tagg kunde ej kopplas: " + ex.getMessage(), JOptionPane.WARNING_MESSAGE);
+                    showStyledMessage("Warning", "Created Deck but couldn't assign a tag " + ex.getMessage(), JOptionPane.WARNING_MESSAGE);
                 }
             }
 
-            headerLabel.setText("Lägg till kort i: " + createdDeck.getTitle());
-            mainActionButton.setText("Lägg till Kort");
+            headerLabel.setText("Add Card in: " + createdDeck.getTitle());
+            mainActionButton.setText("Add Card");
             finishButton.setVisible(true);
             toggleCardFields(true);
-            statusLabel.setText("Lek skapad! Lägg nu till kort.");
+            statusLabel.setText("Deck created! You can now add cards.");
 
         } catch (Exception e) {
-            showStyledMessage("Fel", "Fel: " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
+            showStyledMessage("Wrong", "Wrong: " + e.getMessage(), JOptionPane.ERROR_MESSAGE);
             createdDeck = null;
         }
     }
@@ -298,12 +298,12 @@ public class CreateDeckViewTest extends JPanel {
         String back = backField.getText().trim();
 
         if (front.isBlank() || back.isBlank()) {
-            showStyledMessage("Fel", "Både framsida och baksida behövs.", JOptionPane.WARNING_MESSAGE);
+            showStyledMessage("Wrong", "Both front and back side should be given", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         if (createdDeck == null) {
-            showStyledMessage("Fel", "Ingen lek vald att lägga till kort i.", JOptionPane.WARNING_MESSAGE);
+            showStyledMessage("Wrong", "No deck has been selected to put the card in.", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -315,11 +315,11 @@ public class CreateDeckViewTest extends JPanel {
             frontField.setText("");
             backField.setText("");
             frontField.requestFocus();
-            statusLabel.setText("Kort tillagt! (" + count + " totalt)");
+            statusLabel.setText("Card has been added (" + count + " totalt)");
 
         } catch (Exception e) {
             // If addFlashcard throws e.g. IllegalArgumentException for duplicate name, show styled message
-            showStyledMessage("Fel vid sparande", e.getMessage(), JOptionPane.ERROR_MESSAGE);
+            showStyledMessage("An error occurred while saving", e.getMessage(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -331,8 +331,8 @@ public class CreateDeckViewTest extends JPanel {
         backField.setText("");
         statusLabel.setText(" ");
 
-        headerLabel.setText("Skapa ny lek");
-        mainActionButton.setText("Skapa Lek");
+        headerLabel.setText("Create new Deck");
+        mainActionButton.setText("Create Deck");
         finishButton.setVisible(false);
         toggleCardFields(false);
 

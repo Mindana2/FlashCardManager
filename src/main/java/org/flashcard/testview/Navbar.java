@@ -5,11 +5,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.function.Consumer;
 
-public class NavbarTest extends JPanel {
+public class Navbar extends JPanel {
 
     private final Consumer<String> navigationCallback;
 
-    public NavbarTest(Consumer<String> navigationCallback) {
+    public Navbar(Consumer<String> navigationCallback) {
         this.navigationCallback = navigationCallback;
 
         setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));

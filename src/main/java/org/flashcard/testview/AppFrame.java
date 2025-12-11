@@ -17,13 +17,13 @@ public class AppFrame extends JFrame {
     // UI Components
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
-    private NavbarTest navbar;
+    private Navbar navbar;
 
     // Views
-    private HomeViewTest homeView;
-    private MyDecksViewTest myDecksView; // Inte längre placeholder
-    private CreateDeckViewTest createDeckView; // NY
-    private StudyViewTest studyView;
+    private HomeView homeView;
+    private MyDecksView myDecksView; // Inte längre placeholder
+    private CreateDeckView createDeckView; // NY
+    private StudyView studyView;
     private EditDeckView editDeckView;
 
     public AppFrame(UserController userController, StudyController studyController, DeckController deckController) {
@@ -54,7 +54,7 @@ public class AppFrame extends JFrame {
     }
 
     private void initComponents() {
-        navbar = new NavbarTest(this::navigateTo);
+        navbar = new Navbar(this::navigateTo);
         add(navbar, BorderLayout.NORTH);
 
         cardLayout = new CardLayout();
@@ -62,10 +62,10 @@ public class AppFrame extends JFrame {
         mainContentPanel.setBackground(new Color(245, 245, 245));
 
         // --- Initiera Vyer ---
-        homeView = new HomeViewTest(deckController, userController, this);
-        myDecksView = new MyDecksViewTest(deckController, userController, this); // Nu riktig klass
-        createDeckView = new CreateDeckViewTest(deckController, userController, this); // NY
-        studyView = new StudyViewTest(studyController, this);
+        homeView = new HomeView(deckController, userController, this);
+        myDecksView = new MyDecksView(deckController, userController, this); // Nu riktig klass
+        createDeckView = new CreateDeckView(deckController, userController, this); // NY
+        studyView = new StudyView(studyController, this);
         editDeckView = new EditDeckView(deckController, userController, this);
 
         mainContentPanel.add(homeView, "Home");
@@ -86,7 +86,7 @@ public class AppFrame extends JFrame {
 
         cardLayout.show(mainContentPanel, viewName);
     }
-    public CreateDeckViewTest getCreateDeckView() {
+    public CreateDeckView getCreateDeckView() {
         return createDeckView; // din instans av CreateDeckViewTest
     }
 
@@ -97,7 +97,7 @@ public class AppFrame extends JFrame {
         try {
             Integer userId = userController.getCurrentUserId();
             if (userId == null) {
-                JOptionPane.showMessageDialog(this, "Ingen användare inloggad!");
+                JOptionPane.showMessageDialog(this, "No User loggedIn!");
                 return;
             }
 
@@ -110,7 +110,7 @@ public class AppFrame extends JFrame {
             cardLayout.show(mainContentPanel, "Study");
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Kunde inte starta passet: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Couldn't start the session : " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -13,10 +13,14 @@ import org.flashcard.models.studysession.StudySession;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.UserRepository;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+// ⬇⬇⬇ NYA IMPORTS FÖR OBSERVER (DIN KOD)
+import org.flashcard.controllers.observer.Observable;
 
 @Controller
 @Transactional
@@ -27,6 +31,21 @@ public class StudyController {
     private final UserRepository userRepository;
 
     private StudySession currentSession;
+
+    // Observer-variabler för att notifiera view om förändringar
+    private final Observable<FlashcardDTO> currentCardObservable = new Observable<>();
+    private final Observable<Boolean> sessionFinishedObservable = new Observable<>();
+
+    // Getter-metoder för observables
+    public Observable<FlashcardDTO> getCurrentCardObservable() {
+        return currentCardObservable;
+    }
+
+    public Observable<Boolean> getSessionFinishedObservable() {
+        return sessionFinishedObservable;
+    }
+
+
 
     public StudyController(FlashcardRepository flashcardRepository,
                            DeckRepository deckRepository,
@@ -44,14 +63,18 @@ public class StudyController {
         Deck currentDeck = deckRepository.findById(deckId)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
-        // Load flashcards eagerly if needed
         List<Flashcard> cards = flashcardRepository.findByDeck(currentDeck);
         currentDeck.setCards(cards);
-
 
         StudyAlgorithm algorithm = StudyAlgorithmFactory.createAlgorithm(algorithmStrategy.toLowerCase());
         currentSession = new StudySession(currentDeck, currentUser, algorithm);
         currentSession.startSession();
+
+        // 🔵 NYTT: Notifiera första kortet om sessionen har ett
+        FlashcardDTO first = nextCard(); // nextCard() already notifies observers
+        if (first == null) {
+            sessionFinishedObservable.notifyListeners(true);
+        }
     }
 
     // Apply a rating to a specific card in the current session
@@ -61,17 +84,26 @@ public class StudyController {
 
         RatingStrategy selectedStrategy = StrategyFactory.createStrategy(rating);
         selectedStrategy.updateReviewState(flashcard);
-        flashcardRepository.save(flashcard); // persist rating changes
+        flashcardRepository.save(flashcard);
     }
 
-    public FlashcardDTO nextCard(){
-        Flashcard flashCard = currentSession.getNextCardAndRemove();
+    public FlashcardDTO nextCard() {
+        Flashcard flashCard = (currentSession == null) ? null : currentSession.getNextCardAndRemove();
 
         if (flashCard == null) {
-            return null; // Tells the view that the session is over
+
+            sessionFinishedObservable.notifyListeners(true);
+            return null;
         }
-        return FlashcardMapper.toDTO(flashCard);
+
+        FlashcardDTO dto = FlashcardMapper.toDTO(flashCard);
+
+        // Notifiera view om nytt kort
+        currentCardObservable.notifyListeners(dto);
+
+        return dto;
     }
+
     public void endSession() {
         this.currentSession = null;
     }

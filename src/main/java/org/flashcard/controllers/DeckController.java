@@ -6,6 +6,7 @@ import org.flashcard.application.dto.TagDTO;
 import org.flashcard.application.mapper.DeckMapper;
 import org.flashcard.application.mapper.FlashcardMapper;
 import org.flashcard.application.mapper.TagMapper;
+import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
@@ -17,21 +18,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/* We use Spring Data JPA to access the database.
- *
- * This class is annotated with @Service, which tells Spring
- * that it is a service-layer component.
- *
- * Spring automatically detects it and creates a bean in the application context,
- * so it can be injected wherever needed.(see main.java)
- *
- * The @Transactional annotation ensures that no database transactions are left unfinished.
- * It automatically aborts any transactions that result in an error.
- * This allows us to write logic without manually handling database transactions.
- */
 @Service
 @Transactional
 public class DeckController {
+
+    // Observer pattern implementation
+    private final Observable<List<DeckDTO>> decksObservable = new Observable<>();
+    private final Observable<List<FlashcardDTO>> flashcardsObservable = new Observable<>();
+
+    public Observable<List<DeckDTO>> getDecksObservable() {
+        return decksObservable;
+    }
+
+    public Observable<List<FlashcardDTO>> getFlashcardsObservable() {
+        return flashcardsObservable;
+    }
+
 
     private final DeckRepository deckRepo;
     private final FlashcardRepository flashcardRepo;
@@ -48,13 +50,8 @@ public class DeckController {
         this.tagRepo = tagRepo;
     }
 
-    // Create Deck
-    // Create Flashcard
-    // Create Tag
-    // Create User
-
-
     // --- Deck CRUD ---
+
     public DeckDTO createDeck(Integer userId, String title) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
@@ -62,7 +59,14 @@ public class DeckController {
         Deck deck = new Deck(title, user);
         Deck savedDeck = deckRepo.save(deck);
 
-        return DeckMapper.toDTO(savedDeck);
+        DeckDTO dto = DeckMapper.toDTO(savedDeck);
+
+        // --------------------------------------------------------------------
+        // OBSERVER: notify deck list changed
+        decksObservable.notifyListeners(getAllDecksForUser(userId));
+        // --------------------------------------------------------------------
+
+        return dto;
     }
 
     public TagDTO createTag(Integer userId, String title, String color) {
@@ -74,12 +78,10 @@ public class DeckController {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-
         Tag tag = new Tag(title.trim(), color, user);
         Tag savedTag = tagRepo.save(tag);
         return TagMapper.toDTO(savedTag);
     }
-
 
     public TagDTO assignTagToDeck(Integer deckId, Integer tagId) {
         Deck deck = deckRepo.findById(deckId)
@@ -89,31 +91,31 @@ public class DeckController {
                 .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
 
         deck.setTag(tag);
+
+        // --------------------------------------------------------------------
+        decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
+        // --------------------------------------------------------------------
+
         return TagMapper.toDTO(tag);
     }
 
-    // Används av MyDecksView
     public List<DeckDTO> getAllDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
 
         return userDecks.stream()
                 .map(deck -> {
-                    // Räkna antal kort via repository istället för deck.getCards()
                     long cardCount = flashcardRepo.countByDeckId(deck.getId());
                     return DeckMapper.toDTO(deck, (int) cardCount);
                 })
                 .collect(Collectors.toList());
     }
 
-
     public DeckDTO getDeckById(Integer deckId) {
         Deck deck = deckRepo.findById(deckId)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
         return DeckMapper.toDTO(deck);
     }
 
-    // Used by homeview to get all decks that are due today
     public List<DeckDTO> getDueDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
 
@@ -122,7 +124,7 @@ public class DeckController {
                     long dueCount = 0;
                     if (deck.getCards() != null) {
                         dueCount = deck.getCards().stream()
-                                .filter(this::isCardDue) // Din isDue-logik
+                                .filter(this::isCardDue)
                                 .count();
                     }
                     return DeckMapper.toDTO(deck, (int) dueCount);
@@ -131,14 +133,12 @@ public class DeckController {
                 .collect(Collectors.toList());
     }
 
-    // Helper method
     private boolean isCardDue(Flashcard card) {
         CardLearningState state = card.getCardLearningState();
         return state == null || state.isDueToday();
     }
 
     public DeckDTO updateDeck(Integer deckId, String newTitle, Integer newTagId) {
-        // 1. Hämta Entiteten
         Deck deck = deckRepo.findById(deckId)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
@@ -151,18 +151,31 @@ public class DeckController {
                     .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
             deck.setTag(tag);
         } else {
-            deck.setTag(null);  //If newTagID is null it is removed
+            deck.setTag(null);
         }
 
         Deck savedDeck = deckRepo.save(deck);
-        return DeckMapper.toDTO(savedDeck);
+        DeckDTO dto = DeckMapper.toDTO(savedDeck);
+
+        // --------------------------------------------------------------------
+        decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
+        // --------------------------------------------------------------------
+
+        return dto;
     }
 
     public void deleteDeck(Integer deckId) {
-        if (!deckRepo.existsById(deckId)) {
-            throw new IllegalArgumentException("Deck not found");
-        }
+
+        Deck deck = deckRepo.findById(deckId)
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
+
+        Integer userId = deck.getUser().getId();
+
         deckRepo.deleteById(deckId);
+
+        // --------------------------------------------------------------------
+        decksObservable.notifyListeners(getAllDecksForUser(userId));
+        // --------------------------------------------------------------------
     }
 
     // --- Flashcard CRUD ---
@@ -170,55 +183,59 @@ public class DeckController {
     public FlashcardDTO addFlashcard(Integer deckId, String front, String back) {
 
         Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Leken hittades inte"));
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
-        try {
-            Flashcard card = new Flashcard(front, back, deck);
-            Flashcard savedCard = flashcardRepo.save(card);
-            return FlashcardMapper.toDTO(savedCard);
+        Flashcard card = new Flashcard(front, back, deck);
+        Flashcard savedCard = flashcardRepo.save(card);
 
-        } catch (org.springframework.dao.DataIntegrityViolationException e) {
-            throw new IllegalArgumentException(
-                    "Ett kort med denna framsida finns redan"
-            );
-        }
+        FlashcardDTO dto = FlashcardMapper.toDTO(savedCard);
+
+        // --------------------------------------------------------------------
+        flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
+        // --------------------------------------------------------------------
+
+        return dto;
     }
-
-
 
     public boolean deckExists(Integer userId, String title) {
         return deckRepo.existsByUserIdAndTitle(userId, title);
     }
 
-
-
     public List<FlashcardDTO> getFlashcardsForDeck(Integer deckId) {
         List<Flashcard> cards = flashcardRepo.findByDeckId(deckId);
-
-        // Changes from Flashcard to FlashcardDTO for every flashcard
-        return cards.stream()
-                .map(FlashcardMapper::toDTO)
-                .collect(Collectors.toList());
+        return cards.stream().map(FlashcardMapper::toDTO).collect(Collectors.toList());
     }
+
     public FlashcardDTO updateFlashcard(Integer cardId, String newFront, String newBack) {
 
         Flashcard card = flashcardRepo.findById(cardId)
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
 
-
         if (newFront != null && !newFront.isBlank()) card.setFront(newFront);
         if (newBack != null && !newBack.isBlank()) card.setBack(newBack);
 
+        Flashcard savedCard = flashcardRepo.save(card);
 
-        Flashcard savedCard = flashcardRepo.save(card); //Save to database
+        // --------------------------------------------------------------------
+        flashcardsObservable.notifyListeners(
+                getFlashcardsForDeck(savedCard.getDeck().getId())
+        );
+        // --------------------------------------------------------------------
 
-        return FlashcardMapper.toDTO(savedCard);       //Convert to DTO and return
+        return FlashcardMapper.toDTO(savedCard);
     }
 
     public void deleteFlashcard(Integer cardId) {
-        if (!flashcardRepo.existsById(cardId)) {
-            throw new IllegalArgumentException("Flashcard not found");
-        }
+
+        Flashcard card = flashcardRepo.findById(cardId)
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
+
+        Integer deckId = card.getDeck().getId();
+
         flashcardRepo.deleteById(cardId);
+
+        // --------------------------------------------------------------------
+        flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
+        // --------------------------------------------------------------------
     }
 }
