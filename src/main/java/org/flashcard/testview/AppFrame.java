@@ -65,7 +65,7 @@ public class AppFrame extends JFrame {
         homeView = new HomeViewTest(deckController, userController, this);
         myDecksView = new MyDecksViewTest(deckController, userController, this); // Nu riktig klass
         createDeckView = new CreateDeckViewTest(deckController, userController, this); // NY
-        studyView = new StudyViewTest(studyController, this);
+        studyView = new StudyViewTest(deckController, studyController, this);
         editDeckView = new EditDeckView(deckController, userController, this);
 
         mainContentPanel.add(homeView, "Home");

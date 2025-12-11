@@ -7,14 +7,18 @@ import org.flashcard.application.mapper.DeckMapper;
 import org.flashcard.application.mapper.FlashcardMapper;
 import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.models.dataclasses.*;
+import org.flashcard.models.progress.FlashcardProgression;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
 import org.flashcard.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.flashcard.models.ratingstrategy.RatingStrategy;
+import org.flashcard.models.ratingstrategy.StrategyFactory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /* We use Spring Data JPA to access the database.
@@ -220,5 +224,14 @@ public class DeckController {
             throw new IllegalArgumentException("Flashcard not found");
         }
         flashcardRepo.deleteById(cardId);
+    }
+    public long showEstimatedDate(String rating, int cardID){
+        Flashcard flashcard = flashcardRepo.findById(cardID)
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
+
+
+        CardLearningState state = flashcard.getCardLearningState();
+
+        return FlashcardProgression.estimateDate(rating, state);
     }
 }

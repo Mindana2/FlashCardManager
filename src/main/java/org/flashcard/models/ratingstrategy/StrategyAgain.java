@@ -8,4 +8,5 @@ public class StrategyAgain implements RatingStrategy {
     public void updateReviewState(Flashcard flashCard) {           //Reset state for card
         flashCard.getCardLearningState().updateDates(0); // 0 days, show again today
     }
+
 }

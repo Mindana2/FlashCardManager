@@ -1,7 +1,9 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.FlashcardDTO;
+import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.StudyController;
+import org.flashcard.models.dataclasses.Deck;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,17 +12,20 @@ public class StudyViewTest extends JPanel {
 
     private final StudyController studyController;
     private final AppFrame appFrame;
+    private final DeckController deckController;
 
     private JTextArea cardTextArea;
     private JPanel controlsPanel;
     private JButton showAnswerButton;
     private JPanel ratingPanel;
+    private JPanel intervalPanel;
     private JButton nextButton; // NY: För Study All mode
 
     private FlashcardDTO currentCard;
     private String currentStrategy; // "today" eller "all"
 
-    public StudyViewTest(StudyController studyController, AppFrame appFrame) {
+    public StudyViewTest(DeckController deckController, StudyController studyController, AppFrame appFrame) {
+        this.deckController = deckController;
         this.studyController = studyController;
         this.appFrame = appFrame;
         setLayout(new BorderLayout());
@@ -52,12 +57,18 @@ public class StudyViewTest extends JPanel {
         showAnswerButton.addActionListener(e -> showBack());
 
         // Rating Panel (För 'today' mode)
+        JPanel ratingWrapper = new JPanel(new GridBagLayout());
+        intervalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        GridBagConstraints constraints = new GridBagConstraints();
+        addRatingIntervals();
         ratingPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         ratingPanel.setVisible(false);
         createRatingButton("Again", "again", new Color(255, 80, 80));
         createRatingButton("Hard", "hard", new Color(255, 165, 0));
         createRatingButton("Medium", "medium", new Color(70, 130, 180));
         createRatingButton("Easy", "easy", new Color(60, 179, 113));
+        ratingWrapper.add(intervalPanel);
+        ratingWrapper.add(ratingPanel);
 
         // Next Button (För 'all' mode)
         nextButton = new JButton("Nästa Kort ->");
@@ -69,7 +80,7 @@ public class StudyViewTest extends JPanel {
         nextButton.setVisible(false);
 
         controlsPanel.add(showAnswerButton);
-        controlsPanel.add(ratingPanel);
+        controlsPanel.add(ratingWrapper);
         controlsPanel.add(nextButton);
 
         add(controlsPanel, BorderLayout.SOUTH);
@@ -130,5 +141,16 @@ public class StudyViewTest extends JPanel {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Fel vid rating: " + e.getMessage());
         }
+    }
+    private void addRatingIntervals(){
+        JLabel text = new JLabel("ehej");
+
+        intervalPanel.add(text);
+//        intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("again", currentCard.getId()))));
+//        intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("hard", currentCard.getId()))));
+//        intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("medium", currentCard.getId()))));
+//        intervalPanel.add(new JLabel(String.valueOf(deckController.showEstimatedDate("easy", currentCard.getId()))));
+
+
     }
 }
