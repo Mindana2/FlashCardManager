@@ -33,7 +33,7 @@ public class DeckController {
     public Observable<List<FlashcardDTO>> getFlashcardsObservable() {
         return flashcardsObservable;
     }
-    // --------------------------------------------------------------------
+
 
     private final DeckRepository deckRepo;
     private final FlashcardRepository flashcardRepo;
@@ -183,7 +183,7 @@ public class DeckController {
     public FlashcardDTO addFlashcard(Integer deckId, String front, String back) {
 
         Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Leken hittades inte"));
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
         Flashcard card = new Flashcard(front, back, deck);
         Flashcard savedCard = flashcardRepo.save(card);
