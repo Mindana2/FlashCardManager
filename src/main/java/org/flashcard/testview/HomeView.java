@@ -76,6 +76,6 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
     // OBSERVER CALLBACK METHOD
     @Override
     public void notify(List<DeckDTO> updatedDecks) {
-        refreshData();
+        SwingUtilities.invokeLater(this::refreshData);
     }
 }

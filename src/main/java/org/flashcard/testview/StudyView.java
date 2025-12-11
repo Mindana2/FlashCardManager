@@ -105,7 +105,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
     // Observer callback for new card
     @Override
     public void notify(FlashcardDTO card) {
-        showNewCard(card);
+        SwingUtilities.invokeLater(() -> showNewCard(card));
     }
 
     private void showNewCard(FlashcardDTO card) {

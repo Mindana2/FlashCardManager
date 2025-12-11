@@ -267,6 +267,6 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
     @Override
     public void notify(List<FlashcardDTO> updatedCards) {
         // Ladda om kortlistan automatiskt
-        refreshCardsList();
+        SwingUtilities.invokeLater(this::refreshCardsList);
     }
 }
