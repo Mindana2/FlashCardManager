@@ -58,7 +58,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         controlsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
         controlsPanel.setPreferredSize(new Dimension(800, 100));
 
-        showAnswerButton = new JButton("Visa Svar");
+        showAnswerButton = new JButton("Show Answer");
         showAnswerButton.setFont(new Font("SansSerif", Font.BOLD, 16));
         showAnswerButton.setPreferredSize(new Dimension(200, 50));
         showAnswerButton.addActionListener(e -> showBack());
@@ -71,7 +71,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         createRatingButton("Medium", "medium", new Color(70, 130, 180));
         createRatingButton("Easy", "easy", new Color(60, 179, 113));
 
-        nextButton = new JButton("Nästa Kort ->");
+        nextButton = new JButton("Next Card ->");
         nextButton.setPreferredSize(new Dimension(200, 50));
         nextButton.setBackground(new Color(60, 120, 240));
         nextButton.setForeground(Color.WHITE);
@@ -147,13 +147,13 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
             studyController.applyRating(rating, currentCard.getId());
             studyController.nextCard();  // Observer will handle UI update
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Fel vid rating: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error while rating: " + e.getMessage());
         }
     }
 
     // Called when sessionFinishedObservable fires
     private void handleSessionFinished() {
-        JOptionPane.showMessageDialog(this, "Passet är slut!");
+        JOptionPane.showMessageDialog(this, "The session is over!");
         appFrame.navigateTo("Home");
     }
 }

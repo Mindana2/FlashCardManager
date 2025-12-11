@@ -29,7 +29,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         setBackground(new Color(245, 245, 245));
 
         // Header
-        JLabel title = new JLabel("Dags att plugga!");
+        JLabel title = new JLabel("To be rehearsed Today");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
         title.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
         add(title, BorderLayout.NORTH);
@@ -54,7 +54,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
 
         if (dueDecks.isEmpty()) {
-            JLabel emptyLabel = new JLabel("Inga kort att plugga idag! Bra jobbat.");
+            JLabel emptyLabel = new JLabel("No cards to study today! Great job.");
             emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
             gridPanel.add(emptyLabel);
         } else {

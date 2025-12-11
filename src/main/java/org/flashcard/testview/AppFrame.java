@@ -97,7 +97,7 @@ public class AppFrame extends JFrame {
         try {
             Integer userId = userController.getCurrentUserId();
             if (userId == null) {
-                JOptionPane.showMessageDialog(this, "Ingen användare inloggad!");
+                JOptionPane.showMessageDialog(this, "No User loggedIn!");
                 return;
             }
 
@@ -110,7 +110,7 @@ public class AppFrame extends JFrame {
             cardLayout.show(mainContentPanel, "Study");
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Kunde inte starta passet: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Couldn't start the session : " + e.getMessage());
             e.printStackTrace();
         }
     }

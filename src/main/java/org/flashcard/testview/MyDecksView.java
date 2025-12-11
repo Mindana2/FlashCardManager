@@ -33,10 +33,10 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
         headerPanel.setBackground(new Color(245, 245, 245));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 10, 30));
 
-        JLabel title = new JLabel("Mina Lekar");
+        JLabel title = new JLabel("My Decks");
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
 
-        JButton createButton = new JButton("+ Skapa Ny Lek");
+        JButton createButton = new JButton("+ Create New Deck");
         createButton.setBackground(new Color(46, 204, 113)); // Grön
         createButton.setForeground(Color.WHITE);
         createButton.setFocusPainted(false);
@@ -72,7 +72,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
         List<DeckDTO> allDecks = deckController.getAllDecksForUser(userId);
 
         if (allDecks.isEmpty()) {
-            JLabel emptyLabel = new JLabel("Du har inga lekar än. Skapa en!");
+            JLabel emptyLabel = new JLabel("You don’t have any decks yet. Create one!");
             emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
             gridPanel.add(emptyLabel);
         } else {
@@ -88,7 +88,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
                 JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 6));
                 btnRow.setBackground(new Color(245, 245, 245));
 
-                JButton editBtn = new JButton("Redigera");
+                JButton editBtn = new JButton("Edit");
                 editBtn.setPreferredSize(new Dimension(90, 28));
                 editBtn.setBackground(new Color(70, 130, 180));
                 editBtn.setForeground(Color.WHITE);
@@ -98,7 +98,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
                         appFrame.getEditDeckView().loadDeck(deck.getId());
                         appFrame.navigateTo("EditDeck");
                     } catch (Exception ex) {
-                        JOptionPane.showMessageDialog(this, "Kunde inte öppna redigeringsvyn: " + ex.getMessage());
+                        JOptionPane.showMessageDialog(this, "Couldn't open edit view " + ex.getMessage());
                     }
                 });
 

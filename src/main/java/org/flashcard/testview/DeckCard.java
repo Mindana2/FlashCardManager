@@ -46,13 +46,13 @@ public class DeckCard extends JPanel {
         }
 
         // --- Info (Due Count) ---
-        JLabel infoLabel = new JLabel(deck.getDueCount() + " kort redo");
+        JLabel infoLabel = new JLabel("Total Cards: " + deck.getDueCount());
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         infoLabel.setForeground(new Color(100, 100, 100));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // --- Action Button ---
-        JButton studyButton = new JButton("Starta");
+        JButton studyButton = new JButton("Start");
         studyButton.setBackground(new Color(60, 120, 240));
         studyButton.setForeground(Color.WHITE);
         studyButton.setFocusPainted(false);
