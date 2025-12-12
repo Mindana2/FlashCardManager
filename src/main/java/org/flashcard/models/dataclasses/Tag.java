@@ -1,6 +1,9 @@
 package org.flashcard.models.dataclasses;
 
 import jakarta.persistence.*;
+
+import java.awt.*;
+
 /* Our dataclasses also take use of Spring Framework.
  *
  * @Entity denotes that this class represents the "Tags" table in the database.
@@ -49,9 +52,24 @@ public class Tag {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public String getColor() { return color; }
+    public String getColor() { return color;}
     public void setColor(String color) { this.color = color; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    @Transient
+    public Color getColorObject() {
+        if (color == null || color.isBlank()) {
+            return Color.GRAY;
+        }
+
+        String hex = color.startsWith("#") ? color : ("#" + color);
+
+        try {
+            return Color.decode(hex);
+        } catch (NumberFormatException e) {
+            return Color.GRAY;
+        }
+    }
 }

@@ -76,6 +76,10 @@ public class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
+    public UserDTO getUserById(Integer userId) {
+        return UserMapper.toDTO(getUserByIdEntity(userId));
+    }
+
     public void deleteUser(Integer userId) {
         if (!userRepo.existsById(userId)) {
             throw new IllegalArgumentException("User not found");
@@ -102,6 +106,20 @@ public class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         this.currentUser = user;
+    }
+
+    public TagDTO createTag(Integer userId, String title, String color) {
+
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tag title cannot be empty");
+        }
+
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Tag tag = new Tag(title.trim(), color, user);
+        Tag savedTag = tagRepo.save(tag);
+        return TagMapper.toDTO(savedTag);
     }
 
 
