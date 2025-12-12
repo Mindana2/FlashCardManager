@@ -39,9 +39,8 @@ public class Navbar extends JPanel {
 
         searchBar = new SearchBar("Search Decks...", 300);
 
-        // Viktigt: vi *lyssnar* på dokumentet men vi ignorerar placeholder via getEffectiveText()
+
         searchBar.getField().getDocument().addDocumentListener(new SimpleDocumentListener(() -> {
-            // Triggera filter i AppFrame – AppFrame hämtar searchText via navbar.getSearchText()
             onFilterChanged.run();
         }));
 

@@ -95,9 +95,9 @@ public class DeckController {
 
         deck.setTag(tag);
 
-        // --------------------------------------------------------------------
+
         decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
-        // --------------------------------------------------------------------
+
 
         return TagMapper.toDTO(tag);
     }
@@ -160,9 +160,8 @@ public class DeckController {
         Deck savedDeck = deckRepo.save(deck);
         DeckDTO dto = DeckMapper.toDTO(savedDeck);
 
-        // --------------------------------------------------------------------
         decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
-        // --------------------------------------------------------------------
+
 
         return dto;
     }
@@ -176,9 +175,9 @@ public class DeckController {
 
         deckRepo.deleteById(deckId);
 
-        // --------------------------------------------------------------------
+
         decksObservable.notifyListeners(getAllDecksForUser(userId));
-        // --------------------------------------------------------------------
+
     }
 
     // --- Flashcard CRUD ---
@@ -193,9 +192,9 @@ public class DeckController {
 
         FlashcardDTO dto = FlashcardMapper.toDTO(savedCard);
 
-        // --------------------------------------------------------------------
+
         flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
-        // --------------------------------------------------------------------
+
 
         return dto;
     }
@@ -219,7 +218,7 @@ public class DeckController {
 
         Flashcard savedCard = flashcardRepo.save(card);
 
-        // --------------------------------------------------------------------
+
         flashcardsObservable.notifyListeners(
                 getFlashcardsForDeck(savedCard.getDeck().getId())
         );
@@ -237,36 +236,33 @@ public class DeckController {
 
         flashcardRepo.deleteById(cardId);
 
-        // --------------------------------------------------------------------
+
         flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
-        // --------------------------------------------------------------------
+
     }
 
     // Search / Filter
-    public List<DeckDTO> searchDecks(Integer userId, String text, Integer tagId) {
+    public List<DeckDTO> searchDecks(Integer userId, String searchText, Integer tagId) {
 
-        List<DeckDTO> decks = getAllDecksForUser(userId);
+        List<DeckDTO> all = getAllDecksForUser(userId);
 
-        // TEXT FILTER: matcha tag.title (om text ges)
-        if (text != null && !text.isBlank()) {
-            String lower = text.toLowerCase();
-            decks = decks.stream()
-                    .filter(d -> {
-                        if (d.getTagDTO() == null) return false;
-                        return d.getTagDTO().getTitle().toLowerCase().contains(lower);
-                    })
-                    .collect(Collectors.toList());
-        }
+        return all.stream()
+                // Filtrate after Deck Title (SearchBar)
+                .filter(d -> {
+                    if (searchText == null || searchText.isBlank()) return true;
+                    return d.getTitle().toLowerCase().contains(searchText.toLowerCase());
+                })
 
-        // TAG FILTER: matcha id (säkert jämförande)
-        if (tagId != null) {
-            decks = decks.stream()
-                    .filter(d -> d.getTagDTO() != null && d.getTagDTO().getId() == tagId)
-                    .collect(Collectors.toList());
-        }
+                // Tag Filter (Dropdown)
+                .filter(d -> {
+                    if (tagId == null) return true; // (All Tags)
+                    if (d.getTagDTO() == null) return false;
+                    return d.getTagDTO().getId() == tagId;
+                })
 
-        return decks;
+                .toList();
     }
+
 
 
 

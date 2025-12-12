@@ -54,11 +54,11 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
         gridPanel.setBackground(Color.WHITE);
         gridPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // ⬇⬇⬇ NYTT: vi skapar scrollPane som variabel och tar bort border
+
         JScrollPane scrollPane = new JScrollPane(gridPanel);
         scrollPane.setBorder(null); // <-- tar bort linjen
         add(scrollPane, BorderLayout.CENTER);
-        // ⬆⬆⬆ END NEW
+
     }
 
     public void applyFilter(String text, Integer tagId) {
