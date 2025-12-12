@@ -51,25 +51,40 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         gridPanel.removeAll();
 
         Integer userId = userController.getCurrentUserId();
-        List<DeckDTO> decks = deckController.searchDecks(userId, text, tagId)
-                .stream()
-                .filter(d -> d.getDueCount() > 0)
-                .toList();
+        if (userId == null) return;
 
-        if (decks.isEmpty()) {
+        // Hämta dynamiskt beräknade decks med kort som är due today
+        List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
+
+        // Applicera sökfilter om text finns
+        if (text != null && !text.isBlank()) {
+            dueDecks = dueDecks.stream()
+                    .filter(d -> d.getTitle().toLowerCase().contains(text.toLowerCase()))
+                    .toList();
+        }
+
+        // Applicera tag-filter om tagId finns
+        if (tagId != null) {
+            dueDecks = dueDecks.stream()
+                    .filter(d -> d.getTagDTO() != null && tagId.equals(d.getTagDTO().getId()))
+                    .toList();
+        }
+
+        if (dueDecks.isEmpty()) {
             JLabel lbl = new JLabel("No cards to study today!");
             lbl.setHorizontalAlignment(SwingConstants.CENTER);
             gridPanel.add(lbl);
         } else {
-            for (DeckDTO d : decks) {
-                gridPanel.add(new DeckCard(d,
-                        e -> appFrame.startStudySession(d.getId(), "today")));
+            for (DeckDTO deck : dueDecks) {
+                gridPanel.add(new DeckCard(deck,
+                        e -> appFrame.startStudySession(deck.getId(), "today")));
             }
         }
 
         gridPanel.revalidate();
         gridPanel.repaint();
     }
+
 
     @Override
     public void notify(List<DeckDTO> data) {
