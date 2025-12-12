@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class StrategyHard extends BaseIntervalStrategy {
     @Override
-    protected double getMultiplier() {
+    public double getMultiplier() {
         return 1.2; // Increases slowly
     }
 }

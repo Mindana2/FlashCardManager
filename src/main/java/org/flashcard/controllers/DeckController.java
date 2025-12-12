@@ -8,6 +8,8 @@ import org.flashcard.application.mapper.FlashcardMapper;
 import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.models.dataclasses.*;
+import org.flashcard.models.progress.FlashcardProgression;
+import org.flashcard.models.ratingstrategy.BaseIntervalStrategy;
 import org.flashcard.models.progress.DeckProgression;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
@@ -15,8 +17,11 @@ import org.flashcard.repositories.TagRepository;
 import org.flashcard.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.flashcard.models.ratingstrategy.RatingStrategy;
+import org.flashcard.models.ratingstrategy.StrategyFactory;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -255,5 +260,13 @@ public class DeckController {
         // --------------------------------------------------------------------
         flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
         // --------------------------------------------------------------------
+    }
+    public long showEstimatedDate(String rating, int cardID){
+        Flashcard flashcard = flashcardRepo.findById(cardID)
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
+        RatingStrategy strategy = StrategyFactory.createStrategy(rating);
+
+        CardLearningState state = flashcard.getCardLearningState();
+        return FlashcardProgression.estimateDate(strategy, state);
     }
 }

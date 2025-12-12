@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class StrategyMedium extends BaseIntervalStrategy {
     @Override
-    protected double getMultiplier() {
+    public double getMultiplier() {
         return 1.5; //Increases lagom
     }
 }
