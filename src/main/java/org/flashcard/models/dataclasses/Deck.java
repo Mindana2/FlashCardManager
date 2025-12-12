@@ -30,18 +30,20 @@ public class Deck {
     @Column(nullable = false)
     private LocalDate dateCreated = LocalDate.now();
 
-    // Many decks belong to one user
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    // Optional tag
     @ManyToOne
     @JoinColumn(name = "tagId", nullable = true)
     private Tag tag;
 
     @OneToMany(mappedBy = "deck", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Flashcard> cards;
+
+    // Optional in-memory DeckProgress
+    @Transient
+    private DeckProgress deckProgress;
 
     // Constructors
     public Deck() {}
@@ -52,7 +54,7 @@ public class Deck {
         this.dateCreated = LocalDate.now();
     }
 
-    // Getters and setters
+    // Getters / setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
@@ -68,11 +70,11 @@ public class Deck {
     public Tag getTag() { return tag; }
     public void setTag(Tag tag) { this.tag = tag; }
 
-    public List<Flashcard> getCards() {
-        return cards;
-    }
+    public List<Flashcard> getCards() { return cards; }
+    public void setCards(List<Flashcard> cards) { this.cards = cards; }
 
-    public void setCards(List<Flashcard> cards) {
-        this.cards = cards;
-    }
+    public DeckProgress getDeckProgress() { return deckProgress; }
+    public void setDeckProgress(DeckProgress deckProgress) { this.deckProgress = deckProgress; }
+
+    public void invalidateProgress() { this.deckProgress = null; }
 }

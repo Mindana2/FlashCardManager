@@ -80,15 +80,28 @@ public class AppFrame extends JFrame {
     }
 
     public void navigateTo(String viewName) {
-        // Uppdatera datan i vyerna när vi byter till dem
+        // If we leave StudyView, endsession
+        Component current = getCurrentVisibleView();
+        if (current == studyView) {
+            studyController.endSession(false);
+        }
+
         if ("Home".equals(viewName)) homeView.refreshData();
         if ("MyDecks".equals(viewName)) myDecksView.refreshData();
 
         cardLayout.show(mainContentPanel, viewName);
     }
+
     public CreateDeckView getCreateDeckView() {
         return createDeckView; // din instans av CreateDeckViewTest
     }
+    private Component getCurrentVisibleView() {
+        for (Component comp : mainContentPanel.getComponents()) {
+            if (comp.isVisible()) return comp;
+        }
+        return null;
+    }
+
 
     public EditDeckView getEditDeckView() { return editDeckView; }
 
