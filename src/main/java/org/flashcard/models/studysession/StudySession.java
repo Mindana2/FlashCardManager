@@ -1,9 +1,12 @@
 package org.flashcard.models.studysession;
 
 import org.flashcard.models.dataclasses.Deck;
+import org.flashcard.models.dataclasses.DeckProgress;
 import org.flashcard.models.dataclasses.Flashcard;
 import org.flashcard.models.dataclasses.User;
+import org.flashcard.models.progress.DeckProgression;
 
+import java.time.Instant;
 import java.util.List;
 /*
  * This package is responsible for dividing flashcards into sub-decks:
@@ -36,5 +39,16 @@ public class StudySession {
     public Flashcard getNextCardAndRemove() {
         if (cards == null || cards.isEmpty()) return null;
         return cards.remove(0);
+    }
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void endSession() {
+
+        double progressPercent = DeckProgression.calculateDeckProgression(deck);
+
+        deck.setDeckProgress(new DeckProgress(progressPercent));
+        cards = null;
     }
 }
