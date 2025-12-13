@@ -96,7 +96,7 @@ public class DeckController {
     }
 
     public List<DeckDTO> getAllDecksForUser(Integer userId) {
-        List<Deck> userDecks = deckRepo.findByUserId(userId);
+        List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
 
         return userDecks.stream()
                 .map(deck -> {

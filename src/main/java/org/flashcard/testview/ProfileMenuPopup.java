@@ -155,16 +155,24 @@ public class ProfileMenuPopup extends JWindow {
             @Override public void mouseExited(MouseEvent e) {
                 row.setBackground(new Color(55, 55, 55));
             }
-            @Override public void mouseClicked(MouseEvent e) {
-                String name = JOptionPane.showInputDialog(null, "Enter new username:");
-                if (name == null || name.isBlank()) return;
+            public void mouseClicked(MouseEvent e) {
+                while (true) {
+                    String name = JOptionPane.showInputDialog(null, "Enter new username (at least 3 characters):");
+                    if (name == null) return; // user cancelled
 
-                UserDTO newUser = userController.createUser(name);
-                userController.loginByUserId(newUser.getId());
-                navbar.onUserChanged();
+                    name = name.trim();
+                    if (name.length() >= 3) {
+                        UserDTO newUser = userController.createUser(name);
+                        userController.loginByUserId(newUser.getId());
+                        navbar.onUserChanged();
 
-                reloadList();
-                setVisible(false);
+                        reloadList();
+                        setVisible(false);
+                        break;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Username must be at least 3 characters long.", "Invalid Username", JOptionPane.WARNING_MESSAGE);
+                    }
+                }
             }
         });
 

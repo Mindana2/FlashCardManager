@@ -15,6 +15,8 @@ public class Navbar extends JPanel {
     private final SearchBar searchBar;
     private final TagDropdown tagDropdown;
     private final UserController userController;
+    private ProfileMenuButton profileMenuButton;
+
 
 
     public Navbar(Consumer<String> navigate,
@@ -32,8 +34,8 @@ public class Navbar extends JPanel {
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         left.setOpaque(false);
 
-        ProfileMenuButton profileButton = new ProfileMenuButton(userController, this);
-        left.add(profileButton);
+        profileMenuButton = new ProfileMenuButton(userController, this);
+        left.add(profileMenuButton);
 
 
         left.add(createNavButton("Home", "Home"));
@@ -44,6 +46,7 @@ public class Navbar extends JPanel {
         center.setOpaque(false);
 
         searchBar = new SearchBar("Search Decks...", 300);
+
         searchBar.getField().getDocument().addDocumentListener(new SearchListener(() -> {
             onFilterChanged.run();
         }));
@@ -85,7 +88,9 @@ public class Navbar extends JPanel {
     /** Called by ProfileDropdown when user changes */
     public void onUserChanged() {
         reloadTags();
-        onFilterChanged.run(); // refresh deck section
+        onFilterChanged.run();
+
+        profileMenuButton.refreshUser();
     }
 
 
