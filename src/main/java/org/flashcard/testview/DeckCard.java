@@ -1,6 +1,7 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.TagDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,23 +22,13 @@ public class DeckCard extends JPanel {
 
         // --- Tag i vänstra hörnet ---
         JPanel tagPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        tagPanel.setOpaque(false);
-        if (deck.getTagDTO() != null) {
-            JLabel tagLabel = new JLabel(deck.getTagDTO().getTitle());
-            tagLabel.setOpaque(true);
-            try {
-                String rawHex = deck.getTagDTO().getColorHex();
-                if (rawHex == null) rawHex = "808080";
-                String normalized = rawHex.startsWith("#") ? rawHex : ("#" + rawHex);
-                Color bg = Color.decode(normalized);
+        TagDTO tagDTO = deck.getTagDTO();
 
-                tagLabel.setBackground(bg);
-                double luminance = (0.299 * bg.getRed() + 0.587 * bg.getGreen() + 0.114 * bg.getBlue()) / 255;
-                tagLabel.setForeground(luminance > 0.6 ? Color.BLACK : Color.WHITE);
-            } catch (Exception e) {
-                tagLabel.setBackground(Color.GRAY);
-                tagLabel.setForeground(Color.WHITE);
-            }
+        tagPanel.setOpaque(false);
+        if (tagDTO != null) {
+            JLabel tagLabel = new JLabel(tagDTO.getTitle());
+            tagLabel.setOpaque(true);
+            tagLabel.setBackground(tagDTO.getColor());
             tagLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
             tagLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
             tagPanel.add(tagLabel);

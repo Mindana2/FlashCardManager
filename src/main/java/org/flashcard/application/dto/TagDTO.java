@@ -1,4 +1,7 @@
 package org.flashcard.application.dto;
+
+import java.awt.*;
+
 // We use DataTransferObjects to transfer data between layers.
 // This ensures View is read-only.
 public class TagDTO {
@@ -15,16 +18,17 @@ public class TagDTO {
     public String getTitle() { return title; }
 
     // TODO convert to Color object here instead of in the viewclasses
-    //public Color getColor() {
-    //    if (colorHex == null || colorHex.isEmpty()) {
-    //        return Color.WHITE; // or a default
-    //    }
+    public Color getColor() {
+        if (colorHex == null || colorHex.isEmpty()) {
+            return Color.WHITE; // or a default
+        }
 
-    //    // Ensure the string starts with a '#'
-    //    String hex = colorHex.startsWith("#") ? colorHex : "#" + colorHex;
+        // Ensure the string starts with a '#'
+        String hex = colorHex.startsWith("#") ? colorHex : "#" + colorHex;
 
-    //    return Color.decode(hex);
-    //}
+        return Color.decode(hex);
+    }
+
     public String getColorHex() { return colorHex; }
 
     public int getId() { return id; }

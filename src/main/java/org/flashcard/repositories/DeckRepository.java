@@ -2,6 +2,8 @@ package org.flashcard.repositories;
 
 import org.flashcard.models.dataclasses.Deck;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,6 +35,11 @@ public interface DeckRepository extends JpaRepository<Deck, Integer> {
 
     // Optional: find a deck by user and title
     Deck findByUserIdAndTitle(Integer userId, String title);
+
+    // Fetch decks along with their tag to avoid stale tag references
+
+    @Query("SELECT d FROM Deck d LEFT JOIN FETCH d.tag WHERE d.user.id = :userId")
+    List<Deck> findByUserIdWithTag(@Param("userId") Integer userId);
 
     boolean existsByUserIdAndTitle(Integer userId, String title);
 

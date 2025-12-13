@@ -34,7 +34,7 @@ public class Deck {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tagId", nullable = true)
     private Tag tag;
 

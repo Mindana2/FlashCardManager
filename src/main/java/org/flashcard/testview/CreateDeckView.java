@@ -248,7 +248,7 @@ public class CreateDeckView extends JPanel {
                 if (!newTagName.isBlank()) {
                     String hex = String.format(Locale.ROOT, "%02x%02x%02x",
                             selectedTagColor.getRed(), selectedTagColor.getGreen(), selectedTagColor.getBlue()).toUpperCase();
-                    TagDTO t = deckController.createTag(userId, newTagName, hex);
+                    TagDTO t = userController.createTag(userId, newTagName, hex);
                     deckController.assignTagToDeck(createdDeck.getId(), t.getId());
                 }
             }
