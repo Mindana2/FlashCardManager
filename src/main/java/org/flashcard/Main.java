@@ -2,6 +2,7 @@ package org.flashcard;
 
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.StudyController;
+import org.flashcard.controllers.TagController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.User;
@@ -28,9 +29,10 @@ public class Main {
             UserController userController = context.getBean(UserController.class);
             DeckController deckController = context.getBean(DeckController.class);
             StudyController studyController = context.getBean(StudyController.class);
+            TagController tagController = context.getBean(TagController.class);
 
             // Start View
-            AppFrame frame = new AppFrame(userController, studyController, deckController);
+            AppFrame frame = new AppFrame(userController, studyController, deckController, tagController);
             frame.setVisible(true);
 
         });

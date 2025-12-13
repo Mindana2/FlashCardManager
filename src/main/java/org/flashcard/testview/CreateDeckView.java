@@ -3,6 +3,7 @@ package org.flashcard.testview;
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.TagDTO;
 import org.flashcard.controllers.DeckController;
+import org.flashcard.controllers.TagController;
 import org.flashcard.controllers.UserController;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ public class CreateDeckView extends JPanel {
 
     private final DeckController deckController;
     private final UserController userController;
+    private final TagController tagController;
     private final AppFrame appFrame;
 
     private DeckDTO createdDeck = null;
@@ -34,9 +36,11 @@ public class CreateDeckView extends JPanel {
     private JLabel statusLabel;
     private JLabel headerLabel;
 
-    public CreateDeckView(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public CreateDeckView(DeckController deckController, UserController userController,
+                          TagController tagController, AppFrame appFrame) {
         this.deckController = deckController;
         this.userController = userController;
+        this.tagController = tagController;
         this.appFrame = appFrame;
 
         setLayout(new BorderLayout());
@@ -198,7 +202,7 @@ public class CreateDeckView extends JPanel {
         if (userId == null) return;
 
         try {
-            List<TagDTO> tags = userController.getTagsForUser(userId);
+            List<TagDTO> tags = tagController.getTagsForUser(userId);
             for (TagDTO t : tags) existingTagsCombo.addItem(t);
         } catch (Exception e) {
             System.err.println("Can't read tags: " + e.getMessage());
@@ -248,7 +252,7 @@ public class CreateDeckView extends JPanel {
                 if (!newTagName.isBlank()) {
                     String hex = String.format(Locale.ROOT, "%02x%02x%02x",
                             selectedTagColor.getRed(), selectedTagColor.getGreen(), selectedTagColor.getBlue()).toUpperCase();
-                    TagDTO t = userController.createTag(userId, newTagName, hex);
+                    TagDTO t = tagController.createTag(userId, newTagName, hex);
                     deckController.assignTagToDeck(createdDeck.getId(), t.getId());
                 }
             }

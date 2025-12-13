@@ -1,6 +1,7 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.TagDTO;
+import org.flashcard.controllers.TagController;
 import org.flashcard.controllers.UserController;
 
 import javax.swing.*;
@@ -15,17 +16,20 @@ public class Navbar extends JPanel {
     private final SearchBar searchBar;
     private final TagDropdown tagDropdown;
     private final UserController userController;
+    private final TagController tagController;
     private ProfileMenuButton profileMenuButton;
 
 
 
     public Navbar(Consumer<String> navigate,
                   Runnable onFilterChanged,
-                  UserController userController) {
+                  UserController userController,
+                  TagController tagController) {
 
         this.navigate = navigate;
         this.onFilterChanged = onFilterChanged;
         this.userController = userController;
+        this.tagController = tagController;
 
         setLayout(new BorderLayout(20, 10));
         setBackground(new Color(50, 50, 50));
@@ -96,7 +100,7 @@ public class Navbar extends JPanel {
 
     private void reloadTags() {
         Integer userId = userController.getCurrentUserId();
-        List<TagDTO> tags = userId == null ? List.of() : userController.getTagsForUser(userId);
+        List<TagDTO> tags = userId == null ? List.of() : tagController.getTagsForUser(userId);
         tagDropdown.loadTags(tags);
     }
 

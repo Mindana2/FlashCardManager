@@ -38,20 +38,10 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserController {
 
-    private final UserRepository userRepo;
-    private final DeckRepository deckRepo;
-    private final TagRepository tagRepo;
-
 
     private final UserService userService;
 
-    public UserController(UserRepository userRepo,
-                          DeckRepository deckRepo,
-                          TagRepository tagRepo,
-                          UserService userService) {
-        this.userRepo = userRepo;
-        this.deckRepo = deckRepo;
-        this.tagRepo = tagRepo;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -86,48 +76,4 @@ public class UserController {
         userService.loginByUserId(userId);
     }
 
-    public TagDTO createTag(Integer userId, String title, String color) {
-
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tag title cannot be empty");
-        }
-
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Tag tag = new Tag(title.trim(), color, user);
-        Tag savedTag = tagRepo.save(tag);
-        return TagMapper.toDTO(savedTag);
-    }
-
-
-    // --- User CRUD ---
-
-
-
-    // --- User-related queries ---
-
-    public List<DeckDTO> getDecksForUser(Integer userId) {
-        if (!userRepo.existsById(userId)) {
-            throw new IllegalArgumentException("User not found");
-        }
-        List<Deck> decks = deckRepo.findByUserId(userId);
-
-        return DeckMapper.toDTOList(decks);
-    }
-
-    public List<TagDTO> getTagsForUser(Integer userId) {
-        if (!userRepo.existsById(userId)) {
-            throw new IllegalArgumentException("User not found");
-        }
-        List<Tag> tags = tagRepo.findByUserId(userId);
-
-        return TagMapper.toDTOList(tags);
-    }
-
-    public String getTagText(Integer tagId) {
-        return tagRepo.findById(tagId)
-                .map(tag -> "Tag: " + tag.getTitle() + ", Color: #" + tag.getColor())
-                .orElse("");
-    }
 }
