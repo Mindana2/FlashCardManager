@@ -3,25 +3,8 @@ package org.flashcard.models.dataclasses;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-/* Our dataclasses also take use of Spring Framework.
- *
- * @Entity denotes that this class represents the "CardLearningState" table in the database.
- *
- * Spring can then use this class to map between Java objects and database rows:
- *
- * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
- *   1. Reads these annotations to know the table and columns.
- *   2. Generates the appropriate SQL.
- *   3. Maps database rows to CardLearningState objects and vice versa.
- *
- * This helps us reduce the amount of boilerplate SQL we need to write.
- *
- * The idea of CardLearningState is to map each Flashcard to a CardLEarningState.
- * This class holds statistics about how often a Flashcard has been reviewed
- * and when the next review is due.
- *
- */
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "CardLearningState")
 public class CardLearningState {
@@ -34,13 +17,14 @@ public class CardLearningState {
     @MapsId
     private Flashcard flashcard;
 
-    private LocalDate lastReviewDate;
-    private LocalDate nextReviewDate;
+    @Column(name = "last_review_date")
+    private LocalDateTime lastReviewDate;
 
+    @Column(name = "next_review_date")
+    private LocalDateTime nextReviewDate;
 
     @Column(nullable = false)
     private BigDecimal intervalBetweenReviews = BigDecimal.valueOf(1.0);
-
 
     @Column(nullable = false)
     private Integer numberOfTimesViewed = 0;
@@ -53,11 +37,10 @@ public class CardLearningState {
         this.numberOfTimesViewed = 0;
     }
 
-
-    //TODO uppdatera så att nya intervalBetweenRevies funkar
+    // Update review dates using LocalDateTime
     public void updateDates(long daysToAdd) {
-        this.lastReviewDate = LocalDate.now();
-        this.nextReviewDate = LocalDate.now().plusDays(daysToAdd);
+        this.lastReviewDate = LocalDateTime.now();
+        this.nextReviewDate = LocalDateTime.now().plusDays(daysToAdd);
         this.numberOfTimesViewed++;
     }
 
@@ -68,11 +51,11 @@ public class CardLearningState {
     public Flashcard getFlashcard() { return flashcard; }
     public void setFlashcard(Flashcard flashcard) { this.flashcard = flashcard; }
 
-    public LocalDate getLastReviewDate() { return lastReviewDate; }
-    public void setLastReviewDate(LocalDate lastReviewDate) { this.lastReviewDate = lastReviewDate; }
+    public LocalDateTime getLastReviewDate() { return lastReviewDate; }
+    public void setLastReviewDate(LocalDateTime lastReviewDate) { this.lastReviewDate = lastReviewDate; }
 
-    public LocalDate getNextReviewDate() { return nextReviewDate; }
-    public void setNextReviewDate(LocalDate nextReviewDate) { this.nextReviewDate = nextReviewDate; }
+    public LocalDateTime getNextReviewDate() { return nextReviewDate; }
+    public void setNextReviewDate(LocalDateTime nextReviewDate) { this.nextReviewDate = nextReviewDate; }
 
     public BigDecimal getIntervalBetweenReviews() { return intervalBetweenReviews; }
     public void setIntervalBetweenReviews(BigDecimal intervalBetweenReviews) { this.intervalBetweenReviews = intervalBetweenReviews; }
@@ -80,8 +63,9 @@ public class CardLearningState {
     public Integer getNumberOfTimesViewed() { return numberOfTimesViewed; }
     public void setNumberOfTimesViewed(Integer numberOfTimesViewed) { this.numberOfTimesViewed = numberOfTimesViewed; }
 
+    // Check if card is due today or earlier
     public boolean isDueToday() {
-        return nextReviewDate == null || !nextReviewDate.isAfter(LocalDate.now());
+        return nextReviewDate == null || !nextReviewDate.isAfter(LocalDateTime.now());
     }
 
     @Override
