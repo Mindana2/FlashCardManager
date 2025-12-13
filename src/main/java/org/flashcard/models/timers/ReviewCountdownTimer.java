@@ -21,13 +21,13 @@ import java.util.TimerTask;
 
 public class ReviewCountdownTimer {
     private final Timer timer;
-    private String countdown;
+    private String countdown = "";
 
     private TimerListener listener;
     private final List<TimerListener> listeners = new ArrayList<>();
     private Duration timeLeft;
     public ReviewCountdownTimer() {
-        this.countdown = "";
+
         timer = new Timer();
 
     }
@@ -44,7 +44,6 @@ public class ReviewCountdownTimer {
                 if (timeLeft.isZero() || timeLeft.isNegative()){
                     timeLeft = Duration.ZERO;
                     countdown = "";
-                    notifyListeners(timeLeft);
                     timer.cancel();
                 }
                 notifyListeners(timeLeft);
@@ -60,7 +59,7 @@ public class ReviewCountdownTimer {
     public void addTimerListener(TimerListener listener){
         listeners.add(listener);
     }
-    public Duration showCountdown(Flashcard flashcard){
+    public Duration showCountdown(){
         return timeLeft;
     }
     public void notifyListeners(Duration timeLeft){

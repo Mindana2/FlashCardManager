@@ -20,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +47,7 @@ public class DeckController {
     private final FlashcardRepository flashcardRepo;
     private final UserRepository userRepo;
     private final TagRepository tagRepo;
-    private final ReviewCountdownTimer countdownTimer = new ReviewCountdownTimer();
+
 
     public DeckController(DeckRepository deckRepo,
                           FlashcardRepository flashcardRepo,
@@ -147,6 +150,29 @@ public class DeckController {
                 .filter(dto -> dto.getDueCount() > 0)
                 .collect(Collectors.toList());
     }
+    public List<DeckDTO> getNotDueDecksForUser(Integer userId) {
+        List<Deck> userDecks = deckRepo.findByUserId(userId);
+
+        return userDecks.stream()
+                .map(deck -> {
+                    // Uppdatera deck progress dynamiskt
+                    double progressPercent = DeckProgression.calculateDeckProgression(deck);
+                    deck.setDeckProgress(new DeckProgress(progressPercent));
+
+                    long dueCount = 0;
+                    if (deck.getCards() != null) {
+                        dueCount = deck.getCards().stream()
+                                .filter(this::isCardDue)
+                                .count();
+                    }
+
+                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount); // nu innehåller deckProgress
+                    return dto;
+                })
+                .filter(dto -> dto.getDueCount() == 0)
+                .collect(Collectors.toList());
+    }
+
 
     private boolean isCardDue(Flashcard card) {
         CardLearningState state = card.getCardLearningState();
@@ -282,9 +308,24 @@ public class DeckController {
         CardLearningState state = flashcard.getCardLearningState();
         return FlashcardProgression.estimateDate(strategy, state);
     }
-    public void startReviewCountdown(int cardID){
+    public FlashcardDTO getNextReviewableCard(int deckID){
+
+        Deck deck = deckRepo.findById(deckID)
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
+        Flashcard nextCard = deck.getCards().stream()
+                .filter(card -> card.getCardLearningState().getNextReviewDate().isAfter(LocalDateTime.now()))
+                .min(Comparator.comparing(card -> card.getCardLearningState().getNextReviewDate()))
+                .orElseThrow(() -> new IllegalStateException("No future review card found"));
+
+
+        return FlashcardMapper.toDTO(nextCard);
+    }
+    public void startReviewCountdown(int deckID){
+        Deck deck = deckRepo.findById(deckID)
         Flashcard flashcard = flashcardRepo.findById(cardID)
                 .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
+        Deck deck = flashcardRepo.
+        ReviewCountdownTimer countdownTimer = deck.getReviewCountdownTimer();
         countdownTimer.startCountdown(flashcard);
     }
 }

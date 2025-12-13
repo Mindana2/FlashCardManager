@@ -57,26 +57,26 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, TimerLi
         if (userId == null) return;
 
         // Hämta dynamiskt beräknade decks med kort som är due today
-        List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
         List<DeckDTO> decks = deckController.getAllDecksForUser(userId);
+        List<DeckDTO> notDueDecks = deckController.getNotDueDecksForUser(userId);
+        List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
 
         // Applicera sökfilter om text finns
         if (text != null && !text.isBlank()) {
-            dueDecks = dueDecks.stream()
+            decks = decks.stream()
                     .filter(d -> d.getTitle().toLowerCase().contains(text.toLowerCase()))
                     .toList();
         }
 
         // Applicera tag-filter om tagId finns
         if (tagId != null) {
-            dueDecks = dueDecks.stream()
+            decks = decks.stream()
                     .filter(d -> d.getTagDTO() != null && tagId.equals(d.getTagDTO().getId()))
                     .toList();
         }
-//        for (DeckDTO deck : decks){
-//            if (!dueDecks.contains(deck)){
-//                gridPanel.add(new DeckCard(deck,
-//                        e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
+//        for (DeckDTO deck : notDueDecks){
+//            gridPanel.add(new DeckCard(deck,
+//                    e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
 //            }
 //            else {
 //                gridPanel.add(new DeckCard(deck,

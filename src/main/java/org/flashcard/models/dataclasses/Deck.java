@@ -1,5 +1,7 @@
 package org.flashcard.models.dataclasses;
 import jakarta.persistence.*;
+import org.flashcard.models.timers.ReviewCountdownTimer;
+
 import java.time.LocalDate;
 import java.util.List;
 /* Our dataclasses also take use of Spring Framework.
@@ -45,6 +47,8 @@ public class Deck {
     @Transient
     private DeckProgress deckProgress;
 
+    private ReviewCountdownTimer reviewCountdownTimer;
+
     // Constructors
     public Deck() {}
 
@@ -75,6 +79,7 @@ public class Deck {
 
     public DeckProgress getDeckProgress() { return deckProgress; }
     public void setDeckProgress(DeckProgress deckProgress) { this.deckProgress = deckProgress; }
+    public ReviewCountdownTimer getReviewCountdownTimer(){ return this.reviewCountdownTimer;}
 
     public void invalidateProgress() { this.deckProgress = null; }
 }
