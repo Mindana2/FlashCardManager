@@ -8,8 +8,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class DeckCard extends JPanel {
+    JLabel infoLabel;
+    JButton studyButton = new JButton("Start");
 
-    public DeckCard(DeckDTO deck, ActionListener onStudyClick) {
+    public DeckCard(DeckDTO deck, ActionListener onStudyClick, String countdown) {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
@@ -66,19 +68,34 @@ public class DeckCard extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // --- Info (Due Count) ---
-        JLabel infoLabel = new JLabel("Total Cards: " + deck.getDueCount());
+        // --- Info (Due Count or Next review) ---
+
+        infoLabel = new JLabel("Total Cards: " + deck.getDueCount());
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         infoLabel.setForeground(new Color(100, 100, 100));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // --- Action Button ---
-        JButton studyButton = new JButton("Start");
+
+
         studyButton.setBackground(new Color(60, 120, 240));
         studyButton.setForeground(Color.WHITE);
         studyButton.setFocusPainted(false);
         studyButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         studyButton.addActionListener(onStudyClick);
+//        if ("".equals(countdown) && ) {
+//
+//        }
+//
+//        else {
+//            infoLabel = new JLabel("Time until next review: " + countdown);
+//            infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
+//            infoLabel.setForeground(new Color(100, 100, 100));
+//            infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+//            setBackground(Color.GRAY);
+
+//        }
+
 
         // --- Center panel ---
         JPanel centerPanel = new JPanel(new GridLayout(2, 1));

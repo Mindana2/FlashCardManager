@@ -9,8 +9,8 @@ import org.flashcard.application.mapper.TagMapper;
 import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.progress.FlashcardProgression;
-import org.flashcard.models.ratingstrategy.BaseIntervalStrategy;
 import org.flashcard.models.progress.DeckProgression;
+import org.flashcard.models.timers.ReviewCountdownTimer;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
@@ -21,7 +21,6 @@ import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,15 +44,18 @@ public class DeckController {
     private final FlashcardRepository flashcardRepo;
     private final UserRepository userRepo;
     private final TagRepository tagRepo;
+    private final ReviewCountdownTimer countdownTimer = new ReviewCountdownTimer();
 
     public DeckController(DeckRepository deckRepo,
                           FlashcardRepository flashcardRepo,
                           UserRepository userRepo,
-                          TagRepository tagRepo) {
+                          TagRepository tagRepo
+                          ) {
         this.deckRepo = deckRepo;
         this.flashcardRepo = flashcardRepo;
         this.userRepo = userRepo;
         this.tagRepo = tagRepo;
+
     }
 
 
@@ -279,5 +281,10 @@ public class DeckController {
 
         CardLearningState state = flashcard.getCardLearningState();
         return FlashcardProgression.estimateDate(strategy, state);
+    }
+    public void startReviewCountdown(int cardID){
+        Flashcard flashcard = flashcardRepo.findById(cardID)
+                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
+        countdownTimer.startCountdown(flashcard);
     }
 }

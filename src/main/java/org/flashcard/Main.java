@@ -5,6 +5,7 @@ import org.flashcard.controllers.StudyController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.User;
+import org.flashcard.models.timers.ReviewCountdownTimer;
 import org.flashcard.testview.AppFrame;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,8 @@ public class Main {
 
             // Start Spring Boot context
             ApplicationContext context = SpringApplication.run(Main.class);
+            //Timer
+
 
             // Retrieve beans from Spring
             UserController userController = context.getBean(UserController.class);
@@ -32,6 +35,8 @@ public class Main {
             // Start View
             AppFrame frame = new AppFrame(userController, studyController, deckController);
             frame.setVisible(true);
+
+
 
         });
     }

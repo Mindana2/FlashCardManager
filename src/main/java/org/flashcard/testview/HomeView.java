@@ -4,16 +4,19 @@ import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.controllers.observer.Observer;
+import org.flashcard.models.timers.TimerListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.Duration;
 import java.util.List;
 
-public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
+public class HomeView extends JPanel implements Observer<List<DeckDTO>>, TimerListener {
 
     private final DeckController deckController;
     private final UserController userController;
     private final AppFrame appFrame;
+    private String countdown;
 
     private JPanel gridPanel;
 
@@ -55,6 +58,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
 
         // Hämta dynamiskt beräknade decks med kort som är due today
         List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
+        List<DeckDTO> decks = deckController.getAllDecksForUser(userId);
 
         // Applicera sökfilter om text finns
         if (text != null && !text.isBlank()) {
@@ -69,6 +73,16 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
                     .filter(d -> d.getTagDTO() != null && tagId.equals(d.getTagDTO().getId()))
                     .toList();
         }
+//        for (DeckDTO deck : decks){
+//            if (!dueDecks.contains(deck)){
+//                gridPanel.add(new DeckCard(deck,
+//                        e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
+//            }
+//            else {
+//                gridPanel.add(new DeckCard(deck,
+//                        e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
+//            }
+//        }
 
         if (dueDecks.isEmpty()) {
             JLabel lbl = new JLabel("No cards to study today!");
@@ -77,7 +91,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         } else {
             for (DeckDTO deck : dueDecks) {
                 gridPanel.add(new DeckCard(deck,
-                        e -> appFrame.startStudySession(deck.getId(), "today")));
+                        e -> appFrame.startStudySession(deck.getId(), "today"), ""));
             }
         }
 
@@ -89,5 +103,13 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
     @Override
     public void notify(List<DeckDTO> data) {
         refreshData(null, null);
+    }
+
+
+    @Override
+    public void updateTime(String countdown) {
+        this.countdown = countdown;
+        gridPanel.revalidate();
+        gridPanel.repaint();
     }
 }
