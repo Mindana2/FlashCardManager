@@ -65,25 +65,10 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         //List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
 
         // Hämta ALLA decks med due-info
-        List<DeckDTO> allDecks = deckController.getAllDecksForUser(userId);
-        List<DeckDTO> dueDecks = deckController.getDueDecksForUser(userId);
-        List<DeckDTO> notDueDecks = deckController.getNotDueDecksForUser(userId);
+        List<DeckDTO> dueDecks = filterController.getDueDecksForUser(userId);
+        List<DeckDTO> notDueDecks = filterController.getNotDueDecksForUser(userId);
+        List<DeckDTO> allDecks = deckController .getAllDecksForUser(userId);
 
-        for (DeckDTO deck : dueDecks) {
-            gridPanel.add(new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "today")));
-        }
-
-        for(DeckDTO notDueDeck : notDueDecks){
-            Duration timeLeft = deckController.timeUntilDue(notDueDeck.getId());
-            gridPanel.add(
-                    new DeckCard(
-                            notDueDeck,
-                            null,
-                            true,
-                            "Next Card available in: ",
-                            timeLeft));
-
-        }
         // Applicera sökfilter om text finns
         if (text != null && !text.isBlank()) {
             allDecks = allDecks.stream()
@@ -99,12 +84,36 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         }
 
         // Sortera så att aktiva decks (med due cards) kommer först
-        allDecks.stream()
+        allDecks = allDecks.stream()
                 .sorted((d1, d2) -> Boolean.compare(
                         d2.getDueCount() > 0,
                         d1.getDueCount() > 0
                 ))
                 .toList();
+        //Lägger till decks i vyn
+        for (DeckDTO deck : allDecks) {
+            //Lägger till decks som kan spelas
+            if (deck.getDueCount() > 0) {
+                gridPanel.add(new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "today")));
+            }
+             else {
+                 //Lägger till decks som inte kan spelas med en countdown timer
+                Duration timeLeft = deckController.timeUntilDue(deck.getId());
+                gridPanel.add(
+                        new DeckCard(
+                                deck,
+                                null,
+                                true,
+                                "Next Card available in: ",
+                                timeLeft,
+                                deckController
+                        ));
+             }
+        }
+
+
+
+
 
 
 //        if (decks.isEmpty()) {

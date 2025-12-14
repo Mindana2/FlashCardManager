@@ -90,13 +90,13 @@ public class DeckController {
         return deckService.showEstimatedDate(rating, cardID);
     }
 
-    // Get all decks with due cards at Home view
-    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
-        return deckService.getAllDecksWithDueInfo(userId);
-    }
-    public List<DeckDTO> getNotDueDecksForUser(int userID){
-        return deckService.getNotDueDecksForUser(userID);
-    }
+//    // Get all decks with due cards at Home view
+//    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
+//        return deckService.getAllDecksWithDueInfo(userId);
+//    }
+//    public List<DeckDTO> getNotDueDecksForUser(int userID){
+//        return deckService.getNotDueDecksForUser(userID);
+//    }
 //    public Flashcard getNextReviewableCard(int deckID){
 //        return deckService.getNextReviewableCard(deckID);
 //    }
