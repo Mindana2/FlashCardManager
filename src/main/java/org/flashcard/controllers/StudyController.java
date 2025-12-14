@@ -11,24 +11,22 @@ public class StudyController {
 
     private final StudyService studyService;
 
-    private final Observable<FlashcardDTO> currentCardObservable = new Observable<>();
-    private final Observable<Boolean> sessionFinishedObservable = new Observable<>();
-    private final Observable<DeckDTO> deckProgressObservable = new Observable<>();
+
 
     public StudyController(StudyService studyService) {
         this.studyService = studyService;
     }
 
     public Observable<FlashcardDTO> getCurrentCardObservable() {
-        return currentCardObservable;
+        return studyService.getCurrentCardObservable();
     }
 
     public Observable<Boolean> getSessionFinishedObservable() {
-        return sessionFinishedObservable;
+        return studyService.getSessionFinishedObservable();
     }
 
     public Observable<DeckDTO> getDeckProgressObservable() {
-        return deckProgressObservable;
+        return studyService.getDeckProgressObservable();
     }
 
     public void startSession(String algorithmStrategy, int deckId, int userId) {
@@ -36,9 +34,9 @@ public class StudyController {
 
         FlashcardDTO first = studyService.nextCard();
         if (first != null) {
-            currentCardObservable.notifyListeners(first);
+            getCurrentCardObservable().notifyListeners(first);
         } else {
-            sessionFinishedObservable.notifyListeners(true);
+            getSessionFinishedObservable().notifyListeners(true);
         }
     }
 
@@ -49,10 +47,10 @@ public class StudyController {
     public void nextCardAndNotify() {
         FlashcardDTO next = studyService.nextCard();
         if (next != null) {
-            currentCardObservable.notifyListeners(next);
+            getCurrentCardObservable().notifyListeners(next);
         } else {
             endSession(true);
-            sessionFinishedObservable.notifyListeners(true);
+            getSessionFinishedObservable().notifyListeners(true);
         }
     }
 
@@ -60,7 +58,7 @@ public class StudyController {
         studyService.endSession();
         if (notifyView) {
             DeckDTO updated = studyService.getDeckProgress();
-            if (updated != null) deckProgressObservable.notifyListeners(updated);
+            if (updated != null) getDeckProgressObservable().notifyListeners(updated);
         }
     }
 }

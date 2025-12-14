@@ -1,21 +1,29 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.dto.TagDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.Duration;
 
 public class DeckCard extends JPanel {
     JLabel infoLabel;
     JButton studyButton = new JButton("Start");
+    DeckDTO deck;
+    Timer countdownTimer;
 
-    public DeckCard(DeckDTO deck, ActionListener onStudyClick, String countdown) {
+    public DeckCard(DeckDTO deck, ActionListener onStudyClick, Duration timeLeft) {
+
+        this.deck = deck;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         setPreferredSize(new Dimension(220, 150));
+
+        countdownTimer = new Timer(0, e -> updateCountdown());
 
         // --- Top Panel (Tag + Titel + Progress) ---
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -35,6 +43,8 @@ public class DeckCard extends JPanel {
             tagLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
             tagPanel.add(tagLabel);
         }
+
+
         topPanel.add(tagPanel, BorderLayout.WEST);
 
         // --- Titel centrerad ---
@@ -106,5 +116,8 @@ public class DeckCard extends JPanel {
 
         add(centerPanel, BorderLayout.CENTER);
         add(studyButton, BorderLayout.SOUTH);
+    }
+    private void updateCountdown(){
+
     }
 }

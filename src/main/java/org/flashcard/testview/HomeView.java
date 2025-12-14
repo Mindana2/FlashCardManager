@@ -1,6 +1,7 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.controllers.observer.Observer;
@@ -11,12 +12,12 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class HomeView extends JPanel implements Observer<List<DeckDTO>>, TimerListener {
+public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
 
     private final DeckController deckController;
     private final UserController userController;
     private final AppFrame appFrame;
-    private String countdown;
+
 
     private JPanel gridPanel;
 
@@ -74,26 +75,27 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, TimerLi
                     .filter(d -> d.getTagDTO() != null && tagId.equals(d.getTagDTO().getId()))
                     .toList();
         }
-//        for (DeckDTO deck : notDueDecks){
-//            gridPanel.add(new DeckCard(deck,
-//                    e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
-//            }
+        for (DeckDTO deck : notDueDecks){
+            Duration timeLeft = deckController.timeUntilDue(deck.getId());
+            gridPanel.add(new DeckCard(deck,
+                    e -> appFrame.startStudySession(deck.getId(), "today"), timeLeft));
+            }
 //            else {
 //                gridPanel.add(new DeckCard(deck,
-//                        e -> appFrame.startStudySession(deck.getId(), "today"), countdown));
+//                        e -> appFrame.startStudySession(deck.getId(), "today"), timeLeft));
 //            }
 //        }
 
-        if (dueDecks.isEmpty()) {
-            JLabel lbl = new JLabel("No cards to study today!");
-            lbl.setHorizontalAlignment(SwingConstants.CENTER);
-            gridPanel.add(lbl);
-        } else {
-            for (DeckDTO deck : dueDecks) {
-                gridPanel.add(new DeckCard(deck,
-                        e -> appFrame.startStudySession(deck.getId(), "today"), ""));
-            }
-        }
+//        if (dueDecks.isEmpty()) {
+//            JLabel lbl = new JLabel("No cards to study today!");
+//            lbl.setHorizontalAlignment(SwingConstants.CENTER);
+//            gridPanel.add(lbl);
+//        } else {
+//            for (DeckDTO deck : dueDecks) {
+//                gridPanel.add(new DeckCard(deck,
+//                        e -> appFrame.startStudySession(deck.getId(), "today"), ""));
+//            }
+//        }
 
         gridPanel.revalidate();
         gridPanel.repaint();
@@ -106,10 +108,10 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, TimerLi
     }
 
 
-    @Override
-    public void updateTime(String countdown) {
-        this.countdown = countdown;
-        gridPanel.revalidate();
-        gridPanel.repaint();
-    }
+//    @Override
+//    public void updateTime(String countdown) {
+//        this.countdown = countdown;
+//        gridPanel.revalidate();
+//        gridPanel.repaint();
+//    }
 }

@@ -4,16 +4,9 @@ package org.flashcard.models.timers;
 
 
 import org.flashcard.models.dataclasses.CardLearningState;
-import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Flashcard;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -59,6 +52,9 @@ public class ReviewCountdownTimer {
     public void addTimerListener(TimerListener listener){
         listeners.add(listener);
     }
+    public List<TimerListener> getListeners(){
+        return listeners;
+    }
     public Duration showCountdown(){
         return timeLeft;
     }
@@ -67,8 +63,7 @@ public class ReviewCountdownTimer {
         long hours = timeLeft.toHours();
         long minutes = timeLeft.toMinutes();
         long seconds = timeLeft.toSeconds();
-        String countdown = String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        if (timeLeft.isZero()) ;
+        countdown = String.format("%02d:%02d:%02d", hours, minutes, seconds);
         for (TimerListener listener : listeners){
             listener.updateTime(countdown);
         }

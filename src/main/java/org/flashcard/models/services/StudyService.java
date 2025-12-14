@@ -4,6 +4,7 @@ import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.mapper.DeckMapper;
 import org.flashcard.application.mapper.FlashcardMapper;
+import org.flashcard.controllers.observer.Observable;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Flashcard;
 import org.flashcard.models.dataclasses.User;
@@ -27,6 +28,9 @@ public class StudyService {
     private final FlashcardRepository flashcardRepository;
     private final DeckRepository deckRepository;
     private final UserRepository userRepository;
+    private final Observable<FlashcardDTO> currentCardObservable = new Observable<>();
+    private final Observable<Boolean> sessionFinishedObservable = new Observable<>();
+    private final Observable<DeckDTO> deckProgressObservable = new Observable<>();
 
     private StudySession currentSession;
 
@@ -37,7 +41,17 @@ public class StudyService {
         this.deckRepository = deckRepository;
         this.userRepository = userRepository;
     }
+    public Observable<FlashcardDTO> getCurrentCardObservable() {
+        return currentCardObservable;
+    }
 
+    public Observable<Boolean> getSessionFinishedObservable() {
+        return sessionFinishedObservable;
+    }
+
+    public Observable<DeckDTO> getDeckProgressObservable() {
+        return deckProgressObservable;
+    }
     public void startSession(String algorithmStrategy, int deckId, int userId) {
         User currentUser = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));

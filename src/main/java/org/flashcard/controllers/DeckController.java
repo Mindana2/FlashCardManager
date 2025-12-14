@@ -10,37 +10,29 @@ import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.progress.FlashcardProgression;
 import org.flashcard.models.progress.DeckProgression;
+import org.flashcard.models.services.DeckService;
 import org.flashcard.models.timers.ReviewCountdownTimer;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
 import org.flashcard.repositories.UserRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Controller;
 import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service
-@Transactional
+@Controller
 public class DeckController {
 
     // Observer pattern implementation
-    private final Observable<List<DeckDTO>> decksObservable = new Observable<>();
-    private final Observable<List<FlashcardDTO>> flashcardsObservable = new Observable<>();
+    private DeckService deckService;
 
-    public Observable<List<DeckDTO>> getDecksObservable() {
-        return decksObservable;
-    }
-
-    public Observable<List<FlashcardDTO>> getFlashcardsObservable() {
-        return flashcardsObservable;
-    }
 
 
     private final DeckRepository deckRepo;
@@ -60,181 +52,53 @@ public class DeckController {
         this.tagRepo = tagRepo;
 
     }
+    public Observable<List<DeckDTO>> getDecksObservable() {
+        return deckService.getDecksObservable();
+    }
 
-
-
-
+    public Observable<List<FlashcardDTO>> getFlashcardsObservable() {
+        return deckService.getFlashcardsObservable();
+    }
     // --- Deck CRUD ---
 
     public DeckDTO createDeck(Integer userId, String title) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        Deck deck = new Deck(title, user);
-        Deck savedDeck = deckRepo.save(deck);
-
-        DeckDTO dto = DeckMapper.toDTO(savedDeck);
-
-        // --------------------------------------------------------------------
-        // OBSERVER: notify deck list changed
-        decksObservable.notifyListeners(getAllDecksForUser(userId));
-        // --------------------------------------------------------------------
-
-        return dto;
+        return deckService.createDeck(userId, title);
     }
 
 
     public TagDTO assignTagToDeck(Integer deckId, Integer tagId) {
-        Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
-        Tag tag = tagRepo.findById(tagId)
-                .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
-
-        deck.setTag(tag);
-
-
-        decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
-
-
-        return TagMapper.toDTO(tag);
+        return deckService.assignTagToDeck(deckId, tagId);
     }
 
     public List<DeckDTO> getAllDecksForUser(Integer userId) {
-        List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
-
-        return userDecks.stream()
-                .map(deck -> {
-                    // Get cards for deck
-                    List<Flashcard> cards = flashcardRepo.findByDeck(deck);
-                    deck.setCards(cards);
-
-                    // Calculate progression
-                    double progress = DeckProgression.calculateDeckProgression(deck);
-                    deck.setDeckProgress(new DeckProgress(progress));
-
-                    // Count cards
-                    long cardCount = cards.size();
-
-                    return DeckMapper.toDTO(deck, (int) cardCount);
-                })
-                .collect(Collectors.toList());
+        return deckService.getAllDecksForUser(userId);
     }
 
 
     public DeckDTO getDeckById(Integer deckId) {
-        Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-        return DeckMapper.toDTO(deck);
+        return deckService.getDeckById(deckId);
     }
 
     public List<DeckDTO> getDueDecksForUser(Integer userId) {
-        List<Deck> userDecks = deckRepo.findByUserId(userId);
-
-        return userDecks.stream()
-                .map(deck -> {
-                    // Uppdatera deck progress dynamiskt
-                    double progressPercent = DeckProgression.calculateDeckProgression(deck);
-                    deck.setDeckProgress(new DeckProgress(progressPercent));
-
-                    long dueCount = 0;
-                    if (deck.getCards() != null) {
-                        dueCount = deck.getCards().stream()
-                                .filter(this::isCardDue)
-                                .count();
-                    }
-
-                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount); // nu innehåller deckProgress
-                    return dto;
-                })
-                .filter(dto -> dto.getDueCount() > 0)
-                .collect(Collectors.toList());
+        return deckService.getDueDecksForUser(userId);
     }
+
     public List<DeckDTO> getNotDueDecksForUser(Integer userId) {
-        List<Deck> userDecks = deckRepo.findByUserId(userId);
-
-        return userDecks.stream()
-                .map(deck -> {
-                    // Uppdatera deck progress dynamiskt
-                    double progressPercent = DeckProgression.calculateDeckProgression(deck);
-                    deck.setDeckProgress(new DeckProgress(progressPercent));
-
-                    long dueCount = 0;
-                    if (deck.getCards() != null) {
-                        dueCount = deck.getCards().stream()
-                                .filter(this::isCardDue)
-                                .count();
-                    }
-
-                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount); // nu innehåller deckProgress
-                    return dto;
-                })
-                .filter(dto -> dto.getDueCount() == 0)
-                .collect(Collectors.toList());
-    }
-
-
-    private boolean isCardDue(Flashcard card) {
-        CardLearningState state = card.getCardLearningState();
-        return state == null || state.isDueToday();
+        return deckService.getNotDueDecksForUser(userId);
     }
 
     public DeckDTO updateDeck(Integer deckId, String newTitle, Integer newTagId) {
-        Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
-        if (newTitle != null && !newTitle.isBlank()) {
-            deck.setTitle(newTitle);
-        }
-
-        if (newTagId != null) {
-            Tag tag = tagRepo.findById(newTagId)
-                    .orElseThrow(() -> new IllegalArgumentException("Tag not found"));
-            deck.setTag(tag);
-        } else {
-            deck.setTag(null);
-        }
-
-        Deck savedDeck = deckRepo.save(deck);
-        DeckDTO dto = DeckMapper.toDTO(savedDeck);
-
-        decksObservable.notifyListeners(getAllDecksForUser(deck.getUser().getId()));
-
-
-        return dto;
+        return deckService.updateDeck(deckId, newTitle, newTagId);
     }
 
     public void deleteDeck(Integer deckId) {
-
-        Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
-        Integer userId = deck.getUser().getId();
-
-        deckRepo.deleteById(deckId);
-
-
-        decksObservable.notifyListeners(getAllDecksForUser(userId));
-
+        deckService.deleteDeck(deckId);
     }
 
     // --- Flashcard CRUD ---
 
     public FlashcardDTO addFlashcard(Integer deckId, String front, String back) {
-
-        Deck deck = deckRepo.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
-        Flashcard card = new Flashcard(front, back, deck);
-        Flashcard savedCard = flashcardRepo.save(card);
-
-        FlashcardDTO dto = FlashcardMapper.toDTO(savedCard);
-
-
-        flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
-
-
-        return dto;
+        return deckService.addFlashcard(deckId, front, back);
     }
 
     public boolean deckExists(Integer userId, String title) {
@@ -242,90 +106,29 @@ public class DeckController {
     }
 
     public List<FlashcardDTO> getFlashcardsForDeck(Integer deckId) {
-        List<Flashcard> cards = flashcardRepo.findByDeckId(deckId);
-        return cards.stream().map(FlashcardMapper::toDTO).collect(Collectors.toList());
+        return deckService.getFlashcardsForDeck(deckId);
     }
 
     public FlashcardDTO updateFlashcard(Integer cardId, String newFront, String newBack) {
-
-        Flashcard card = flashcardRepo.findById(cardId)
-                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-
-        if (newFront != null && !newFront.isBlank()) card.setFront(newFront);
-        if (newBack != null && !newBack.isBlank()) card.setBack(newBack);
-
-        Flashcard savedCard = flashcardRepo.save(card);
-
-
-        flashcardsObservable.notifyListeners(
-                getFlashcardsForDeck(savedCard.getDeck().getId())
-        );
-        // --------------------------------------------------------------------
-
-        return FlashcardMapper.toDTO(savedCard);
+        return deckService.updateFlashcard(cardId, newFront, newBack);
     }
 
     public void deleteFlashcard(Integer cardId) {
-
-        Flashcard card = flashcardRepo.findById(cardId)
-                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-
-        Integer deckId = card.getDeck().getId();
-
-        flashcardRepo.deleteById(cardId);
-
-
-        flashcardsObservable.notifyListeners(getFlashcardsForDeck(deckId));
-
+        deckService.deleteFlashcard(cardId);
     }
 
     // Search / Filter
     public List<DeckDTO> searchDecks(Integer userId, String searchText, Integer tagId) {
-
-        List<DeckDTO> all = getAllDecksForUser(userId);
-
-        return all.stream()
-                // Filtrate after Deck Title (SearchBar)
-                .filter(d -> {
-                    if (searchText == null || searchText.isBlank()) return true;
-                    return d.getTitle().toLowerCase().contains(searchText.toLowerCase());
-                })
-
-                // Tag Filter (Dropdown)
-                .filter(d -> {
-                    if (tagId == null) return true; // (All Tags)
-                    if (d.getTagDTO() == null) return false;
-                    return d.getTagDTO().getId() == tagId;
-                })
-
-                .toList();
+        return deckService.searchDecks(userId, searchText, tagId);
     }
     public long showEstimatedDate(String rating, int cardID){
-        Flashcard flashcard = flashcardRepo.findById(cardID)
-                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-        RatingStrategy strategy = StrategyFactory.createStrategy(rating);
-
-        CardLearningState state = flashcard.getCardLearningState();
-        return FlashcardProgression.estimateDate(strategy, state);
+        return deckService.showEstimatedDate(rating, cardID);
     }
-    public FlashcardDTO getNextReviewableCard(int deckID){
-
-        Deck deck = deckRepo.findById(deckID)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-        Flashcard nextCard = deck.getCards().stream()
-                .filter(card -> card.getCardLearningState().getNextReviewDate().isAfter(LocalDateTime.now()))
-                .min(Comparator.comparing(card -> card.getCardLearningState().getNextReviewDate()))
-                .orElseThrow(() -> new IllegalStateException("No future review card found"));
-
-
-        return FlashcardMapper.toDTO(nextCard);
+//    public Flashcard getNextReviewableCard(int deckID){
+//        return deckService.getNextReviewableCard(deckID);
+//    }
+    public Duration timeUntilDue(int deckID){
+        return deckService.timeUntilDue(deckID);
     }
-    public void startReviewCountdown(int deckID){
-        Deck deck = deckRepo.findById(deckID)
-        Flashcard flashcard = flashcardRepo.findById(cardID)
-                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-        Deck deck = flashcardRepo.
-        ReviewCountdownTimer countdownTimer = deck.getReviewCountdownTimer();
-        countdownTimer.startCountdown(flashcard);
-    }
+
 }

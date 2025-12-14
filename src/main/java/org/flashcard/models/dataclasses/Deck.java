@@ -47,7 +47,6 @@ public class Deck {
     @Transient
     private DeckProgress deckProgress;
 
-    private ReviewCountdownTimer reviewCountdownTimer;
 
     // Constructors
     public Deck() {}
@@ -79,7 +78,6 @@ public class Deck {
 
     public DeckProgress getDeckProgress() { return deckProgress; }
     public void setDeckProgress(DeckProgress deckProgress) { this.deckProgress = deckProgress; }
-    public ReviewCountdownTimer getReviewCountdownTimer(){ return this.reviewCountdownTimer;}
 
     public void invalidateProgress() { this.deckProgress = null; }
 }
