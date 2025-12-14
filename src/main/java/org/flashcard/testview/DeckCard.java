@@ -9,11 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.Duration;
 
+
 public class DeckCard extends JPanel {
     JLabel infoLabel;
     JButton studyButton = new JButton("Start");
     DeckDTO deck;
     Timer countdownTimer;
+
+    private JButton studyButton;
 
     public DeckCard(DeckDTO deck, ActionListener onStudyClick, Duration timeLeft) {
 
@@ -21,7 +24,7 @@ public class DeckCard extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        setPreferredSize(new Dimension(220, 150));
+        setPreferredSize(new Dimension(220, 192));
 
         countdownTimer = new Timer(0, e -> updateCountdown());
 
@@ -86,25 +89,16 @@ public class DeckCard extends JPanel {
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // --- Action Button ---
-
-
+        studyButton = new JButton("Start");
         studyButton.setBackground(new Color(60, 120, 240));
         studyButton.setForeground(Color.WHITE);
         studyButton.setFocusPainted(false);
         studyButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        studyButton.addActionListener(onStudyClick);
-//        if ("".equals(countdown) && ) {
-//
-//        }
-//
-//        else {
-//            infoLabel = new JLabel("Time until next review: " + countdown);
-//            infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
-//            infoLabel.setForeground(new Color(100, 100, 100));
-//            infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-//            setBackground(Color.GRAY);
 
-//        }
+        // Lägg till ActionListener om den inte är null
+        if (onStudyClick != null) {
+            studyButton.addActionListener(onStudyClick);
+        }
 
 
         // --- Center panel ---
@@ -117,6 +111,35 @@ public class DeckCard extends JPanel {
         add(centerPanel, BorderLayout.CENTER);
         add(studyButton, BorderLayout.SOUTH);
     }
+
+    // Ny konstruktor för inaktiverat kort med nedräkningstext
+    public DeckCard(
+            DeckDTO deck,
+            ActionListener onStudyClick,
+            boolean disabled,
+            String countdownText
+    ) {
+        this(deck, onStudyClick); // återanvänd befintlig konstruktor
+
+        if (disabled) {
+            setBackground(new Color(103, 97, 97));
+
+            studyButton.setEnabled(false);
+            studyButton.setBackground(new Color(103, 97, 97));
+            studyButton.setForeground(Color.DARK_GRAY);
+            studyButton.setCursor(Cursor.getDefaultCursor());
+            studyButton.setText(" ");
+
+            JLabel countdownLabel = new JLabel(countdownText, SwingConstants.CENTER);
+            countdownLabel.setFont(new Font("SansSerif", Font.ITALIC, 14)); // ⬅ större font
+            countdownLabel.setForeground(new Color(255, 255, 255));          // ⬅ tydligare färg
+
+
+            add(countdownLabel, BorderLayout.CENTER);
+        }
+
+    }
+
     private void updateCountdown(){
 
     }

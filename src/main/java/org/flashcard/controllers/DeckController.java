@@ -124,6 +124,27 @@ public class DeckController {
     public long showEstimatedDate(String rating, int cardID){
         return deckService.showEstimatedDate(rating, cardID);
     }
+
+    // Get all decks with due cards at Home view
+    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
+        List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
+
+        return userDecks.stream()
+                .map(deck -> {
+                    List<Flashcard> cards = flashcardRepo.findByDeck(deck);
+                    deck.setCards(cards);
+
+                    double progress = DeckProgression.calculateDeckProgression(deck);
+                    deck.setDeckProgress(new DeckProgress(progress));
+
+                    long dueCount = cards.stream()
+                            .filter(this::isCardDue)
+                            .count();
+
+                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount);
+                    return dto;
+                })
+                .collect(Collectors.toList());
 //    public Flashcard getNextReviewableCard(int deckID){
 //        return deckService.getNextReviewableCard(deckID);
 //    }
