@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "CardLearningState")
@@ -57,7 +58,10 @@ public class CardLearningState {
     public LocalDateTime getNextReviewDate() { return nextReviewDate; }
     public void setNextReviewDate(LocalDateTime nextReviewDate) { this.nextReviewDate = nextReviewDate; }
 
-    public BigDecimal getIntervalBetweenReviews() { return intervalBetweenReviews; }
+    public BigDecimal getIntervalBetweenReviews() {
+        intervalBetweenReviews = BigDecimal.valueOf(ChronoUnit.SECONDS.between(lastReviewDate, nextReviewDate));
+        return intervalBetweenReviews;
+    }
     public void setIntervalBetweenReviews(BigDecimal intervalBetweenReviews) { this.intervalBetweenReviews = intervalBetweenReviews; }
 
     public Integer getNumberOfTimesViewed() { return numberOfTimesViewed; }

@@ -1,19 +1,32 @@
 package org.flashcard.testview;
 
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.dto.TagDTO;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.time.Duration;
+
 
 public class DeckCard extends JPanel {
+    JLabel infoLabel;
+    JButton studyButton = new JButton("Start");
+    DeckDTO deck;
+    Timer countdownTimer;
 
-    public DeckCard(DeckDTO deck, ActionListener onStudyClick) {
+    private JButton studyButton;
+
+    public DeckCard(DeckDTO deck, ActionListener onStudyClick, Duration timeLeft) {
+
+        this.deck = deck;
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        setPreferredSize(new Dimension(220, 150));
+        setPreferredSize(new Dimension(220, 192));
+
+        countdownTimer = new Timer(0, e -> updateCountdown());
 
         // --- Top Panel (Tag + Titel + Progress) ---
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -33,6 +46,8 @@ public class DeckCard extends JPanel {
             tagLabel.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
             tagPanel.add(tagLabel);
         }
+
+
         topPanel.add(tagPanel, BorderLayout.WEST);
 
         // --- Titel centrerad ---
@@ -66,19 +81,25 @@ public class DeckCard extends JPanel {
 
         add(topPanel, BorderLayout.NORTH);
 
-        // --- Info (Due Count) ---
-        JLabel infoLabel = new JLabel("Total Cards: " + deck.getDueCount());
+        // --- Info (Due Count or Next review) ---
+
+        infoLabel = new JLabel("Total Cards: " + deck.getDueCount());
         infoLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
         infoLabel.setForeground(new Color(100, 100, 100));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // --- Action Button ---
-        JButton studyButton = new JButton("Start");
+        studyButton = new JButton("Start");
         studyButton.setBackground(new Color(60, 120, 240));
         studyButton.setForeground(Color.WHITE);
         studyButton.setFocusPainted(false);
         studyButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        studyButton.addActionListener(onStudyClick);
+
+        // Lägg till ActionListener om den inte är null
+        if (onStudyClick != null) {
+            studyButton.addActionListener(onStudyClick);
+        }
+
 
         // --- Center panel ---
         JPanel centerPanel = new JPanel(new GridLayout(2, 1));
@@ -89,5 +110,37 @@ public class DeckCard extends JPanel {
 
         add(centerPanel, BorderLayout.CENTER);
         add(studyButton, BorderLayout.SOUTH);
+    }
+
+    // Ny konstruktor för inaktiverat kort med nedräkningstext
+    public DeckCard(
+            DeckDTO deck,
+            ActionListener onStudyClick,
+            boolean disabled,
+            String countdownText
+    ) {
+        this(deck, onStudyClick); // återanvänd befintlig konstruktor
+
+        if (disabled) {
+            setBackground(new Color(103, 97, 97));
+
+            studyButton.setEnabled(false);
+            studyButton.setBackground(new Color(103, 97, 97));
+            studyButton.setForeground(Color.DARK_GRAY);
+            studyButton.setCursor(Cursor.getDefaultCursor());
+            studyButton.setText(" ");
+
+            JLabel countdownLabel = new JLabel(countdownText, SwingConstants.CENTER);
+            countdownLabel.setFont(new Font("SansSerif", Font.ITALIC, 14)); // ⬅ större font
+            countdownLabel.setForeground(new Color(255, 255, 255));          // ⬅ tydligare färg
+
+
+            add(countdownLabel, BorderLayout.CENTER);
+        }
+
+    }
+
+    private void updateCountdown(){
+
     }
 }

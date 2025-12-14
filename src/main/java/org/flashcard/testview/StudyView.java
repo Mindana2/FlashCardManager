@@ -91,7 +91,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         nextButton.setBackground(new Color(60, 120, 240));
         nextButton.setForeground(Color.WHITE);
         nextButton.setFont(new Font("SansSerif", Font.BOLD, 16));
-        nextButton.addActionListener(e -> studyController.nextCard());
+        nextButton.addActionListener(e -> studyController.nextCardAndNotify());
         nextButton.setVisible(false);
 
         controlsPanel.add(showAnswerButton);
@@ -166,7 +166,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
     private void applyRating(String rating) {
         try {
             studyController.applyRating(rating, currentCard.getId());
-            studyController.nextCard();
+            studyController.nextCardAndNotify();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error while rating: " + e.getMessage());
         }

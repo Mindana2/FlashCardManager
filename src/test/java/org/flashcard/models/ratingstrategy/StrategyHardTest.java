@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,8 +47,8 @@ class StrategyHardTest {
 
     @Test
     void updateReviewState_WithPreviousReview_ShouldMultiplyInterval() {
-        LocalDate lastReview = LocalDate.now().minusDays(4);
-        LocalDate nextReview = LocalDate.now();
+        LocalDateTime lastReview = LocalDateTime.now().minusDays(4);
+        LocalDateTime nextReview = LocalDateTime.now();
         state.setLastReviewDate(lastReview);
         state.setNextReviewDate(nextReview);
         state.setNumberOfTimesViewed(2);

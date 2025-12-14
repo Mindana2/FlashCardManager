@@ -2,128 +2,63 @@ package org.flashcard.controllers;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
-import org.flashcard.application.mapper.DeckMapper;
-import org.flashcard.application.mapper.FlashcardMapper;
-import org.flashcard.models.dataclasses.Deck;
-import org.flashcard.models.dataclasses.Flashcard;
-import org.flashcard.models.dataclasses.User;
-import org.flashcard.models.ratingstrategy.RatingStrategy;
-import org.flashcard.models.ratingstrategy.StrategyFactory;
-import org.flashcard.models.studysession.StudyAlgorithm;
-import org.flashcard.models.studysession.StudyAlgorithmFactory;
-import org.flashcard.models.studysession.StudySession;
-import org.flashcard.repositories.DeckRepository;
-import org.flashcard.repositories.FlashcardRepository;
-import org.flashcard.repositories.UserRepository;
-
+import org.flashcard.models.services.StudyService;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
 import org.flashcard.controllers.observer.Observable;
 
 @Controller
-@Transactional
 public class StudyController {
 
-    private final FlashcardRepository flashcardRepository;
-    private final DeckRepository deckRepository;
-    private final UserRepository userRepository;
+    private final StudyService studyService;
 
 
 
-    private StudySession currentSession;
+    public StudyController(StudyService studyService) {
+        this.studyService = studyService;
+    }
 
-    // Observer-variabler för att notifiera view om förändringar
-    private final Observable<FlashcardDTO> currentCardObservable = new Observable<>();
-    private final Observable<Boolean> sessionFinishedObservable = new Observable<>();
-    private final Observable<DeckDTO> deckProgressObservable = new Observable<>();
-
-    // Getter-metoder för observables
     public Observable<FlashcardDTO> getCurrentCardObservable() {
-        return currentCardObservable;
+        return studyService.getCurrentCardObservable();
     }
 
     public Observable<Boolean> getSessionFinishedObservable() {
-        return sessionFinishedObservable;
+        return studyService.getSessionFinishedObservable();
     }
+
     public Observable<DeckDTO> getDeckProgressObservable() {
-        return deckProgressObservable;
+        return studyService.getDeckProgressObservable();
     }
 
-
-
-    public StudyController(FlashcardRepository flashcardRepository,
-                           DeckRepository deckRepository,
-                           UserRepository userRepository) {
-        this.flashcardRepository = flashcardRepository;
-        this.deckRepository = deckRepository;
-        this.userRepository = userRepository;
-    }
-
-    // Start a study session for a given deck and user
     public void startSession(String algorithmStrategy, int deckId, int userId) {
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        studyService.startSession(algorithmStrategy, deckId, userId);
 
-        Deck currentDeck = deckRepository.findById(deckId)
-                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
-
-        List<Flashcard> cards = flashcardRepository.findByDeck(currentDeck);
-        currentDeck.setCards(cards);
-
-        StudyAlgorithm algorithm = StudyAlgorithmFactory.createAlgorithm(algorithmStrategy.toLowerCase());
-        currentSession = new StudySession(currentDeck, currentUser, algorithm);
-        currentSession.startSession();
-
-
-        FlashcardDTO first = nextCard(); // nextCard() already notifies observers
-        if (first == null) {
-            sessionFinishedObservable.notifyListeners(true);
+        FlashcardDTO first = studyService.nextCard();
+        if (first != null) {
+            getCurrentCardObservable().notifyListeners(first);
+        } else {
+            getSessionFinishedObservable().notifyListeners(true);
         }
     }
 
-    // Apply a rating to a specific card in the current session
     public void applyRating(String rating, int cardId) {
-        Flashcard flashcard = flashcardRepository.findById(cardId)
-                .orElseThrow(() -> new IllegalArgumentException("Flashcard not found"));
-
-        RatingStrategy selectedStrategy = StrategyFactory.createStrategy(rating);
-        selectedStrategy.updateReviewState(flashcard);
-
-        flashcardRepository.save(flashcard);
+        studyService.applyRating(rating, cardId);
     }
 
-    public FlashcardDTO nextCard() {
-        Flashcard flashCard = (currentSession == null) ? null : currentSession.getNextCardAndRemove();
-
-        if (flashCard == null) {
+    public void nextCardAndNotify() {
+        FlashcardDTO next = studyService.nextCard();
+        if (next != null) {
+            getCurrentCardObservable().notifyListeners(next);
+        } else {
             endSession(true);
-            sessionFinishedObservable.notifyListeners(true);
-            return null;
+            getSessionFinishedObservable().notifyListeners(true);
         }
-
-        FlashcardDTO dto = FlashcardMapper.toDTO(flashCard);
-
-        // Notifiera view om nytt kort
-        currentCardObservable.notifyListeners(dto);
-
-        return dto;
     }
 
     public void endSession(boolean notifyView) {
-        if (currentSession != null) {
-            currentSession.endSession();
-
-            if (notifyView) {
-                DeckDTO updatedDeck = DeckMapper.toDTO(currentSession.getDeck());
-                deckProgressObservable.notifyListeners(updatedDeck);
-            }
-
-            currentSession = null;
+        studyService.endSession();
+        if (notifyView) {
+            DeckDTO updated = studyService.getDeckProgress();
+            if (updated != null) getDeckProgressObservable().notifyListeners(updated);
         }
     }
-
-
 }
