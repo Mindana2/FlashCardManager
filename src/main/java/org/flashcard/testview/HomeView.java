@@ -3,6 +3,7 @@ package org.flashcard.testview;
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.DeckController;
+import org.flashcard.controllers.FilterController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.controllers.observer.Observer;
 import org.flashcard.models.timers.TimerListener;
@@ -16,14 +17,17 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
 
     private final DeckController deckController;
     private final UserController userController;
+    private final FilterController filterController;
     private final AppFrame appFrame;
 
 
     private JPanel gridPanel;
 
-    public HomeView(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public HomeView(DeckController deckController, UserController userController,
+                    FilterController filterController, AppFrame appFrame) {
         this.deckController = deckController;
         this.userController = userController;
+        this.filterController = filterController;
         this.appFrame = appFrame;
 
         deckController.getDecksObservable().addListener(this);

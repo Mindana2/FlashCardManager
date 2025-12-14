@@ -55,14 +55,6 @@ public class DeckController {
         return deckService.getDeckById(deckId);
     }
 
-    public List<DeckDTO> getDueDecksForUser(Integer userId) {
-        return deckService.getDueDecksForUser(userId);
-    }
-
-    public List<DeckDTO> getNotDueDecksForUser(Integer userId) {
-        return deckService.getNotDueDecksForUser(userId);
-    }
-
     public DeckDTO updateDeck(Integer deckId, String newTitle, Integer newTagId) {
         return deckService.updateDeck(deckId, newTitle, newTagId);
     }
@@ -94,9 +86,6 @@ public class DeckController {
     }
 
     // Search / Filter
-    public List<DeckDTO> searchDecks(Integer userId, String searchText, Integer tagId) {
-        return deckService.searchDecks(userId, searchText, tagId);
-    }
     public long showEstimatedDate(String rating, int cardID){
         return deckService.showEstimatedDate(rating, cardID);
     }
@@ -104,6 +93,9 @@ public class DeckController {
     // Get all decks with due cards at Home view
     public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
         return deckService.getAllDecksWithDueInfo(userId);
+    }
+    public List<DeckDTO> getNotDueDecksForUser(int userID){
+        return deckService.getNotDueDecksForUser(userID);
     }
 //    public Flashcard getNextReviewableCard(int deckID){
 //        return deckService.getNextReviewableCard(deckID);

@@ -1,9 +1,6 @@
 package org.flashcard;
 
-import org.flashcard.controllers.DeckController;
-import org.flashcard.controllers.StudyController;
-import org.flashcard.controllers.TagController;
-import org.flashcard.controllers.UserController;
+import org.flashcard.controllers.*;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.User;
 import org.flashcard.models.timers.ReviewCountdownTimer;
@@ -33,9 +30,11 @@ public class Main {
             DeckController deckController = context.getBean(DeckController.class);
             StudyController studyController = context.getBean(StudyController.class);
             TagController tagController = context.getBean(TagController.class);
+            FilterController filterController = context.getBean(FilterController.class);
 
             // Start View
-            AppFrame frame = new AppFrame(userController, studyController, deckController, tagController);
+            AppFrame frame = new AppFrame(userController, studyController, deckController,
+                    tagController, filterController);
             frame.setVisible(true);
 
 
