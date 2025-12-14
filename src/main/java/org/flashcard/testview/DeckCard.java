@@ -15,10 +15,11 @@ public class DeckCard extends JPanel {
     JButton studyButton = new JButton("Start");
     DeckDTO deck;
     Timer countdownTimer;
+    Duration timeLeft;
+    JLabel countdownLabel = new JLabel();
+    String countdownText;
 
-    private JButton studyButton;
-
-    public DeckCard(DeckDTO deck, ActionListener onStudyClick, Duration timeLeft) {
+    public DeckCard(DeckDTO deck, ActionListener onStudyClick) {
 
         this.deck = deck;
         setLayout(new BorderLayout());
@@ -26,7 +27,7 @@ public class DeckCard extends JPanel {
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         setPreferredSize(new Dimension(220, 192));
 
-        countdownTimer = new Timer(0, e -> updateCountdown());
+
 
         // --- Top Panel (Tag + Titel + Progress) ---
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -117,10 +118,15 @@ public class DeckCard extends JPanel {
             DeckDTO deck,
             ActionListener onStudyClick,
             boolean disabled,
-            String countdownText
+            String countdownText,
+            Duration timeLeft
+
     ) {
         this(deck, onStudyClick); // återanvänd befintlig konstruktor
-
+        this.timeLeft = timeLeft;
+        this.countdownText = countdownText;
+        countdownTimer = new Timer(1000, e -> updateCountdown());
+        countdownTimer.start();
         if (disabled) {
             setBackground(new Color(103, 97, 97));
 
@@ -130,7 +136,7 @@ public class DeckCard extends JPanel {
             studyButton.setCursor(Cursor.getDefaultCursor());
             studyButton.setText(" ");
 
-            JLabel countdownLabel = new JLabel(countdownText, SwingConstants.CENTER);
+            countdownLabel = new JLabel(countdownText, SwingConstants.CENTER);
             countdownLabel.setFont(new Font("SansSerif", Font.ITALIC, 14)); // ⬅ större font
             countdownLabel.setForeground(new Color(255, 255, 255));          // ⬅ tydligare färg
 
@@ -141,6 +147,15 @@ public class DeckCard extends JPanel {
     }
 
     private void updateCountdown(){
-
+        timeLeft = timeLeft.minusSeconds(1);
+        if (timeLeft.isNegative() || timeLeft.isZero()){
+            countdownLabel.setText(countdownText + "00:00:00");
+            countdownTimer.stop();
+        } else{
+        long hours = timeLeft.toHours();
+        long minutes = timeLeft.toMinutesPart();
+        long seconds = timeLeft.toSecondsPart();
+        countdownLabel.setText(countdownText + hours +":"+ minutes + ":" + seconds);
+        }
     }
 }

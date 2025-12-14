@@ -140,6 +140,26 @@ public class DeckService {
                 .filter(dto -> dto.getDueCount() > 0)
                 .collect(Collectors.toList());
     }
+    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
+        List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
+
+        return userDecks.stream()
+                .map(deck -> {
+                    List<Flashcard> cards = flashcardRepo.findByDeck(deck);
+                    deck.setCards(cards);
+
+                    double progress = DeckProgression.calculateDeckProgression(deck);
+                    deck.setDeckProgress(new DeckProgress(progress));
+
+                    long dueCount = cards.stream()
+                            .filter(this::isCardDue)
+                            .count();
+
+                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
     public List<DeckDTO> getNotDueDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
 
@@ -311,6 +331,7 @@ public class DeckService {
         return nextCard;
 
     }
+
 
     public Duration timeUntilDue(int deckID) {
         Flashcard flashcard = getNextReviewableCard(deckID);

@@ -61,7 +61,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
         //List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
 
         // Hämta ALLA decks med due-info
-        List<DeckDTO> decks = deckController.getAllDecksWithDueInfo(userId);
+        List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
         List<DeckDTO> notDueDecks = deckController.getNotDueDecksForUser(userId);
 
         // Applicera sökfilter om text finns
@@ -87,36 +87,32 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
                 .toList();
 
 
-        if (decks.isEmpty()) {
-            JLabel lbl = new JLabel("No cards to study today!");
-            lbl.setHorizontalAlignment(SwingConstants.CENTER);
-            gridPanel.add(lbl);
-        } else {
-            for (DeckDTO deck : decks) {
+//        if (decks.isEmpty()) {
+//            JLabel lbl = new JLabel("No cards to study today!");
+//            lbl.setHorizontalAlignment(SwingConstants.CENTER);
+//            gridPanel.add(lbl);
+//        }
 
-                boolean isActive = deck.getDueCount() > 0; // ✅ HÄR
+        for (DeckDTO deck : decks) {
+            gridPanel.add(new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "today")));
+        }
 
-                if (isActive) {
-                    gridPanel.add(
-                            new DeckCard(
-                                    deck,
-                                    e -> appFrame.startStudySession(deck.getId(), "today")
-                            )
-                    );
-                } else {
-                    gridPanel.add(
-                            new DeckCard(
-                                    deck,
-                                    null,
-                                    true,
-                                    "Next Card available in X days"
-                            )
-                    );
-                }
-            }
+        for(DeckDTO notDueDeck : notDueDecks){
+            Duration timeLeft = deckController.timeUntilDue(notDueDeck.getId());
+            gridPanel.add(
+                    new DeckCard(
+                            notDueDeck,
+                            null,
+                            true,
+                            "Next Card available in: ",
+                            timeLeft));
+
+        }
+
+
 //            else {
 //                gridPanel.add(new DeckCard(deck,
-//                        e -> appFrame.startStudySession(deck.getId(), "today"), timeLeft));
+//        }              e -> appFrame.startStudySession(deck.getId(), "today"), timeLeft));
 //            }
 //        }
 
