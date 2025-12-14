@@ -1,10 +1,9 @@
 package org.flashcard.testview;
 
-import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.dto.DeckDTO;
+import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.UserController;
-
 import org.flashcard.controllers.observer.Observer;
 
 import javax.swing.*;
@@ -22,14 +21,21 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
     private JLabel headerLabel;
     private JPanel cardsListPanel;
     private JScrollPane cardsScroll;
+
     private JTextField newFrontField;
     private JTextField newBackField;
     private JButton addCardButton;
+
     private JButton deleteDeckButton;
     private JButton backButton;
+    private JButton doneButton;
+
     private JLabel statusLabel;
 
-    public EditDeckView(DeckController deckController, UserController userController, AppFrame appFrame) {
+    public EditDeckView(DeckController deckController,
+                        UserController userController,
+                        AppFrame appFrame) {
+
         this.deckController = deckController;
         this.userController = userController;
         this.appFrame = appFrame;
@@ -43,6 +49,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
 
     private void initComponents() {
 
+        /* ===== TOP BAR ===== */
         JPanel top = new JPanel(new BorderLayout());
         top.setBackground(new Color(245, 245, 245));
         top.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
@@ -55,98 +62,120 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
         headerLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         top.add(headerLabel, BorderLayout.CENTER);
 
+        JPanel topRight = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        topRight.setBackground(new Color(245, 245, 245));
+
         deleteDeckButton = new JButton("Delete Deck");
         deleteDeckButton.setBackground(new Color(220, 60, 60));
         deleteDeckButton.setForeground(Color.WHITE);
         deleteDeckButton.addActionListener(e -> confirmAndDeleteDeck());
-        top.add(deleteDeckButton, BorderLayout.EAST);
+        topRight.add(deleteDeckButton);
 
+        doneButton = new JButton("Done");
+        doneButton.setFont(new Font("SansSerif", Font.BOLD, 13));
+        doneButton.setBackground(new Color(65, 105, 225));
+        doneButton.setForeground(Color.WHITE);
+        doneButton.addActionListener(e -> appFrame.navigateTo("MyDecks"));
+        topRight.add(doneButton);
+
+        top.add(topRight, BorderLayout.EAST);
         add(top, BorderLayout.NORTH);
 
+        /* ===== FLASHCARDS OVERVIEW ===== */
         cardsListPanel = new JPanel();
         cardsListPanel.setLayout(new BoxLayout(cardsListPanel, BoxLayout.Y_AXIS));
         cardsListPanel.setBackground(Color.WHITE);
-        cardsListPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        cardsListPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         cardsScroll = new JScrollPane(cardsListPanel);
         cardsScroll.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220)));
         cardsScroll.getVerticalScrollBar().setUnitIncrement(14);
-        add(cardsScroll, BorderLayout.CENTER);
 
-        JPanel bottom = new JPanel();
-        bottom.setLayout(new BoxLayout(bottom, BoxLayout.Y_AXIS));
-        bottom.setBackground(new Color(245, 245, 245));
-        bottom.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
+        JPanel overviewPanel = new JPanel(new BorderLayout());
+        overviewPanel.setBackground(Color.WHITE);
 
-        JPanel form = new JPanel(new GridBagLayout());
-        form.setBackground(new Color(245, 245, 245));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6,6,6,6);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JLabel overviewLabel = new JLabel("Flashcards");
+        overviewLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        overviewLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
-        gbc.gridx = 0; gbc.gridy = 0; gbc.weightx = 0;
-        form.add(new JLabel("Front Side:"), gbc);
+        overviewPanel.add(overviewLabel, BorderLayout.NORTH);
+        overviewPanel.add(cardsScroll, BorderLayout.CENTER);
+
+        /* ===== CREATE FLASHCARD PANEL ===== */
+        JPanel createPanel = new JPanel();
+        createPanel.setLayout(new BoxLayout(createPanel, BoxLayout.Y_AXIS));
+        createPanel.setBackground(Color.WHITE);
+        createPanel.setBorder(BorderFactory.createEmptyBorder(24, 24, 24, 24));
+
+        JLabel createTitle = new JLabel("Create Flashcard");
+        createTitle.setFont(new Font("SansSerif", Font.BOLD, 18));
+        createPanel.add(createTitle);
+        createPanel.add(Box.createVerticalStrut(18));
+
+        JLabel frontLabel = new JLabel("Front (Question)");
+        createPanel.add(frontLabel);
+
         newFrontField = new JTextField();
-        gbc.gridx = 1; gbc.gridy = 0; gbc.weightx = 1;
-        form.add(newFrontField, gbc);
+        newFrontField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        createPanel.add(newFrontField);
+        createPanel.add(Box.createVerticalStrut(14));
 
-        gbc.gridx = 0; gbc.gridy = 1; gbc.weightx = 0;
-        form.add(new JLabel("Back Side:"), gbc);
+        JLabel backLabel = new JLabel("Back (Answer)");
+        createPanel.add(backLabel);
+
         newBackField = new JTextField();
-        gbc.gridx = 1; gbc.gridy = 1; gbc.weightx = 1;
-        form.add(newBackField, gbc);
+        newBackField.setMaximumSize(new Dimension(Integer.MAX_VALUE, 38));
+        createPanel.add(newBackField);
+        createPanel.add(Box.createVerticalStrut(22));
 
         addCardButton = new JButton("+ Add Card");
-        addCardButton.setPreferredSize(new Dimension(150, 36));
         addCardButton.setBackground(new Color(60, 160, 80));
         addCardButton.setForeground(Color.WHITE);
         addCardButton.addActionListener(e -> handleAddCard());
-
-        JPanel formRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
-        formRow.setBackground(new Color(245, 245, 245));
-        formRow.add(addCardButton);
-
-        bottom.add(form);
-        bottom.add(formRow);
+        createPanel.add(addCardButton);
+        createPanel.add(Box.createVerticalStrut(10));
 
         statusLabel = new JLabel(" ");
-        statusLabel.setFont(new Font("SansSerif", Font.PLAIN, 12));
         statusLabel.setForeground(new Color(0, 120, 0));
-        statusLabel.setBorder(BorderFactory.createEmptyBorder(8,0,0,0));
-        bottom.add(statusLabel);
+        createPanel.add(statusLabel);
 
-        add(bottom, BorderLayout.SOUTH);
+        /* ===== SPLIT PANE ===== */
+        JSplitPane splitPane = new JSplitPane(
+                JSplitPane.HORIZONTAL_SPLIT,
+                overviewPanel,
+                createPanel
+        );
+        splitPane.setResizeWeight(0.6);
+        splitPane.setDividerSize(6);
+        splitPane.setBorder(null);
+
+        add(splitPane, BorderLayout.CENTER);
     }
 
+    /* ===== PUBLIC API ===== */
     public void loadDeck(int deckId) {
-        try {
-            currentDeck = deckController.getDeckById(deckId);
-            headerLabel.setText("Edit: " + currentDeck.getTitle());
-            statusLabel.setText("Loaded deck ID " + currentDeck.getId());
-            refreshCardsList();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Couldn't load deck: " + e.getMessage());
-        }
+        currentDeck = deckController.getDeckById(deckId);
+        headerLabel.setText("Edit: " + currentDeck.getTitle());
+        refreshCardsList();
     }
 
+    /* ===== LOGIC ===== */
     private void refreshCardsList() {
         cardsListPanel.removeAll();
 
-        if (currentDeck == null) {
-            cardsListPanel.revalidate();
-            cardsListPanel.repaint();
-            return;
-        }
-
-        List<FlashcardDTO> cards = deckController.getFlashcardsForDeck(currentDeck.getId());
+        List<FlashcardDTO> cards =
+                deckController.getFlashcardsForDeck(currentDeck.getId());
 
         if (cards.isEmpty()) {
-            JLabel empty = new JLabel("No cards in this deck. Add one below.");
-            empty.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
-            cardsListPanel.add(empty);
+            JLabel emptyLabel = new JLabel("No cards yet.", SwingConstants.CENTER);
+            emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            emptyLabel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
+            cardsListPanel.add(emptyLabel);
         } else {
-            for (FlashcardDTO c : cards) {
-                cardsListPanel.add(cardRowFor(c));
+            // Lägg nya kort överst
+            for (int i = cards.size() - 1; i >= 0; i--) {
+                cardsListPanel.add(cardRowFor(cards.get(i)));
+                cardsListPanel.add(Box.createVerticalStrut(8));
             }
         }
 
@@ -155,118 +184,60 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
     }
 
     private JPanel cardRowFor(FlashcardDTO card) {
-        JPanel row = new JPanel(new BorderLayout(8,8));
+        JPanel row = new JPanel(new BorderLayout());
+        row.setMaximumSize(new Dimension(400, 80)); // bestämd storlek
+        row.setPreferredSize(new Dimension(400, 80));
         row.setBackground(Color.WHITE);
-        row.setBorder(BorderFactory.createMatteBorder(0,0,1,0, new Color(230,230,230)));
+        row.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(220, 220, 220)),
+                BorderFactory.createEmptyBorder(8, 8, 8, 8)
+        ));
 
-        JPanel text = new JPanel();
-        text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
-        text.setBackground(Color.WHITE);
-
-        JLabel front = new JLabel("<html><b>Q:</b> " + safe(card.getFront()) + "</html>");
-        JLabel back = new JLabel("<html><b>A:</b> " + safe(card.getBack()) + "</html>");
-
-        front.setBorder(BorderFactory.createEmptyBorder(6,6,6,6));
-        back.setBorder(BorderFactory.createEmptyBorder(0,6,6,6));
-
-        text.add(front);
-        text.add(back);
-
-        JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 6));
-        actions.setBackground(Color.WHITE);
+        JLabel text = new JLabel("<html><b>Q:</b> " + card.getFront()
+                + "<br><b>A:</b> " + card.getBack() + "</html>");
+        row.add(text, BorderLayout.CENTER);
 
         JButton deleteBtn = new JButton("Delete");
-        deleteBtn.setBackground(new Color(220,60,60));
         deleteBtn.setForeground(Color.WHITE);
+        deleteBtn.setBackground(new Color(220, 60, 60));
+        deleteBtn.setFocusPainted(false);
         deleteBtn.addActionListener(e -> confirmAndDeleteCard(card.getId()));
-        actions.add(deleteBtn);
-
-        row.add(text, BorderLayout.CENTER);
-        row.add(actions, BorderLayout.EAST);
+        row.add(deleteBtn, BorderLayout.EAST);
 
         return row;
     }
 
-    private String safe(String s) {
-        return s == null ? "" : s;
-    }
-
     private void handleAddCard() {
-        if (currentDeck == null) {
-            JOptionPane.showMessageDialog(this, "No deck selected.");
-            return;
-        }
+        deckController.addFlashcard(
+                currentDeck.getId(),
+                newFrontField.getText(),
+                newBackField.getText()
+        );
 
-        String front = newFrontField.getText().trim();
-        String back = newBackField.getText().trim();
-
-        if (front.isBlank() || back.isBlank()) {
-            JOptionPane.showMessageDialog(this, "Both fields required.");
-            return;
-        }
-
-        try {
-            deckController.addFlashcard(currentDeck.getId(), front, back);
-
-            newFrontField.setText("");
-            newBackField.setText("");
-            statusLabel.setText("Card added.");
-
-            currentDeck = deckController.getDeckById(currentDeck.getId());
-            refreshCardsList();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Couldn't add card: " + ex.getMessage());
-        }
+        newFrontField.setText("");
+        newBackField.setText("");
+        refreshCardsList();
     }
 
     private void confirmAndDeleteCard(Integer cardId) {
-        int res = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to delete this card?",
-                "Confirm deletion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
-
-        if (res == JOptionPane.YES_OPTION) {
-            try {
-                deckController.deleteFlashcard(cardId);
-                statusLabel.setText("Card deleted.");
-
-                currentDeck = deckController.getDeckById(currentDeck.getId());
-                refreshCardsList();
-
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Couldn't delete card: " + ex.getMessage());
-            }
+        if (JOptionPane.showConfirmDialog(this, "Delete card?",
+                "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            deckController.deleteFlashcard(cardId);
+            refreshCardsList();
         }
     }
 
     private void confirmAndDeleteDeck() {
-        if (currentDeck == null) return;
-
-        int res = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure? This will delete the deck and all cards.",
-                "Confirm deletion",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
-
-        if (res == JOptionPane.YES_OPTION) {
-            try {
-                deckController.deleteDeck(currentDeck.getId());
-                JOptionPane.showMessageDialog(this, "Deck deleted.");
-                appFrame.navigateTo("MyDecks");
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Couldn't delete deck: " + e.getMessage());
-            }
+        if (JOptionPane.showConfirmDialog(this,
+                "Delete deck and all cards?",
+                "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            deckController.deleteDeck(currentDeck.getId());
+            appFrame.navigateTo("MyDecks");
         }
     }
 
     @Override
-    public void notify(List<FlashcardDTO> updatedCards) {
+    public void notify(List<FlashcardDTO> flashcardDTOS) {
         SwingUtilities.invokeLater(this::refreshCardsList);
     }
 }

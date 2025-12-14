@@ -92,24 +92,30 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>> {
                 .toList();
         //Lägger till decks i vyn
         for (DeckDTO deck : allDecks) {
-            //Lägger till decks som kan spelas
+            // Hoppa över decks utan kort
+            if (deck.getCardCount() == 0) continue;
+
             if (deck.getDueCount() > 0) {
-                gridPanel.add(new DeckCard(deck, e -> appFrame.startStudySession(deck.getId(), "today")));
-            }
-             else {
-                 //Lägger till decks som inte kan spelas med en countdown timer
+                // Aktiva decks med due cards
+                gridPanel.add(new DeckCard(
+                        deck,
+                        DeckCard.DeckCardContext.HOME_VIEW,
+                        e -> appFrame.startStudySession(deck.getId(), "today")
+                ));
+            } else {
+                // Decks med kort men inga due cards -> utgråade med countdown
                 Duration timeLeft = deckController.timeUntilDue(deck.getId());
-                gridPanel.add(
-                        new DeckCard(
-                                deck,
-                                null,
-                                true,
-                                "Next Card available in: ",
-                                timeLeft,
-                                deckController
-                        ));
-             }
+                gridPanel.add(new DeckCard(
+                        deck,
+                        null,
+                        true,
+                        "Next Card available in: ",
+                        timeLeft,
+                        deckController
+                ));
+            }
         }
+
 
 
 
