@@ -1,6 +1,6 @@
 package org.flashcard.models.dataclasses;
 import jakarta.persistence.*;
-import org.flashcard.models.timers.ReviewCountdownTimer;
+
 
 import java.time.LocalDate;
 import java.util.List;

@@ -4,6 +4,7 @@ import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.dto.TagDTO;
 import org.flashcard.controllers.DeckController;
+import org.flashcard.models.timers.CountdownListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +21,7 @@ public class DeckCard extends JPanel {
     JLabel countdownLabel = new JLabel();
     String countdownText;
     DeckController deckController;
+    CountdownListener listener;
 
     public DeckCard(DeckDTO deck, ActionListener onStudyClick) {
 
@@ -122,7 +124,8 @@ public class DeckCard extends JPanel {
             boolean disabled,
             String countdownText,
             Duration timeLeft,
-            DeckController deckController
+            DeckController deckController,
+            CountdownListener listener
 
     ) {
         this(deck, onStudyClick); // återanvänd befintlig konstruktor
@@ -130,6 +133,7 @@ public class DeckCard extends JPanel {
         this.deck = deck;
         this.countdownText = countdownText;
         this.deckController = deckController;
+        this.listener = listener;
         countdownTimer = new Timer(1000, e -> updateCountdown());
         countdownTimer.start();
         if (disabled) {
@@ -156,6 +160,8 @@ public class DeckCard extends JPanel {
         if (timeLeft.isNegative() || timeLeft.isZero()){
             countdownLabel.setText(countdownText + "00:00:00");
             countdownTimer.stop();
+            deckController.updateDeckCards(listener);
+
         } else{
         long hours = timeLeft.toHours();
         long minutes = timeLeft.toMinutesPart();

@@ -12,7 +12,7 @@ import org.flashcard.models.progress.DeckProgression;
 import org.flashcard.models.progress.FlashcardProgression;
 import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
-import org.flashcard.models.timers.ReviewCountdownTimer;
+
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
@@ -31,9 +31,10 @@ import java.util.stream.Collectors;
 @Transactional
 public class DeckService {
     private final Observable<List<DeckDTO>> decksObservable = new Observable<>();
+    private final Observable<DeckDTO> deckObservable = new Observable<>();
     private final Observable<List<FlashcardDTO>> flashcardsObservable = new Observable<>();
-    private final List<ReviewCountdownTimer> timers = new ArrayList<>();
-    private ReviewCountdownTimer countdownTimer;
+//    private final List<ReviewCountdownTimer> timers = new ArrayList<>();
+//    private ReviewCountdownTimer countdownTimer;
     private final DeckRepository deckRepo;
     private final FlashcardRepository flashcardRepo;
     private final UserRepository userRepo;
@@ -48,6 +49,9 @@ public class DeckService {
         this.userRepo = userRepo;
         this.tagRepo = tagRepo;
 
+    }
+    public Observable<DeckDTO> getDeckObservable() {
+        return deckObservable;
     }
     public Observable<List<DeckDTO>> getDecksObservable() {
         return decksObservable;
