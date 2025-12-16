@@ -78,6 +78,20 @@ public class DeckService {
         return dto;
     }
 
+    public void resetDeckProgression(Integer deckId) {
+        Deck deck = deckRepo.findById(deckId)
+                .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
+
+        List<Flashcard> cards = deck.getCards();
+
+        cards.forEach(card -> {
+            if (card.getCardLearningState() != null) {
+                card.getCardLearningState().updateDates(0);
+                flashcardRepo.save(card);
+            }
+        });
+    }
+
 
     public TagDTO assignTagToDeck(Integer deckId, Integer tagId) {
         Deck deck = deckRepo.findById(deckId)

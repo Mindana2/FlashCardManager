@@ -30,7 +30,5 @@ public class ReviewCountdownTimerTest {
     void testingCountdownFeature(){
         flashcard.getCardLearningState().setNextReviewDate(LocalDateTime.of(2025, 12, 13, 20, 16, 0));
         timer.startCountdown(flashcard);
-
-
     }
 }

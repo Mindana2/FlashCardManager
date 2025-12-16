@@ -84,6 +84,10 @@ public class DeckController {
         deckService.deleteFlashcard(cardId);
     }
 
+    public void resetDeckProgression(Integer deckId) {
+        deckService.resetDeckProgression(deckId);
+    }
+
     // Search / Filter
     public long showEstimatedDate(String rating, int cardID){
         return deckService.showEstimatedDate(rating, cardID);
