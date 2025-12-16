@@ -87,7 +87,7 @@ public class AppFrame extends JFrame {
     }
 
     public void navigateTo(String view) {
-        if ("Home".equals(view)) homeView.refreshData(null, null);
+        if ("Home".equals(view)) homeView.refreshData(null,null);
         if ("MyDecks".equals(view)) myDecksView.refreshData(null, null);
 
         cardLayout.show(mainContentPanel, view);

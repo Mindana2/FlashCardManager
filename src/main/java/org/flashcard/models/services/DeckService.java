@@ -12,7 +12,7 @@ import org.flashcard.models.progress.DeckProgression;
 import org.flashcard.models.progress.FlashcardProgression;
 import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
-import org.flashcard.models.timers.ReviewCountdownTimer;
+
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
 import org.flashcard.repositories.TagRepository;
@@ -31,9 +31,10 @@ import java.util.stream.Collectors;
 @Transactional
 public class DeckService {
     private final Observable<List<DeckDTO>> decksObservable = new Observable<>();
+    private final Observable<DeckDTO> deckObservable = new Observable<>();
     private final Observable<List<FlashcardDTO>> flashcardsObservable = new Observable<>();
-    private final List<ReviewCountdownTimer> timers = new ArrayList<>();
-    private ReviewCountdownTimer countdownTimer;
+//    private final List<ReviewCountdownTimer> timers = new ArrayList<>();
+//    private ReviewCountdownTimer countdownTimer;
     private final DeckRepository deckRepo;
     private final FlashcardRepository flashcardRepo;
     private final UserRepository userRepo;
@@ -48,6 +49,9 @@ public class DeckService {
         this.userRepo = userRepo;
         this.tagRepo = tagRepo;
 
+    }
+    public Observable<DeckDTO> getDeckObservable() {
+        return deckObservable;
     }
     public Observable<List<DeckDTO>> getDecksObservable() {
         return decksObservable;
@@ -93,6 +97,7 @@ public class DeckService {
 
     public List<DeckDTO> getAllDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
+        LocalDateTime now = LocalDateTime.now();
 
         return userDecks.stream()
                 .map(deck -> {
@@ -103,7 +108,7 @@ public class DeckService {
                     deck.setDeckProgress(new DeckProgress(progress));
 
                     long dueCount = cards.stream()
-                            .filter(this::isCardDue)
+                            .filter(flashcard -> isCardDue(flashcard, now))
                             .count();
 
                     DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount);
@@ -121,7 +126,7 @@ public class DeckService {
 
     public List<DeckDTO> getDueDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
-
+        LocalDateTime now = LocalDateTime.now();
         return userDecks.stream()
                 .map(deck -> {
                     // Uppdatera deck progress dynamiskt
@@ -131,7 +136,7 @@ public class DeckService {
                     long dueCount = 0;
                     if (deck.getCards() != null) {
                         dueCount = deck.getCards().stream()
-                                .filter(this::isCardDue)
+                                .filter(flashcard -> isCardDue(flashcard, now))
                                 .count();
                     }
 
@@ -141,29 +146,10 @@ public class DeckService {
                 .filter(dto -> dto.getDueCount() > 0)
                 .collect(Collectors.toList());
     }
-//    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
-//        List<Deck> userDecks = deckRepo.findByUserIdWithTag(userId);
-//
-//        return userDecks.stream()
-//                .map(deck -> {
-//                    List<Flashcard> cards = flashcardRepo.findByDeck(deck);
-//                    deck.setCards(cards);
-//
-//                    double progress = DeckProgression.calculateDeckProgression(deck);
-//                    deck.setDeckProgress(new DeckProgress(progress));
-//
-//                    long dueCount = cards.stream()
-//                            .filter(this::isCardDue)
-//                            .count();
-//
-//                    DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount);
-//                    return dto;
-//                })
-//                .collect(Collectors.toList());
-//    }
+
     public List<DeckDTO> getNotDueDecksForUser(Integer userId) {
         List<Deck> userDecks = deckRepo.findByUserId(userId);
-
+        LocalDateTime now = LocalDateTime.now();
         return userDecks.stream()
                 .map(deck -> {
                     // Uppdatera deck progress dynamiskt
@@ -173,7 +159,7 @@ public class DeckService {
                     long dueCount = 0;
                     if (deck.getCards() != null) {
                         dueCount = deck.getCards().stream()
-                                .filter(this::isCardDue)
+                                .filter(flashcard -> isCardDue(flashcard, now))
                                 .count();
                     }
 
@@ -185,9 +171,9 @@ public class DeckService {
     }
 
 
-    private boolean isCardDue(Flashcard card) {
+    private boolean isCardDue(Flashcard card, LocalDateTime now) {
         CardLearningState state = card.getCardLearningState();
-        return state == null || state.isDueToday();
+        return state == null || state.isDueToday(now);
     }
 
     public DeckDTO updateDeck(Integer deckId, String newTitle, Integer newTagId) {
@@ -319,23 +305,33 @@ public class DeckService {
         CardLearningState state = flashcard.getCardLearningState();
         return FlashcardProgression.estimateDate(strategy, state);
     }
-    private Flashcard getNextReviewableCard(int deckID){
+    private Flashcard getNextReviewableCard(int deckID, LocalDateTime now){
         Deck deck = deckRepo.findById(deckID)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
         return deck.getCards().stream()
                 .filter(card -> card.getCardLearningState() != null &&
-                        card.getCardLearningState().getNextReviewDate().isAfter(LocalDateTime.now()))
+                        card.getCardLearningState().getNextReviewDate().isAfter(now))
                 .min(Comparator.comparing(card -> card.getCardLearningState().getNextReviewDate()))
                 .orElse(null);
     }
 
     public Duration timeUntilDue(int deckID) {
-        Flashcard flashcard = getNextReviewableCard(deckID);
-        if(flashcard == null){
+        Deck deck = deckRepo.findById(deckID)
+                .orElseThrow(() -> new IllegalArgumentException("Deck Not Found"));
+        LocalDateTime now = LocalDateTime.now();
+        long dueCount = 0;
+        if (deck.getCards() != null) {
+            dueCount = deck.getCards().stream()
+                    .filter(flashcard -> isCardDue(flashcard, now))
+                    .count();
+        }
+        Flashcard flashcard = getNextReviewableCard(deckID, now);
+        if (flashcard == null || dueCount > 0){
             return Duration.ZERO;
         }
-        return Duration.between(LocalDateTime.now(), flashcard.getCardLearningState().getNextReviewDate());
+
+        return Duration.between(now, flashcard.getCardLearningState().getNextReviewDate());
     }
 
 }
