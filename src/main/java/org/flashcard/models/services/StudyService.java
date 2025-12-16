@@ -36,7 +36,8 @@ public class StudyService {
 
     public StudyService(FlashcardRepository flashcardRepository,
                         DeckRepository deckRepository,
-                        UserRepository userRepository) {
+                        UserRepository userRepository
+                        ) {
         this.flashcardRepository = flashcardRepository;
         this.deckRepository = deckRepository;
         this.userRepository = userRepository;
@@ -85,6 +86,7 @@ public class StudyService {
         if (currentSession != null) {
             currentSession.endSession();
             currentSession = null;
+
         }
     }
 

@@ -11,8 +11,12 @@ public abstract class BaseIntervalStrategy implements RatingStrategy {
 
         long daysToAdd = calculateDays(state, getMultiplier());
 
+        daysToAdd = applyExtremeRules(daysToAdd);
+
         state.updateDates(daysToAdd);
     }
+
+    protected abstract long applyExtremeRules(long daysToAdd);
 
     //Helper method
     public static long calculateDays(CardLearningState state, double multiplier) {

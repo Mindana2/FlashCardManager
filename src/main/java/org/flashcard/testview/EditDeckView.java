@@ -101,6 +101,31 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
         overviewPanel.add(overviewLabel, BorderLayout.NORTH);
         overviewPanel.add(cardsScroll, BorderLayout.CENTER);
 
+        /* ===== RESET PROGRESSION BUTTON ===== */
+        JButton resetProgressBtn = new JButton("Reset progression for all cards");
+        resetProgressBtn.setBackground(new Color(65, 105, 225)); // mörkblå
+        resetProgressBtn.setForeground(Color.WHITE);
+        resetProgressBtn.setFocusPainted(false);
+        resetProgressBtn.setFont(new Font("SansSerif", Font.BOLD, 13));
+        resetProgressBtn.addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(this,
+                    "Reset progression for all cards in this deck?",
+                    "Confirm",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                deckController.resetDeckProgression(currentDeck.getId());
+                refreshCardsList();
+            }
+        });
+
+// Centrera knappen i panelen
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        buttonPanel.add(resetProgressBtn);
+
+        overviewPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+
         /* ===== CREATE FLASHCARD PANEL ===== */
         JPanel createPanel = new JPanel();
         createPanel.setLayout(new BoxLayout(createPanel, BoxLayout.Y_AXIS));

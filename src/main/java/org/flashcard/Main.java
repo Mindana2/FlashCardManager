@@ -3,7 +3,7 @@ package org.flashcard;
 import org.flashcard.controllers.*;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.User;
-import org.flashcard.models.timers.ReviewCountdownTimer;
+
 import org.flashcard.testview.AppFrame;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

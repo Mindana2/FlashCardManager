@@ -4,9 +4,11 @@ import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.application.dto.TagDTO;
 import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
+import org.flashcard.controllers.observer.Observer;
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.services.DeckService;
 import org.flashcard.models.services.FlashCardService;
+import org.flashcard.models.timers.CountdownListener;
 import org.flashcard.repositories.DeckRepository;
 import org.springframework.stereotype.Controller;
 import java.time.Duration;
@@ -82,23 +84,22 @@ public class DeckController {
         flashCardService.deleteFlashcard(cardId);
     }
 
+    public void resetDeckProgression(Integer deckId) {
+        deckService.resetDeckProgression(deckId);
+    }
+
     // Search / Filter
     public long showEstimatedDate(String rating, int cardID){
         return flashCardService.showEstimatedDate(rating, cardID);
     }
 
-//    // Get all decks with due cards at Home view
-//    public List<DeckDTO> getAllDecksWithDueInfo(Integer userId) {
-//        return deckService.getAllDecksWithDueInfo(userId);
-//    }
-//    public List<DeckDTO> getNotDueDecksForUser(int userID){
-//        return deckService.getNotDueDecksForUser(userID);
-//    }
-//    public Flashcard getNextReviewableCard(int deckID){
-//        return deckService.getNextReviewableCard(deckID);
-//    }
     public Duration timeUntilDue(int deckID){
         return deckService.timeUntilDue(deckID);
     }
+    public void updateDeckCards(CountdownListener listener){
+        listener.onCountdownFinished();
+
+    }
+
 
 }

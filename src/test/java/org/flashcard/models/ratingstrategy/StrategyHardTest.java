@@ -5,6 +5,7 @@ import org.flashcard.models.dataclasses.Flashcard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -62,5 +63,21 @@ class StrategyHardTest {
         assertEquals(expectedInterval, actualInterval);
 
         assertEquals(3, state.getNumberOfTimesViewed());
+    }
+
+    @Test
+    void testMaximumInterval_shouldNotExceedMaxInterval() {
+        state.setLastReviewDate(LocalDateTime.now().minusDays(40));
+        state.setNextReviewDate(LocalDateTime.now());
+
+        strategy.updateReviewState(flashcard);
+
+
+        //Convert from seconds to days
+        BigDecimal secondsPerDay = new BigDecimal(86400);
+        BigDecimal intervalInDays = state.getIntervalBetweenReviews()
+                .divide(secondsPerDay, 0, BigDecimal.ROUND_HALF_UP);
+
+        assertEquals(new BigDecimal(10),intervalInDays);
     }
 }
