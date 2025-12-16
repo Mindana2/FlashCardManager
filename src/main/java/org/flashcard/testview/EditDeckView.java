@@ -233,11 +233,15 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
     }
 
     private void handleAddCard() {
-        deckController.addFlashcard(
-                currentDeck.getId(),
-                newFrontField.getText(),
-                newBackField.getText()
-        );
+        try {
+            deckController.addFlashcard(
+                    currentDeck.getId(),
+                    newFrontField.getText(),
+                    newBackField.getText()
+            );
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+        }
 
         newFrontField.setText("");
         newBackField.setText("");

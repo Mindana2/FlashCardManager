@@ -7,6 +7,7 @@ import org.flashcard.controllers.observer.Observable;   // <-- OBSERVER
 import org.flashcard.controllers.observer.Observer;
 import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.services.DeckService;
+import org.flashcard.models.services.FlashCardService;
 import org.flashcard.models.timers.CountdownListener;
 import org.flashcard.repositories.DeckRepository;
 import org.springframework.stereotype.Controller;
@@ -16,15 +17,14 @@ import java.util.List;
 @Controller
 public class DeckController {
 
-    // Observer pattern implementation
     private final DeckService deckService;
-    private final DeckRepository deckRepo;
+    private final FlashCardService flashCardService;
 
 
 
-    public DeckController(DeckRepository deckRepo, DeckService deckService) {
+    public DeckController(DeckService deckService, FlashCardService flashCardService) {
         this.deckService = deckService;
-        this.deckRepo = deckRepo;
+        this.flashCardService = flashCardService;
 
     }
     public Observable<List<DeckDTO>> getDecksObservable() {
@@ -32,7 +32,7 @@ public class DeckController {
     }
 
     public Observable<List<FlashcardDTO>> getFlashcardsObservable() {
-        return deckService.getFlashcardsObservable();
+        return flashCardService.getFlashcardsObservable();
     }
     // --- Deck CRUD ---
 
@@ -65,23 +65,23 @@ public class DeckController {
     // --- Flashcard CRUD ---
 
     public FlashcardDTO addFlashcard(Integer deckId, String front, String back) {
-        return deckService.addFlashcard(deckId, front, back);
+        return flashCardService.addFlashcard(deckId, front, back);
     }
 
     public boolean deckExists(Integer userId, String title) {
-        return deckRepo.existsByUserIdAndTitle(userId, title);
+        return deckService.deckExists(userId, title);
     }
 
     public List<FlashcardDTO> getFlashcardsForDeck(Integer deckId) {
-        return deckService.getFlashcardsForDeck(deckId);
+        return flashCardService.getFlashcardsForDeck(deckId);
     }
 
     public FlashcardDTO updateFlashcard(Integer cardId, String newFront, String newBack) {
-        return deckService.updateFlashcard(cardId, newFront, newBack);
+        return flashCardService.updateFlashcard(cardId, newFront, newBack);
     }
 
     public void deleteFlashcard(Integer cardId) {
-        deckService.deleteFlashcard(cardId);
+        flashCardService.deleteFlashcard(cardId);
     }
 
     public void resetDeckProgression(Integer deckId) {
@@ -90,7 +90,7 @@ public class DeckController {
 
     // Search / Filter
     public long showEstimatedDate(String rating, int cardID){
-        return deckService.showEstimatedDate(rating, cardID);
+        return flashCardService.showEstimatedDate(rating, cardID);
     }
 
     public Duration timeUntilDue(int deckID){
