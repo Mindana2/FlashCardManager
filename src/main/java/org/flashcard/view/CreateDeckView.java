@@ -16,7 +16,7 @@ public class CreateDeckView extends JPanel {
     private final DeckController deckController;
     private final UserController userController;
     private final TagController tagController;
-    private final AppFrame appFrame;
+    private final MainFrame mainFrame;
 
     private DeckDTO createdDeck = null;
     private Color selectedTagColor = new Color(0x808080);
@@ -37,11 +37,11 @@ public class CreateDeckView extends JPanel {
     private JLabel headerLabel;
 
     public CreateDeckView(DeckController deckController, UserController userController,
-                          TagController tagController, AppFrame appFrame) {
+                          TagController tagController, MainFrame mainFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.tagController = tagController;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
@@ -256,8 +256,8 @@ public class CreateDeckView extends JPanel {
                     deckController.assignTagToDeck(deck.getId(), t.getId());
                 }
             }
-            appFrame.navigateTo("EditDeck");
-            appFrame.getEditDeckView().loadDeck(deck.getId());
+            mainFrame.navigateTo("EditDeck");
+            mainFrame.getEditDeckView().loadDeck(deck.getId());
 
         } catch (Exception e) {
             showStyledMessage("Error", e.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -282,7 +282,7 @@ public class CreateDeckView extends JPanel {
 
     private void resetAndGoBack() {
         resetFormForNewDeck();
-        appFrame.navigateTo("MyDecks");
+        mainFrame.navigateTo("MyDecks");
     }
 
     private void showStyledMessage(String title, String message, int type) {

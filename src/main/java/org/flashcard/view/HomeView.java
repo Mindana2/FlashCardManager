@@ -16,18 +16,18 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
     private final DeckController deckController;
     private final UserController userController;
     private final FilterController filterController;
-    private final AppFrame appFrame;
+    private final MainFrame mainFrame;
     private List<DeckDTO> allDecks;
 
 
     private JPanel gridPanel;
 
     public HomeView(DeckController deckController, UserController userController,
-                    FilterController filterController, AppFrame appFrame) {
+                    FilterController filterController, MainFrame mainFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.filterController = filterController;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         deckController.getDecksObservable().addListener(this);
         setDecks();
@@ -78,7 +78,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
                 gridPanel.add(new DeckCard(
                         deck,
                         DeckCard.DeckCardContext.HOME_VIEW,
-                        e -> appFrame.startStudySession(deck.getId(), "today")
+                        e -> mainFrame.startStudySession(deck.getId(), "today")
                 ));
             } else {
                 // Decks med kort men inga due cards -> utgråade med countdown

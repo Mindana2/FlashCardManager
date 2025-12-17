@@ -1,7 +1,7 @@
 package org.flashcard;
 
 import org.flashcard.controllers.*;
-import org.flashcard.view.AppFrame;
+import org.flashcard.view.MainFrame;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -27,7 +27,7 @@ public class Main {
             FilterController filterController = context.getBean(FilterController.class);
 
             // Start View
-            AppFrame frame = new AppFrame(userController, studyController, deckController,
+            MainFrame frame = new MainFrame(userController, studyController, deckController,
                     tagController, filterController);
             frame.setVisible(true);
         });

@@ -12,7 +12,7 @@ import java.awt.*;
 public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
     private final StudyController studyController;
-    private final AppFrame appFrame;
+    private final MainFrame mainFrame;
     private final DeckController deckController;
 
     private JTextArea cardTextArea;
@@ -30,10 +30,10 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         if (finished != null && finished) handleSessionFinished();
     };
 
-    public StudyView(StudyController studyController, DeckController deckController, AppFrame appFrame) {
+    public StudyView(StudyController studyController, DeckController deckController, MainFrame mainFrame) {
         this.deckController = deckController;
         this.studyController = studyController;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         studyController.getCurrentCardObservable().addListener(this);
         studyController.getSessionFinishedObservable().addListener(finishedListener);
@@ -182,6 +182,6 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
     // Called when sessionFinishedObservable fires
     private void handleSessionFinished() {
         JOptionPane.showMessageDialog(this, "The session is over!");
-        appFrame.navigateTo("Home");
+        mainFrame.navigateTo("Home");
     }
 }
