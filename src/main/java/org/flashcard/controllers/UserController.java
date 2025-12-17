@@ -3,22 +3,19 @@ package org.flashcard.controllers;
 
 import org.flashcard.application.dto.UserDTO;
 import org.flashcard.models.services.UserService;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
 /* We use Spring Data JPA to access the database.
- * This class is annotated with @Service, which tells Spring
- * that it is a service-layer component.
+ * This class is annotated with @Controller, which tells Spring
+ * that it is a controller-layer component.
  * Spring automatically detects it and creates a bean in the application context,
  * so it can be injected wherever needed.(see main.java)
- * The @Transactional annotation ensures that no database transactions are left unfinished.
- * It automatically aborts any transactions that result in an error.
- * This allows us to write logic without manually handling database transactions.
  */
-@Service
-@Transactional
+@Controller
 public class UserController {
 
 

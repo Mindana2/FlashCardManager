@@ -10,7 +10,12 @@ import org.flashcard.models.timers.CountdownListener;
 import org.springframework.stereotype.Controller;
 import java.time.Duration;
 import java.util.List;
-
+/* We use Spring Data JPA to access the database.
+ * This class is annotated with @Controller, which tells Spring
+ * that it is a controller-layer component.
+ * Spring automatically detects it and creates a bean in the application context,
+ * so it can be injected wherever needed.(see main.java)
+ */
 @Controller
 public class DeckController {
 

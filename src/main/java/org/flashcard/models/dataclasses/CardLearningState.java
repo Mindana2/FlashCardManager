@@ -6,6 +6,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+/* Our dataclasses also take use of Spring Framework.
+ * @Entity denotes that this class represents the "Decks" table in the database.
+ * Spring can then use this class to map between Java objects and database rows:
+ * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
+ *   1. Reads these annotations to know the table and columns.
+ *   2. Generates the appropriate SQL.
+ *   3. Maps database rows to Deck objects and vice versa.
+ * This helps us reduce the amount of boilerplate SQL we need to write.
+ */
 @Entity
 @Table(name = "CardLearningState")
 public class CardLearningState {
