@@ -13,6 +13,7 @@ import org.flashcard.models.progress.FlashcardProgression;
 import org.flashcard.models.ratingstrategy.RatingStrategy;
 import org.flashcard.models.ratingstrategy.StrategyFactory;
 
+import org.flashcard.models.timers.CountdownListener;
 import org.flashcard.models.timers.TimerModel;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.FlashcardRepository;
@@ -61,9 +62,6 @@ public class DeckService {
         return flashcardsObservable;
     }
 
-    public TimerModel getTimerModel() {
-        return timerModel;
-    }
 
     public DeckDTO createDeck(Integer userId, String title) {
         User user = userRepo.findById(userId)
@@ -296,21 +294,28 @@ public class DeckService {
 
 
 
-    private Flashcard getNextReviewableCard(int deckID, LocalDateTime now){
+    private Flashcard getNextReviewableCard(int deckID){
         Deck deck = deckRepo.findById(deckID)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
 
         return deck.getCards().stream()
                 .filter(card -> card.getCardLearningState() != null &&
-                        card.getCardLearningState().getNextReviewDate().isAfter(now))
+                        card.getCardLearningState().getNextReviewDate().isAfter(LocalDateTime.now()))
                 .min(Comparator.comparing(card -> card.getCardLearningState().getNextReviewDate()))
                 .orElse(null);
     }
 
-    public void updateTimeUntilDue(int deckID, LocalDateTime now) {
-        long dueCount = getDueCount(deckID, now);
-        Flashcard flashcard = getNextReviewableCard(deckID, now);
-        timerModel.updateTimer(flashcard, dueCount, now);
+//    public void updateTimeUntilDue(int deckID, LocalDateTime now) {
+//        long dueCount = getDueCount(deckID, now);
+//        Flashcard flashcard = getNextReviewableCard(deckID, now);
+//        timerModel.updateTimer(flashcard, dueCount, now);
+//        decksObservable.notifyListeners(null);
+//    }
+    public void addTimerListener(CountdownListener listener, int deckID){
+        Flashcard flashcard = getNextReviewableCard(deckID);
+        if (flashcard != null)
+            timerModel.addTimerListener(listener, deckID, flashcard.getCardLearningState().getNextReviewDate());
+        decksObservable.notifyListeners(null);
     }
 
 

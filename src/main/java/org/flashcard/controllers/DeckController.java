@@ -102,8 +102,8 @@ public class DeckController {
     public long getDueCount(int deckID, LocalDateTime now) {
         return deckService.getDueCount(deckID, now);
     }
-    public TimerModel getTimerModel() {
-        return deckService.getTimerModel();
+    public void addTimerListener(CountdownListener listener, int deckID){
+        deckService.addTimerListener(listener, deckID);
     }
 
 

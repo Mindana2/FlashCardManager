@@ -148,7 +148,7 @@ public class DeckCard extends JPanel implements CountdownListener{
         this.deck = deck;
         this.cardAvailableText = "Next Card available in: ";
         this.deckController = deckController;
-        deckController.getTimerModel().addTimerListener(this);
+        deckController.addTimerListener(this, deck.getId());
         countdownTimer = new Timer(1000, e -> updateCountdown());
         countdownTimer.start();
         if (disabled) {
@@ -172,20 +172,20 @@ public class DeckCard extends JPanel implements CountdownListener{
 
         LocalDateTime now = LocalDateTime.now();
         deckController.updateTimeUntilDue(deck.getId(), now);
-        if ("00d : 00h : 00m : 00s".equals(countdownText)) {
-            countdownLabel.setText(cardAvailableText + "00d : 00h : 00m : 00s");
-            countdownTimer.stop();
-            deckController.getDecksObservable().notifyListeners(null);
+        countdownLabel.setText(cardAvailableText + countdownText);
 
-        } else {
-            countdownLabel.setText(cardAvailableText + countdownText);
-        }
     }
     @Override
-    public void notify(String countdown) {
+    public void onTick(String countdown) {
         this.countdownText = countdown;
 
 
+    }
+
+    @Override
+    public void onFinished() {
+        this.countdownText = "00d : 00h : 00m : 00s";
+        countdownTimer.stop();
     }
 
 }
