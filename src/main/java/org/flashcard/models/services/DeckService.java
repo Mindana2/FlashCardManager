@@ -110,13 +110,13 @@ public class DeckService {
 
         return TagMapper.toDTO(tag);
     }
-    public long getDueCount(int deckID, LocalDateTime now){
+    public long getDueCount(int deckID){
         Deck deck = deckRepo.findById(deckID)
                 .orElseThrow(() -> new IllegalArgumentException("Deck not found"));
         long dueCount = 0;
         if (deck.getCards() != null) {
             dueCount = deck.getCards().stream()
-                    .filter(flashcard -> isCardDue(flashcard, now))
+                    .filter(this::isCardDue)
                     .count();
         }
         return dueCount;
@@ -134,7 +134,7 @@ public class DeckService {
                     double progress = DeckProgression.calculateDeckProgression(deck);
                     deck.setDeckProgress(new DeckProgress(progress));
 
-                    long dueCount = getDueCount(deck.getId(), now);
+                    long dueCount = getDueCount(deck.getId());
 
                     DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount);
                     return dto;
@@ -158,7 +158,7 @@ public class DeckService {
                     double progressPercent = DeckProgression.calculateDeckProgression(deck);
                     deck.setDeckProgress(new DeckProgress(progressPercent));
 
-                    long dueCount = getDueCount(deck.getId(), now);
+                    long dueCount = getDueCount(deck.getId());
 
 
                     DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount); // nu innehåller deckProgress
@@ -177,7 +177,7 @@ public class DeckService {
                     double progressPercent = DeckProgression.calculateDeckProgression(deck);
                     deck.setDeckProgress(new DeckProgress(progressPercent));
 
-                    long dueCount = getDueCount(deck.getId(), now);
+                    long dueCount = getDueCount(deck.getId());
 
                     DeckDTO dto = DeckMapper.toDTO(deck, (int) dueCount); // nu innehåller deckProgress
                     return dto;
@@ -187,9 +187,9 @@ public class DeckService {
     }
 
 
-    private boolean isCardDue(Flashcard card, LocalDateTime now) {
+    private boolean isCardDue(Flashcard card) {
         CardLearningState state = card.getCardLearningState();
-        return state == null || state.isDueToday(now);
+        return state == null || state.isDueToday(LocalDateTime.now());
     }
 
     public DeckDTO updateDeck(Integer deckId, String newTitle, Integer newTagId) {
@@ -305,12 +305,9 @@ public class DeckService {
                 .orElse(null);
     }
 
-//    public void updateTimeUntilDue(int deckID, LocalDateTime now) {
-//        long dueCount = getDueCount(deckID, now);
-//        Flashcard flashcard = getNextReviewableCard(deckID, now);
-//        timerModel.updateTimer(flashcard, dueCount, now);
-//        decksObservable.notifyListeners(null);
-//    }
+    public void updateDeckCards(){
+        decksObservable.notifyListeners(null);
+    }
     public void addTimerListener(CountdownListener listener, int deckID){
         Flashcard flashcard = getNextReviewableCard(deckID);
         if (flashcard != null)

@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Controller
-@Transactional
 public class TagController {
 
     private final TagService tagService;

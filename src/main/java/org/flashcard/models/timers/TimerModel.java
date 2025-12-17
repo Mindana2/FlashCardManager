@@ -45,31 +45,27 @@ public class TimerModel {
 //        return listeners;
 //    }
 
-    public void updateTimer(Flashcard flashcard, int deckId) {
-        for (timeLeft : timeLeftPerDeck.get(deckId)){
-            if (timeLeft.isNegative() || timeLeft.isZero()) {
+    public void updateTimer() {
+        for (int deckID : timeLeftPerDeck.keySet()) {
+            if (timeLeftPerDeck.get(deckID).isNegative() || timeLeftPerDeck.get(deckID).isZero()) {
                 this.timeLeft = Duration.ZERO;
-        }
-
-            if (!finishedSent) {
-                this.finishedSent = true;
-               for (CountdownListener listener : listeners){
-                   listener.onFinished();
-               }
-            }
-
-
-        }else{
-            for (CountdownListener listener : listeners) {
                 countdown = format(timeLeft);
-                listener.onTick(countdown);
+                listenersPerDeck.get(deckID).onTick(countdown);
+                listenersPerDeck.get(deckID).onFinished();
 
+            } else {
+                timeLeft = timeLeftPerDeck.get(deckID);
+                countdown = format(timeLeft);
+                listenersPerDeck.get(deckID).onTick(countdown);
+            }
         }
-
-
-        }
-
     }
+
+
+
+
+
+
     private String format(Duration timeLeft){
         long days = timeLeft.toDays();
         long hours = timeLeft.toHoursPart();

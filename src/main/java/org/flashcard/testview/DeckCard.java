@@ -170,22 +170,23 @@ public class DeckCard extends JPanel implements CountdownListener{
 
     private void updateCountdown() {
 
-        LocalDateTime now = LocalDateTime.now();
-        deckController.updateTimeUntilDue(deck.getId(), now);
-        countdownLabel.setText(cardAvailableText + countdownText);
+
+
+
 
     }
     @Override
     public void onTick(String countdown) {
         this.countdownText = countdown;
-
+        countdownLabel.setText(cardAvailableText + countdownText);
 
     }
 
     @Override
     public void onFinished() {
         this.countdownText = "00d : 00h : 00m : 00s";
-        countdownTimer.stop();
+        countdownLabel.setText(cardAvailableText + countdownText);
+        deckController.updateDeckCards();
     }
 
 }

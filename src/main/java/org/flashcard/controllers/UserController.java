@@ -13,6 +13,7 @@ import org.flashcard.models.services.UserService;
 import org.flashcard.repositories.DeckRepository;
 import org.flashcard.repositories.TagRepository;
 import org.flashcard.repositories.UserRepository;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +35,7 @@ import java.util.stream.Collectors;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
-@Service
-@Transactional
+@Controller
 public class UserController {
 
 
