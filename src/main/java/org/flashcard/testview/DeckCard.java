@@ -109,7 +109,12 @@ public class DeckCard extends JPanel {
         if (onStudyClick != null) {
             studyButton.addActionListener(onStudyClick);
         }
-
+        if (deck.getCardCount() == 0) {
+            studyButton.setEnabled(false);
+            studyButton.setBackground(new Color(180, 180, 180));
+            studyButton.setForeground(Color.DARK_GRAY);
+            studyButton.setCursor(Cursor.getDefaultCursor());
+        }
         // --- Center panel ---
         JPanel centerPanel = new JPanel(new GridLayout(2, 1));
         centerPanel.setOpaque(false);
@@ -130,12 +135,12 @@ public class DeckCard extends JPanel {
             CountdownListener listener
 
     ) {
-        this.deck = deck;
-        setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
-        setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-        setPreferredSize(new Dimension(220, 192));
 
+//        setLayout(new BorderLayout());
+//        setBackground(Color.WHITE);
+//        setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
+//        setPreferredSize(new Dimension(220, 192));
+        this (deck, DeckCardContext.HOME_VIEW, null);
         this.timeLeft = timeLeft;
         this.deck = deck;
         this.countdownText = countdownText;
