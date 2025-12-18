@@ -25,6 +25,12 @@ import java.util.stream.Collectors;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
+
+/**
+ * Orchestrates flashcard operations by managing data persistence, enforcing uniqueness
+ * constraints, and calculating review schedules while notifying observers of data changes.
+ */
+
 @Service
 @Transactional
 public class FlashCardService {

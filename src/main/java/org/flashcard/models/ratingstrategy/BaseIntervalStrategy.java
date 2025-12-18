@@ -3,6 +3,11 @@ package org.flashcard.models.ratingstrategy;
 import org.flashcard.models.dataclasses.CardLearningState;
 import org.flashcard.models.dataclasses.Flashcard;
 
+/**
+ * Provides a template for calculating spaced repetition intervals by applying
+ * strategy-specific multipliers and custom scheduling rules to a flashcard's learning state.
+ */
+
 public abstract class BaseIntervalStrategy implements RatingStrategy {
 
     @Override

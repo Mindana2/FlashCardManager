@@ -2,10 +2,12 @@ package org.flashcard.models.ratingstrategy;
 
 
 import java.util.List;
-/*
- * We use Strategy Pattern to calculate the next review date for a flashcard.
- * Depending on what option the user chooses (AGAIN, HARD, MEDIUM, EASY), we use a different strategy.
+/**
+ * Implements the Factory pattern to decouple strategy instantiation from the client,
+ * providing the correct RatingStrategy implementation based on the user's difficulty input.
+ * (AGAIN, HARD, MEDIUM, EASY)
  */
+
 public final class StrategyFactory {
     private StrategyFactory(){
     }

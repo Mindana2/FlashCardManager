@@ -29,6 +29,13 @@ import java.util.List;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
+
+/**
+ * Coordinates the active learning process by managing study sessions, applying
+ * spaced repetition ratings to cards, and providing a reactive bridge between
+ * the study algorithms and the user interface.
+ */
+
 @Service
 @Transactional
 public class StudyService {

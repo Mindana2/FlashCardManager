@@ -7,6 +7,11 @@ import org.flashcard.models.dataclasses.User;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implements a comprehensive study strategy that prepares every flashcard within
+ * a deck for review, regardless of its current mastery level or due date.
+ */
+
 public class StudyAllAlgorithm implements StudyAlgorithm {
     public StudyAllAlgorithm() {}
 

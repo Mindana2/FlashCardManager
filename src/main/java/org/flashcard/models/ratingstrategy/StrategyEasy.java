@@ -1,6 +1,8 @@
 package org.flashcard.models.ratingstrategy;
 
-
+/**
+ * Implements an accelerated learning strategy that aggressively increases review intervals by a factor.
+ */
 
 public class StrategyEasy extends BaseIntervalStrategy {
     @Override

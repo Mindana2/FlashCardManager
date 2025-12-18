@@ -13,6 +13,12 @@ import java.util.List;
  *   3. Maps database rows to Deck objects and vice versa.
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
+
+/**
+ * Acts as the primary container for flashcards, representing a specific collection
+ * owned by a user and optionally categorized by a tag.
+ */
+
 @Entity
 @Table(name = "Decks",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "title"})})

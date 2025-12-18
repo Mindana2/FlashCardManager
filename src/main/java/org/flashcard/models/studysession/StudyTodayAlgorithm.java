@@ -7,6 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implements a focused study strategy that filters a deck to retrieve only the
+ * flashcards that are currently due for review based on their spaced repetition schedule.
+ */
+
 public class StudyTodayAlgorithm implements StudyAlgorithm {
     public StudyTodayAlgorithm() {}
 

@@ -2,7 +2,12 @@ package org.flashcard.application.mapper;
 
 import org.flashcard.application.dto.UserDTO;
 import org.flashcard.models.dataclasses.User;
-//Our Mapper classes converts our data classes to DTOs
+
+/**
+ *Our Mapper classes converts our data classes to DTOs.
+ * This class maps User data class to UserDTO.
+ */
+
 public class UserMapper {
     public static UserDTO toDTO(User user) {
         return new UserDTO(

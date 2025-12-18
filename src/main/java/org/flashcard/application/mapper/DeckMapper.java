@@ -7,7 +7,10 @@ import org.flashcard.models.dataclasses.DeckProgress;
 
 import java.util.List;
 
-//Mapper to transfer from our Deck dataclass to a DeckDTO
+/**
+ *Our Mapper classes converts our data classes to DTOs.
+ * This class maps Deck data class to DeckDTO.
+ */
 
 public class DeckMapper {
 

@@ -11,6 +11,14 @@ import java.util.List;
  * Spring automatically detects it and creates a bean in the application context,
  * so it can be injected wherever needed.(see main.java)
  */
+
+/**
+ * This @Controller works as an intermediary between the View and the Service layer.
+ * It handles user requests, invokes the appropriate methods in the Service layer,
+ * filters a user's decks based on a search string and a specific tag.
+ * and returns the results back to the View.
+ */
+
 @Controller
 public class FilterController {
 

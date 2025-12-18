@@ -13,6 +13,11 @@ import jakarta.persistence.*;
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
 
+/**
+ * Represents a customizable category label that allows users to organize their
+ * flashcard decks using unique titles and hex-based color coding.
+ */
+
 @Entity
 @Table(name = "Tags",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "title"})}) // unique per user

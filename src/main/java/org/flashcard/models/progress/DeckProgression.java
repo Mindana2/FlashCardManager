@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Provides utility logic to calculate a deck's overall mastery percentage by analyzing
+ * the median review interval of its cards against a 30-day target threshold.
+ */
 
 public class DeckProgression {
 

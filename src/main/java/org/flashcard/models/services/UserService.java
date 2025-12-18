@@ -18,6 +18,12 @@ import java.util.stream.Collectors;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
+
+/**
+ * Manages user account lifecycles and maintains the current authentication state,
+ * serving as the primary authority for user creation, retrieval, and active session tracking.
+ */
+
 @Service
 @Transactional
 public class UserService {

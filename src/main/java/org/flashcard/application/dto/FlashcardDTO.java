@@ -1,6 +1,11 @@
 package org.flashcard.application.dto;
-// We use DataTransferObjects to transfer data between layers.
-// This ensures View is read-only.
+
+/**
+ *We use DataTransferObjects to transfer data between layers,
+ *this ensures View is read-only.
+ *This class represents a Flashcard Data Transfer Object.
+ */
+
 public class FlashcardDTO {
     private final int id;
     private final String front;
