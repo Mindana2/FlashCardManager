@@ -67,8 +67,23 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
         gridPanel.removeAll();
 
         Integer userId = userController.getCurrentUserId();
-        if (userId == null) return;
 
+        if (userId == null) {
+            // Show "No user" message
+            JLabel noUserLabel = new JLabel("No user selected");
+            noUserLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            noUserLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+            noUserLabel.setForeground(Color.GRAY);
+            gridPanel.setLayout(new BorderLayout()); // override GridLayout
+            gridPanel.add(noUserLabel, BorderLayout.CENTER);
+
+            gridPanel.revalidate();
+            gridPanel.repaint();
+            return;
+        }
+
+        // Reset to GridLayout if a user exists
+        gridPanel.setLayout(new GridLayout(0, 3, 20, 20));
 
         // Apply search and tag filter
         allDecks = filterController.searchDecks(userId, text, tagId);
@@ -84,16 +99,11 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
         for (DeckDTO deck : allDecks) {
             // Skip over decks with zero cards
             if (deck.getCardCount() == 0) continue;
-            //Get a DeckCard from the HashMap
             DeckCard deckcard = activeDeckCards.get(deck.getId());
 
-            //If deckcard doesn't exist or if the deck is not disabled while having at least 1 card due for today
-            if (deckcard == null || deckcard.isDisabled() == deck.getDueCount() > 0){
-
-                //If the deck already exists, remove it from the listener list
+            if (deckcard == null || deckcard.isDisabled() == deck.getDueCount() > 0) {
                 if (deckcard != null) deckController.removeTimerListener(deckcard);
-                //If the deck is due, make it playable...
-                if (deck.getDueCount() > 0){
+                if (deck.getDueCount() > 0) {
                     deckcard = new DeckCard(
                             deck,
                             DeckCard.DeckCardContext.HOME_VIEW,
@@ -102,16 +112,14 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
 
                 //...else make it unplayable with a countdown
                 } else {
-                    deckcard =  new DeckCard(deck, true, () -> refreshData(text, tagId));
+                    deckcard = new DeckCard(deck, true, () -> refreshData(text, tagId));
                     deckController.addTimerListener(deckcard, deck);
                 }
-                //(Re)place it in the HashMap
                 activeDeckCards.put(deck.getId(), deckcard);
-
             }
             gridPanel.add(deckcard);
-
         }
+
         gridPanel.revalidate();
         gridPanel.repaint();
     }

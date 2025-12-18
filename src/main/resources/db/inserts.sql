@@ -1,126 +1,120 @@
-------------------------------
--- Users
-------------------------------
 INSERT INTO users (username) VALUES
-('Alice'),
-('Bob'),
-('Carol'),
-('Dave'),
-('Tom Jones');
+--Alice is a student at the University of Waterloo
+('Alice'),      -- 1
+--Carol is traveler and geography enthusiast
+('Carol'),      -- 2
+--Tom Jones is a reader and astronomer
+('Tom Jones');  -- 3
 
-------------------------------
--- Tags
-------------------------------
--- Alice's tags (user_id = 1)
+
 INSERT INTO tags (user_id, title, color) VALUES
-(1, 'School', 'FF9900'),
-(1, 'Hobby', 'CC00FF'),
-(1, 'Math', '00FF99');
+(1, 'Math', '99FF99'),              -- 1
+(1, 'Computer Science', 'CC99FF');  -- 2
 
--- Bob's tags (user_id = 2)
+-- Carol's tags
 INSERT INTO tags (user_id, title, color) VALUES
-(2, 'Work', '00CC88'),
-(2, 'Fun', 'FF00CC');
+(2, 'Languages', '3399FF'),         -- 3
+(2, 'Geography', '66CC99');         -- 4
 
--- Carol's tags (user_id = 3)
+-- Tom Jones's tags
 INSERT INTO tags (user_id, title, color) VALUES
-(3, 'Languages', '3399FF'),
-(3, 'Travel', 'FF6633');
+(3, 'Astronomy', '66CC00'),         -- 5
+(3, 'Books', '9900CC');             -- 6
 
--- Dave's tags (user_id = 4)
-INSERT INTO tags (user_id, title, color) VALUES
-(4, 'Fitness', '66CC00'),
-(4, 'Books', '9900CC');
-
-------------------------------
--- Decks
-------------------------------
--- Alice's decks (user_id = 1)
+-- Alice's decks
 INSERT INTO decks (title, user_id, tag_id) VALUES
-('Math Deck', 1, 1),         -- deck_id = 1
-('Science Deck', 1, 1),      -- deck_id = 2
-('Algebra Basics', 1, 3),    -- deck_id = 3
-('Country Capitals', 1, 1);  -- deck_id = 4
+('Linear Algebra', 1, 1),                -- 1 Math
+('Calculus', 1, 1),                       -- 2 Math
+('Java Programming', 1, 2),               -- 3 Computer Science
+('Algorithms & Data Structures', 1, 2);   -- 4 Computer Science
 
--- Bob's decks (user_id = 2)
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Define a vector', 'An object with both magnitude and direction', 1),
+('What is a matrix?', 'A rectangular array of numbers arranged in rows and columns', 1),
+('Determinant of a 2x2 matrix [[a,b],[c,d]]', 'ad - bc', 1),
+('What is a linear transformation?', 'A function that preserves vector addition and scalar multiplication', 1);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Derivative of x^2', '2x', 2),
+('Integral of 1/x dx', 'ln|x| + C', 2),
+('Limit of sin(x)/x as x → 0', '1', 2),
+('d/dx of e^x', 'e^x', 2);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Keyword for inheritance in Java', 'extends', 3),
+('Keyword for interface implementation', 'implements', 3),
+('Print to console in Java', 'System.out.println()', 3),
+('Primitive type for decimals', 'double', 3);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Big-O of binary search', 'O(log n)', 4),
+('FIFO data structure', 'Queue', 4),
+('LIFO data structure', 'Stack', 4),
+('What is a hash table?', 'A data structure that maps keys to values using a hash function', 4);
+
+-- Carol's decks
 INSERT INTO decks (title, user_id, tag_id) VALUES
-('Programming Deck', 2, 3),  -- deck_id = 5
-('Office Terms', 2, 4);      -- deck_id = 6
+('Spanish Vocabulary', 2, 3),   -- 5 Languages
+('Sign Language', 2, 3),        -- 6 Languages
+('Country Capitals', 2, 4),     -- 7 Geography
+('Mountain Ranges', 2, 4),      -- 8 Geography
+('Famous Rivers', 2, 4);        -- 9 Geography
 
--- Carol's decks (user_id = 3)
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Hello', 'Hola', 5),
+('Goodbye', 'Adiós', 5),
+('Please', 'Por favor', 5),
+('Thank you', 'Gracias', 5),
+('Yes', 'Sí', 5),
+('No', 'No', 5);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Hello in ASL', 'Wave hand at forehead', 6),
+('Thank you in ASL', 'Touch fingers to chin and move forward', 6),
+('Yes in ASL', 'Fist nodding up and down', 6),
+('No in ASL', 'Index and middle finger tap thumb', 6);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('France', 'Paris', 7),
+('Germany', 'Berlin', 7),
+('Italy', 'Rome', 7),
+('Spain', 'Madrid', 7),
+('Japan', 'Tokyo', 7),
+('Canada', 'Ottawa', 7);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Highest mountain in the world', 'Mount Everest', 8),
+('Longest mountain range in the world', 'Andes', 8),
+('Famous mountain range in North America', 'Rockies', 8),
+('Famous mountain range in Europe', 'Alps', 8);
+
+INSERT INTO flashcards (front, back, deck_id) VALUES
+('Longest river in the world', 'Nile', 9),
+('Longest river in South America', 'Amazon', 9),
+('Major river in Europe', 'Danube', 9),
+('Major river in China', 'Yangtze', 9);
+
+-- Tom Jones' decks
 INSERT INTO decks (title, user_id, tag_id) VALUES
-('Spanish Vocabulary', 3, 5),  -- deck_id = 7
-('Travel Phrases', 3, 6);      -- deck_id = 8
+('Our Solar System', 3, 5),  -- 10 Astronomy
+('Space Facts', 3, 5),       -- 11 Astronomy
+('Book Summaries', 3, 6);    -- 12 Books
 
--- Dave's decks (user_id = 4)
-INSERT INTO decks (title, user_id, tag_id) VALUES
-('Workout Routine', 4, 7),     -- deck_id = 9
-('Book Summaries', 4, 8);      -- deck_id = 10
-
-------------------------------
--- Flashcards
-------------------------------
--- Alice's Math Deck (deck_id = 1)
 INSERT INTO flashcards (front, back, deck_id) VALUES
-('2 + 2', '4', 1),
-('5 * 3', '15', 1),
-('Square root of 16', '4', 1),
-('10 / 2', '5', 1);
+('Latin name of Earth’s moon', 'Luna', 10),
+('Largest planet in the solar system', 'Jupiter', 10),
+('Planet with prominent rings', 'Saturn', 10),
+('Planet known as the Red Planet', 'Mars', 10),
+('Smallest planet in the solar system', 'Mercury', 10);
 
--- Alice's Science Deck (deck_id = 2)
 INSERT INTO flashcards (front, back, deck_id) VALUES
-('Water chemical formula', 'H2O', 2),
-('Speed of light in vacuum', '299,792,458 m/s', 2),
-('Planet closest to the Sun', 'Mercury', 2),
-('Human body largest organ', 'Skin', 2);
+('Speed of light in vacuum', '299,792,458 m/s', 11),
+('Distance from Earth to Sun', 'Approximately 149.6 million km', 11),
+('First human in space', 'Yuri Gagarin', 11),
+('First Moon landing', 'Apollo 11 in 1969', 11);
 
--- Alice's Algebra Basics (deck_id = 3)
 INSERT INTO flashcards (front, back, deck_id) VALUES
-('Solve for x: 2x + 3 = 7', 'x = 2', 3),
-('Factor: x^2 - 9', '(x - 3)(x + 3)', 3);
+('1984 by George Orwell', 'Dystopian novel about surveillance and totalitarian regime', 12),
+('Sapiens by Yuval Noah Harari', 'A brief history of humankind', 12),
+('To Kill a Mockingbird', 'Novel about racial injustice in the US South', 12);
 
--- Alice's Country Capitals (deck_id = 4)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('France', 'Paris', 4),
-('Germany', 'Berlin', 4),
-('Italy', 'Rome', 4),
-('Spain', 'Madrid', 4),
-('United Kingdom', 'London', 4),
-('USA', 'Washington, D.C.', 4),
-('Canada', 'Ottawa', 4),
-('Japan', 'Tokyo', 4),
-('Australia', 'Canberra', 4),
-('Brazil', 'Brasília', 4);
-
--- Bob's Programming Deck (deck_id = 5)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('Java keyword for inheritance', 'extends', 5),
-('Print to console in Java', 'System.out.println()', 5),
-('Keyword for interface implementation', 'implements', 5),
-('Java primitive type for decimals', 'double', 5);
-
--- Bob's Office Terms (deck_id = 6)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('CEO', 'Chief Executive Officer', 6),
-('ROI', 'Return on Investment', 6);
-
--- Carol's Spanish Vocabulary (deck_id = 7)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('Hello', 'Hola', 7),
-('Goodbye', 'Adiós', 7),
-('Thank you', 'Gracias', 7);
-
--- Carol's Travel Phrases (deck_id = 8)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('Where is the bathroom?', '¿Dónde está el baño?', 8),
-('How much does it cost?', '¿Cuánto cuesta?', 8);
-
--- Dave's Workout Routine (deck_id = 9)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('Push-ups', 'Do 3 sets of 15 reps', 9),
-('Squats', 'Do 3 sets of 20 reps', 9);
-
--- Dave's Book Summaries (deck_id = 10)
-INSERT INTO flashcards (front, back, deck_id) VALUES
-('1984 by George Orwell', 'Dystopian novel about totalitarian regime', 10),
-('To Kill a Mockingbird', 'Novel about racial injustice in the US South', 10);

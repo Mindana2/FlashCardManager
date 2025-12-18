@@ -30,12 +30,11 @@ psql -U postgres -p 5432 -c "CREATE DATABASE flashcarddb;"
 psql -U postgres -p 5432 -d flashcarddb -f src/main/resources/db/runsetup.sql
 ```
 
-This script will:
-- Erase and reate the database
+This script ask for a password, input '123'. If sucessful it will:
+- Reset the database
 - Create all tables
-- Insert sample data
-- Create views
-- Run basic test queries
+- Provide some sample data
+
 
 ---
 
