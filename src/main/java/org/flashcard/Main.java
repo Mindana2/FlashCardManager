@@ -21,8 +21,6 @@ public class Main {
 
             // Start Spring Boot context
             ApplicationContext context = SpringApplication.run(Main.class);
-            //Timer
-
 
             // Retrieve beans from Spring
             UserController userController = context.getBean(UserController.class);
