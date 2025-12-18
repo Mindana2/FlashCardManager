@@ -5,6 +5,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * A specialized selection component that dynamically populates and manages
+ * user-specific tags to facilitate category-based filtering of flashcard decks.
+ */
+
 public class TagDropdown extends JPanel {
 
     private JComboBox<Object> combo;

@@ -7,6 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import javax.swing.*;
 
+/**
+ * Acts as the entry point for the application, bootstrapping the Spring Boot context
+ * alongside the Swing Event Dispatch Thread to integrate backend dependency injection
+ * with the graphical user interface.
+ */
 
 @SpringBootApplication
 public class Main {
@@ -16,8 +21,6 @@ public class Main {
 
             // Start Spring Boot context
             ApplicationContext context = SpringApplication.run(Main.class);
-            //Timer
-
 
             // Retrieve beans from Spring
             UserController userController = context.getBean(UserController.class);

@@ -11,6 +11,11 @@ import java.awt.*;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Provides a graphical user interface for deck creation, managing form states and
+ * data persistence from the UI layer to the application's controllers.
+ */
+
 public class CreateDeckView extends JPanel {
 
     private final DeckController deckController;

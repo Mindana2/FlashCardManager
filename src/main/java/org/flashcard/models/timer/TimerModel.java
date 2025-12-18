@@ -4,8 +4,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ Acts as the centralized scheduling engine for the application, managing high-precision
+ countdowns for multiple flashcard decks and notifying observers when study intervals are reached.
+ */
+
 public class TimerModel {
-//
+
 
 
     private final Map<CountdownListener, LocalDateTime> listenersPerDeck = new HashMap<>();

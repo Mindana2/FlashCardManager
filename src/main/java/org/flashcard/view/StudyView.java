@@ -8,6 +8,10 @@ import org.flashcard.controllers.observer.Observer;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Implements the interactive learning interface, supporting both free-study and
+ * algorithmic spaced-repetition modes with real-time feedback on review intervals.
+ */
 
 public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
@@ -66,7 +70,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
         showAnswerButton.setPreferredSize(new Dimension(200, 50));
         showAnswerButton.addActionListener(e -> showBack());
 
-        // Rating Panel (För 'today' mode)
+        // Rating Panel (For 'today' mode)
         JPanel ratingWrapper = new JPanel();
         ratingWrapper.setLayout(new BoxLayout(ratingWrapper, BoxLayout.Y_AXIS));
 
@@ -149,7 +153,7 @@ public class StudyView extends JPanel implements Observer<FlashcardDTO> {
 
             showAnswerButton.setVisible(false);
 
-            // Visa rätt kontroller baserat på mode
+            // Show correct controls based on mode
             if ("all".equalsIgnoreCase(currentMode)) {
                 nextButton.setVisible(true);
             } else {

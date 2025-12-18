@@ -1,5 +1,10 @@
 package org.flashcard.application.dto;
-//We use DTOs to transfer read only data to the view
+
+/**
+ *We use DataTransferObjects to transfer data between layers,
+ *this ensures View is read-only.
+ *This class represents a Deck Data Transfer Object.
+ */
 
 public class DeckDTO {
     private final String title;

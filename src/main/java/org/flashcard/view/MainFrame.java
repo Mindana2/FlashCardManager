@@ -4,6 +4,11 @@ import org.flashcard.controllers.*;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Acts as the primary window and high-level orchestrator of the application, managing
+ * the switching between different screens and centralizing access to the business logic controllers.
+ */
+
 public class MainFrame extends JFrame {
 
     private final UserController userController;
@@ -32,7 +37,7 @@ public class MainFrame extends JFrame {
         this.filterController = filterController;
 
         initFrame();
-        autoLoginForTesting();
+        autoLogin();
         initComponents();
     }
 
@@ -44,17 +49,52 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
     }
 
-    private void autoLoginForTesting() {
-        try {
-            userController.loginByUserId(1);
-        } catch (Exception e) {
-            System.err.println("Auto-login failed: " + e.getMessage());
+    private void autoLogin() {
+        var users = userController.getAllUsers();
+
+        if (users.isEmpty()) {
+            promptCreateUser();
+            return;
+        }
+
+        // Prefer user with ID = 1
+        users.stream()
+                .filter(u -> u.getId() == 1)
+                .findFirst()
+                .ifPresentOrElse(
+                        u -> userController.loginByUserId(1),
+                        () -> userController.loginByUserId(users.get(0).getId())
+                );
+    }
+
+    private void promptCreateUser() {
+        while (true) {
+            String name = JOptionPane.showInputDialog(
+                    null,
+                    "No users found.\nPlease create a new user:",
+                    "Create User",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            name = name.trim();
+            if (name.length() >= 3) {
+                var newUser = userController.createUser(name);
+                userController.loginByUserId(newUser.getId());
+                return;
+            }
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Username must be at least 3 characters.",
+                    "Invalid Username",
+                    JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 
     private void initComponents() {
 
-        // Navbar med filter callbacks
+        // Navbar with filter callbacks
         navbar = new Navbar(
                 this::navigateTo,
                 this::applyFilters,
@@ -68,8 +108,8 @@ public class MainFrame extends JFrame {
         mainContentPanel = new JPanel(cardLayout);
 
         homeView = new HomeView(deckController, userController,filterController, this);
-        myDecksView = new MyDecksView(deckController, userController,filterController, this); // Nu riktig klass
-        createDeckView = new CreateDeckView(deckController, userController,tagController, this); // NY
+        myDecksView = new MyDecksView(deckController, userController,filterController, this); // Now correct class
+        createDeckView = new CreateDeckView(deckController, userController,tagController, this); // NEW
         studyView = new StudyView(studyController,deckController, this);
         editDeckView = new EditDeckView(deckController, userController, this);
 
@@ -91,7 +131,7 @@ public class MainFrame extends JFrame {
         cardLayout.show(mainContentPanel, view);
     }
 
-    // När search eller tag ändras
+    // When search or tag changes
     public void applyFilters() {
         String search = navbar.getSearchText();
         Integer tagId = navbar.getSelectedTagId();

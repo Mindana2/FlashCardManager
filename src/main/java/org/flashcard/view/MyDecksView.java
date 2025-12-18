@@ -10,6 +10,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Provides a management dashboard for the user's personal library, allowing for deck
+ * organization, filtering, and direct access to both study sessions and content editing.
+ */
+
 public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
 
     private final DeckController deckController;
@@ -60,7 +65,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
 
 
         JScrollPane scrollPane = new JScrollPane(gridPanel);
-        scrollPane.setBorder(null); // <-- tar bort linjen
+        scrollPane.setBorder(null); // <-- removes the line
         add(scrollPane, BorderLayout.CENTER);
 
     }
@@ -85,7 +90,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
                 wrapper.setOpaque(false);
 
                 DeckCard card = new DeckCard(d, DeckCard.DeckCardContext.MY_DECKS_VIEW,
-                        e -> mainFrame.startStudySession(d.getId(), "all"), null);
+                        e -> mainFrame.startStudySession(d.getId(), "all"));
                 wrapper.add(card, BorderLayout.CENTER);
 
                 JButton editBtn = new JButton("Edit");

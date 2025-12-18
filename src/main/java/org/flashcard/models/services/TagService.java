@@ -18,6 +18,12 @@ import java.util.List;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
+
+/**
+ * Handles the business logic for organizing decks, including the creation and
+ * retrieval of user-specific tags while enforcing validation and ownership rules.
+ */
+
 @Service
 @Transactional
 public class TagService {

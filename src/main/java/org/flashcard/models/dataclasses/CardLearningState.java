@@ -15,6 +15,12 @@ import java.time.temporal.ChronoUnit;
  *   3. Maps database rows to Deck objects and vice versa.
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
+
+/**
+ * Represents the persistent tracking data for a flashcard's spaced repetition schedule,
+ * storing review history, next due dates, and retention statistics.
+ */
+
 @Entity
 @Table(name = "CardLearningState")
 public class CardLearningState {

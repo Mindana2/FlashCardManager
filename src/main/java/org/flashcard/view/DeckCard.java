@@ -9,6 +9,10 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.Duration;
 
+/**
+ * Represents a visual component for a single deck, dynamically adapting its display
+ * based on context (Home vs. Management) and handling real-time countdowns for locked study sessions.
+ */
 public class DeckCard extends JPanel implements CountdownListener{
 
     private Runnable onFinishedCallback;
@@ -31,8 +35,8 @@ public class DeckCard extends JPanel implements CountdownListener{
     DeckController deckController;
     CountdownListener listener;
 
-    // --- Standard constructor ---
-    public DeckCard(DeckDTO deck, DeckCardContext context, ActionListener onStudyClick, Runnable onFinishedCallback) {
+    /** Standard constructor */
+    public DeckCard(DeckDTO deck, DeckCardContext context, ActionListener onStudyClick) {
         this.deck = deck;
         this.onFinishedCallback = onFinishedCallback;
         setLayout(new BorderLayout());
@@ -40,7 +44,7 @@ public class DeckCard extends JPanel implements CountdownListener{
         setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
         setPreferredSize(new Dimension(220, 192));
 
-        // --- Top Panel (Tag + Title + Progress) ---
+        // Top Panel (Tag + Title + Progress)
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setOpaque(false);
         topPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -93,7 +97,7 @@ public class DeckCard extends JPanel implements CountdownListener{
 
         add(topPanel, BorderLayout.NORTH);
 
-        // --- Info Label (dependent on context) ---
+        // Info Label (dependent on context)
         if (context == DeckCardContext.HOME_VIEW) {
             infoLabel = new JLabel("Cards due: " + deck.getDueCount());
         } else { // MY_DECKS_VIEW
@@ -131,7 +135,7 @@ public class DeckCard extends JPanel implements CountdownListener{
         add(studyButton, BorderLayout.SOUTH);
     }
 
-    // --- Constructor with countdown and disabled state ---
+    //Constructor with countdown and disabled state
     public DeckCard(
             DeckDTO deck,
             boolean disabled,
@@ -139,7 +143,7 @@ public class DeckCard extends JPanel implements CountdownListener{
 
     ) {
 
-        this (deck, DeckCardContext.HOME_VIEW, null, null);
+        this (deck, DeckCardContext.HOME_VIEW, null);
         this.disabled = disabled;
         this.cardAvailableText = "Next Card available in: ";
         this.onFinishedCallback = onFinishedCallback;

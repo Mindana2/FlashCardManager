@@ -30,6 +30,13 @@ import java.util.stream.Collectors;
  * It automatically aborts any transactions that result in an error.
  * This allows us to write logic without manually handling database transactions.
  */
+
+/**
+ * Serves as the central orchestrator for deck management, handling complex business
+ * logic such as progress calculation, tag assignment, and due-date scheduling
+ * while maintaining real-time UI synchronization via observables.
+ */
+
 @Service
 @Transactional
 public class DeckService {

@@ -8,6 +8,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+/**
+ * A lightweight, borderless window that provides a dynamic dropdown menu for user account management,
+ * including account switching, user creation, and deletion logic.
+ */
+
 public class ProfileMenuPopup extends JWindow {
 
     private final UserController userController;

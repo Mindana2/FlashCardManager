@@ -16,6 +16,13 @@ import java.util.List;
  * Spring automatically detects it and creates a bean in the application context,
  * so it can be injected wherever needed.(see main.java)
  */
+
+/**
+* This @Controller works as an intermediary between the View and the Service layer.
+* It handles user requests, invokes the appropriate methods in the Service layer,
+* manages the full lifecycle of decks and flashcards, handling CRUD operations, learning schedules,
+* and returns the results back to the View.
+*/
 @Controller
 public class DeckController {
 

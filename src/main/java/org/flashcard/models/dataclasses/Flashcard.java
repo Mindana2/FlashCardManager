@@ -13,6 +13,11 @@ import java.time.LocalDate;
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
 
+/**
+ * Represents the individual question-and-answer for a flashcard within a deck, maintaining
+ * the card's content, its parent deck relationship, and its associated learning metrics.
+ */
+
 @Entity
 @Table(name = "Flashcards",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"deckId", "front"})}) // prevent duplicate fronts in a deck

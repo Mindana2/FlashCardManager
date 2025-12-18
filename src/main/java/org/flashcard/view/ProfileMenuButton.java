@@ -5,6 +5,11 @@ import org.flashcard.controllers.UserController;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * A specialized UI component that represents the current user session,
+ * displaying a dynamic avatar and acting as the trigger for profile-related actions.
+ */
+
 public class ProfileMenuButton extends JButton {
 
     private final ProfileMenuPopup popup;

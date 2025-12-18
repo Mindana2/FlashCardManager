@@ -5,6 +5,11 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+/**
+ * A custom-styled search component that implements placeholder logic and custom 2D graphics
+ * to provide a modern, rounded search bar interface.
+ */
+
 public class SearchBar extends JPanel {
 
     private final JTextField field;
@@ -30,7 +35,7 @@ public class SearchBar extends JPanel {
         field.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
-                // Ta bort placeholder först när användaren verkligen vill skriva
+                // Remove the placeholder only when the user actually wants to type
                 if (field.getText().equals(placeholder)) {
                     field.setText("");
                     field.setForeground(Color.BLACK);

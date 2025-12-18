@@ -12,6 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Serves as the primary dashboard for the user, displaying a filtered grid of study decks
+ * and using real-time scheduling logic to distinguish between active and locked sessions.
+ */
+
 public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
 
     private final DeckController deckController;
@@ -47,7 +52,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
 
 
         JScrollPane scrollPane = new JScrollPane(gridPanel);
-        scrollPane.setBorder(null); // <-- tar bort tunna svarta linjen
+        scrollPane.setBorder(null); // <-- removes thin black line
         add(scrollPane, BorderLayout.CENTER);
     }
     private void setDecks(){
@@ -75,7 +80,9 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
                         d1.getDueCount() > 0
                 ))
                 .toList();
+        //Add decks to grid
         for (DeckDTO deck : allDecks) {
+            // Skip over decks with zero cards
             if (deck.getCardCount() == 0) continue;
             //Get a DeckCard from the HashMap
             DeckCard deckcard = activeDeckCards.get(deck.getId());
@@ -91,8 +98,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
                             deck,
                             DeckCard.DeckCardContext.HOME_VIEW,
                             e -> mainFrame.startStudySession(deck.getId(),
-                                    "today"),
-                            null);
+                                    "today"));
 
                 //...else make it unplayable with a countdown
                 } else {

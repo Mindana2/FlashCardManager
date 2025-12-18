@@ -9,6 +9,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Provides a comprehensive editor for managing flashcard content within a specific deck,
+ * utilizing the Observer pattern to ensure the card list remains synchronized with the database.
+ */
+
 public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>> {
 
     private final DeckController deckController;
@@ -116,7 +121,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
             }
         });
 
-        // Centrera knappen i panelen
+        // Center button in panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -196,7 +201,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
             emptyLabel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
             cardsListPanel.add(emptyLabel);
         } else {
-            // Lägg nya kort överst
+            // Add card on the top
             for (int i = cards.size() - 1; i >= 0; i--) {
                 cardsListPanel.add(cardRowFor(cards.get(i)));
                 cardsListPanel.add(Box.createVerticalStrut(8));

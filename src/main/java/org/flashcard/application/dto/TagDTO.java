@@ -2,8 +2,12 @@ package org.flashcard.application.dto;
 
 import java.awt.*;
 
-// We use DataTransferObjects to transfer data between layers.
-// This ensures View is read-only.
+/**
+ *We use DataTransferObjects to transfer data between layers,
+ *this ensures View is read-only.
+ *This class represents a Tag Data Transfer Object.
+ */
+
 public class TagDTO {
     private final int id;
     private final String title;

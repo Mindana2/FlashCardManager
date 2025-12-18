@@ -12,6 +12,15 @@ import org.flashcard.controllers.observer.Observable;
  * Spring automatically detects it and creates a bean in the application context,
  * so it can be injected wherever needed.(see main.java)
  */
+
+/**
+ * This @Controller works as an intermediary between the View and the Service layer.
+ * It handles user requests, invokes the appropriate methods in the Service layer,
+ * manages the lifecycle of a study session by coordinating flashcard delivery,
+ * student rating applications, and real-time session progress via observables,
+ * and returns the results back to the View.
+ */
+
 @Controller
 public class StudyController {
 

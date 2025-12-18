@@ -20,6 +20,11 @@ import java.util.List;
  *  existsByUserIdAndTitle(Integer userId, String title): Checks if a deck with the given title exists for the user.
  */
 
+/**
+ * Data access interface for Deck entities that leverages Spring Data JPA to automate
+ * database queries
+ */
+
 @Repository
 public interface DeckRepository extends JpaRepository<Deck, Integer> {
 

@@ -14,6 +14,11 @@ import java.time.LocalDate;
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
 
+/**
+ * Represents the core account entity within the system, storing unique identity
+ * credentials and registration data for an individual user.
+ */
+
 @Entity
 @Table(name = "Users")
 public class User {

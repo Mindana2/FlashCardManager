@@ -8,6 +8,10 @@ import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
 
+/**
+ * Acts as the global application header, centralizing navigation controls and
+ * filter inputs to provide a consistent user experience across different views.
+ */
 
 public class Navbar extends JPanel {
 
@@ -77,12 +81,12 @@ public class Navbar extends JPanel {
         return btn;
     }
 
-    /** Returnerar "effektiv" söktext (null om placeholder eller tom). */
+    /** Returns the "effective" search text (null if placeholder or empty). */
     public String getSearchText() {
         return searchBar.getEffectiveText();
     }
 
-    /** Returnerar tag id eller null */
+    /** Returns tag id or null */
     public Integer getSelectedTagId() {
         return tagDropdown.getSelectedTagId();
     }

@@ -1,5 +1,9 @@
 package org.flashcard.models.ratingstrategy;
 
+/**
+ * Implements a conservative learning strategy that slowly increases review intervals by a factor.
+ */
+
 public class StrategyMedium extends BaseIntervalStrategy {
     @Override
     public double getMultiplier() {
