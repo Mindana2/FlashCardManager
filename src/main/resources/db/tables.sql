@@ -7,44 +7,71 @@ CREATE TABLE users (
 
 CREATE TABLE tags (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
-    CHECK (char_length(title) BETWEEN 1 AND 20),
     color CHAR(6) NOT NULL,
+
+    CHECK (char_length(title) BETWEEN 1 AND 20),
     CHECK (color ~ '^[0-9A-Fa-f]{6}$'),
-    UNIQUE(user_id, title)
+
+    UNIQUE (user_id, title),
+    UNIQUE (id, user_id),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE decks (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     title TEXT NOT NULL,
-    date_created Date DEFAULT CURRENT_DATE,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    tag_id INTEGER REFERENCES tags(id) ON DELETE SET NULL,
-    UNIQUE(user_id, title),
-    CHECK (char_length(title) BETWEEN 1 AND 40)
+    date_created DATE DEFAULT CURRENT_DATE,
+    user_id INTEGER NOT NULL,
+    tag_id INTEGER,
+
+    CHECK (char_length(title) BETWEEN 1 AND 40),
+    UNIQUE (user_id, title),
+
+    FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    -- deck and tag must belong to the same user
+    FOREIGN KEY (tag_id, user_id)
+        REFERENCES tags (id, user_id)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE flashcards (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     front TEXT NOT NULL,
     back TEXT NOT NULL,
-    date_created Date DEFAULT CURRENT_DATE,
-    deck_id INTEGER NOT NULL REFERENCES decks(id) ON DELETE CASCADE,
-    UNIQUE(deck_id, front),
+    date_created DATE DEFAULT CURRENT_DATE,
+    deck_id INTEGER NOT NULL,
+
+    UNIQUE (deck_id, front),
     CHECK (char_length(front) BETWEEN 1 AND 500),
-    CHECK (char_length(back) BETWEEN 1 AND 500)
+    CHECK (char_length(back) BETWEEN 1 AND 500),
+
+    FOREIGN KEY (deck_id)
+        REFERENCES decks(id)
+        ON DELETE CASCADE
 );
 
+
 CREATE TABLE card_learning_state (
-    flashcard_id INT PRIMARY KEY,
+    flashcard_id INTEGER PRIMARY KEY,
     last_review_date TIMESTAMP,
     next_review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     interval_between_reviews NUMERIC(10,4) DEFAULT 1,
-    number_of_times_viewed INT DEFAULT 0,
+    number_of_times_viewed INTEGER DEFAULT 0,
+
     CHECK (interval_between_reviews > 0),
     CHECK (number_of_times_viewed >= 0),
-    FOREIGN KEY (flashcard_id) REFERENCES flashcards(id) ON DELETE CASCADE
+
+    FOREIGN KEY (flashcard_id)
+        REFERENCES flashcards(id)
+        ON DELETE CASCADE
 );
 
 CREATE OR REPLACE FUNCTION create_card_learning_state()
@@ -56,11 +83,10 @@ BEGIN
         number_of_times_viewed
     )
     VALUES (
-        NEW.id,     -- shared PK = flashcard id
-        NULL,       -- last_review_date
-        0           -- default number_of_times_viewed
+        NEW.id,
+        NULL,
+        0
     );
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;

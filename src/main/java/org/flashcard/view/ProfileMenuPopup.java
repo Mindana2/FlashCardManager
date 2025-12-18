@@ -44,8 +44,25 @@ public class ProfileMenuPopup extends JWindow {
 
         List<UserDTO> users = userController.getAllUsers();
 
-        for (UserDTO user : users) {
-            container.add(createUserRow(user));
+        if (users.isEmpty()) {
+            // Show "No users" message
+            JPanel emptyRow = new JPanel(new BorderLayout());
+            emptyRow.setBackground(new Color(55, 55, 55));
+            emptyRow.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+            emptyRow.setPreferredSize(new Dimension(220, 36));
+
+            JLabel label = new JLabel("No users");
+            label.setForeground(Color.LIGHT_GRAY);
+            label.setFont(new Font("Arial", Font.ITALIC, 14));
+            emptyRow.add(label, BorderLayout.CENTER);
+
+            container.add(emptyRow);
+
+        } else {
+            // Add existing users
+            for (UserDTO user : users) {
+                container.add(createUserRow(user));
+            }
         }
 
         container.add(createSeparator());
