@@ -123,7 +123,6 @@ public class DeckCard extends JPanel {
     // --- Konstruktor med countdown och disabled state ---
     public DeckCard(
             DeckDTO deck,
-            ActionListener onStudyClick,
             boolean disabled,
             String countdownText,
             Duration timeLeft,

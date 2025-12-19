@@ -19,6 +19,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
     private final UserController userController;
     private final FilterController filterController;
     private final AppFrame appFrame;
+    private List<DeckDTO> allDecks;
 
 
     private JPanel gridPanel;
@@ -29,6 +30,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
         this.userController = userController;
         this.filterController = filterController;
         this.appFrame = appFrame;
+        refreshDecks();
 
         deckController.getDecksObservable().addListener(this);
 
@@ -51,23 +53,20 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
         // ⬆⬆⬆ END NEW
     }
 
-    public void applyFilter(String text, Integer tagId) {
-        refreshData(text, tagId);
-    }
-
-    public void refreshData(String text, Integer tagId) {
-        gridPanel.removeAll();
-
+    private void refreshDecks(){
+        // Hämta ALLA decks med due-info
         Integer userId = userController.getCurrentUserId();
         if (userId == null) return;
+        this.allDecks = deckController.getAllDecksForUser(userId);
+    }
+    public void applyFilter(String text, Integer tagId) {
+        refreshData(text, tagId, null);
+    }
 
-        // Hämta dynamiskt beräknade decks med kort som är due today
-        //List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
+    public void refreshData(String text, Integer tagId, List<DeckDTO> newList) {
+        gridPanel.removeAll();
 
-        // Hämta ALLA decks med due-info
-        List<DeckDTO> dueDecks = filterController.getDueDecksForUser(userId);
-        List<DeckDTO> notDueDecks = filterController.getNotDueDecksForUser(userId);
-        List<DeckDTO> allDecks = deckController.getAllDecksForUser(userId);
+        if (newList != null) this.allDecks = newList;
 
         // Applicera sökfilter om text finns
         if (text != null && !text.isBlank()) {
@@ -108,7 +107,6 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
                 gridPanel.add(
                         new DeckCard(
                                 deck,
-                                null,
                                 true,
                                 "Next Card available in: ",
                                 timeLeft,
@@ -122,12 +120,13 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
 
     @Override
     public void notify(List<DeckDTO> data) {
-
+        refreshData(null, null, data);
     }
 
     @Override
     public void onCountdownFinished() {
-        refreshData(null, null);
+        refreshDecks();
+        refreshData(null, null, null);
     }
 
 

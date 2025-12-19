@@ -68,8 +68,8 @@ public class CardLearningState {
     public void setNumberOfTimesViewed(Integer numberOfTimesViewed) { this.numberOfTimesViewed = numberOfTimesViewed; }
 
     // Check if card is due today or earlier
-    public boolean isDueToday() {
-        return nextReviewDate == null || !nextReviewDate.isAfter(LocalDateTime.now());
+    public boolean isDueToday(LocalDateTime now) {
+        return nextReviewDate == null || !nextReviewDate.isAfter(now);
     }
 
     @Override
