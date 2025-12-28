@@ -30,10 +30,9 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
         this.userController = userController;
         this.filterController = filterController;
         this.appFrame = appFrame;
-        refreshDecks();
 
         deckController.getDecksObservable().addListener(this);
-
+        setDecks();
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
@@ -52,36 +51,29 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
         add(scrollPane, BorderLayout.CENTER);
         // ⬆⬆⬆ END NEW
     }
-
-    private void refreshDecks(){
-        // Hämta ALLA decks med due-info
-        Integer userId = userController.getCurrentUserId();
-        if (userId == null) return;
-        this.allDecks = deckController.getAllDecksForUser(userId);
+    private void setDecks(){
+        int userID = userController.getCurrentUserId();
+        this.allDecks = deckController .getAllDecksForUser(userID);
     }
     public void applyFilter(String text, Integer tagId) {
-        refreshData(text, tagId, null);
+        refreshData(text, tagId);
     }
 
-    public void refreshData(String text, Integer tagId, List<DeckDTO> newList) {
+    public void refreshData(String text, Integer tagId) {
         gridPanel.removeAll();
 
-        if (newList != null) this.allDecks = newList;
+        Integer userId = userController.getCurrentUserId();
+        if (userId == null) return;
+
+        // Hämta dynamiskt beräknade decks med kort som är due today
+        //List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
+
+        // Hämta ALLA decks med due-info
+
+
 
         // Applicera sökfilter om text finns
-        if (text != null && !text.isBlank()) {
-            allDecks = allDecks.stream()
-                    .filter(d -> d.getTitle().toLowerCase().contains(text.toLowerCase()))
-                    .toList();
-        }
-
-        // Applicera tag-filter om tagId finns
-        if (tagId != null) {
-            allDecks = allDecks.stream()
-                    .filter(d -> d.getTagDTO() != null && tagId.equals(d.getTagDTO().getId()))
-                    .toList();
-        }
-
+        allDecks = filterController.searchDecks(userId, text, tagId);
         // Sortera så att aktiva decks (med due cards) kommer först
         allDecks = allDecks.stream()
                 .sorted((d1, d2) -> Boolean.compare(
@@ -104,36 +96,36 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
             } else {
                 // Decks med kort men inga due cards -> utgråade med countdown
                 Duration timeLeft = deckController.timeUntilDue(deck.getId());
-                gridPanel.add(
-                        new DeckCard(
-                                deck,
-                                true,
-                                "Next Card available in: ",
-                                timeLeft,
-                                deckController,
-                                this
-                        ));
-
-            }   }
+                gridPanel.add(new DeckCard(
+                        deck,
+                        true,
+                        "Next Card available in: ",
+                        timeLeft,
+                        deckController,
+                        this
+                ));
+            }
         }
+
+
+
+
+
+
+
+        gridPanel.revalidate();
+        gridPanel.repaint();
+    }
 
 
     @Override
     public void notify(List<DeckDTO> data) {
-        refreshData(null, null, data);
+        refreshData(null, null);
     }
+
 
     @Override
     public void onCountdownFinished() {
-        refreshDecks();
-        refreshData(null, null, null);
+
     }
-
-
-//    @Override
-//    public void updateTime(String countdown) {
-//        this.countdown = countdown;
-//        gridPanel.revalidate();
-//        gridPanel.repaint();
-//    }
 }

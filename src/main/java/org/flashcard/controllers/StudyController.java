@@ -2,6 +2,7 @@ package org.flashcard.controllers;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
+import org.flashcard.models.services.DeckService;
 import org.flashcard.models.services.StudyService;
 import org.springframework.stereotype.Controller;
 import org.flashcard.controllers.observer.Observable;
@@ -11,11 +12,7 @@ public class StudyController {
 
     private final StudyService studyService;
 
-
-
-    public StudyController(StudyService studyService) {
-        this.studyService = studyService;
-    }
+    public StudyController(StudyService studyService, DeckService deckService) { this.studyService = studyService; }
 
     public Observable<FlashcardDTO> getCurrentCardObservable() {
         return studyService.getCurrentCardObservable();
