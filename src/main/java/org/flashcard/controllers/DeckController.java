@@ -9,9 +9,11 @@ import org.flashcard.models.dataclasses.*;
 import org.flashcard.models.services.DeckService;
 import org.flashcard.models.services.FlashCardService;
 import org.flashcard.models.timers.CountdownListener;
+import org.flashcard.models.timers.TimerModel;
 import org.flashcard.repositories.DeckRepository;
 import org.springframework.stereotype.Controller;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -93,12 +95,15 @@ public class DeckController {
         return flashCardService.showEstimatedDate(rating, cardID);
     }
 
-    public Duration timeUntilDue(int deckID){
-        return deckService.timeUntilDue(deckID);
+    public void updateTimeUntilDue(int deckID, LocalDateTime now){
+        deckService.updateTimeUntilDue(deckID, now);
     }
-    public void updateDeckCards(CountdownListener listener){
-        listener.onCountdownFinished();
 
+    public long getDueCount(int deckID, LocalDateTime now) {
+        return deckService.getDueCount(deckID, now);
+    }
+    public TimerModel getTimerModel() {
+        return deckService.getTimerModel();
     }
 
 

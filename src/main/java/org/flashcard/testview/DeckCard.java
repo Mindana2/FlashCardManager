@@ -10,9 +10,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 
-public class DeckCard extends JPanel {
+public class DeckCard extends JPanel implements CountdownListener{
+
+
 
     public enum DeckCardContext {
         HOME_VIEW,
@@ -25,6 +28,7 @@ public class DeckCard extends JPanel {
     Timer countdownTimer;
     Duration timeLeft;
     JLabel countdownLabel = new JLabel();
+    String cardAvailableText;
     String countdownText;
     DeckController deckController;
     CountdownListener listener;
@@ -132,10 +136,7 @@ public class DeckCard extends JPanel {
     public DeckCard(
             DeckDTO deck,
             boolean disabled,
-            String countdownText,
-            Duration timeLeft,
-            DeckController deckController,
-            CountdownListener listener
+            DeckController deckController
 
     ) {
 
@@ -144,11 +145,10 @@ public class DeckCard extends JPanel {
 //        setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
 //        setPreferredSize(new Dimension(220, 192));
         this (deck, DeckCardContext.HOME_VIEW, null);
-        this.timeLeft = timeLeft;
         this.deck = deck;
-        this.countdownText = countdownText;
+        this.cardAvailableText = "Next Card available in: ";
         this.deckController = deckController;
-        this.listener = listener;
+        deckController.getTimerModel().addTimerListener(this);
         countdownTimer = new Timer(1000, e -> updateCountdown());
         countdownTimer.start();
         if (disabled) {
@@ -169,17 +169,23 @@ public class DeckCard extends JPanel {
     }
 
     private void updateCountdown() {
-        timeLeft = deckController.timeUntilDue(deck.getId());
-        if (timeLeft.isNegative() || timeLeft.isZero()) {
-            countdownLabel.setText(countdownText + "00:00:00");
-            countdownTimer.stop();
-            deckController.updateDeckCards(listener);
 
-        } else{
-        long hours = timeLeft.toHours();
-        long minutes = timeLeft.toMinutesPart();
-        long seconds = timeLeft.toSecondsPart();
-        countdownLabel.setText(countdownText + hours +":"+ minutes + ":" + seconds);
+        LocalDateTime now = LocalDateTime.now();
+        deckController.updateTimeUntilDue(deck.getId(), now);
+        if ("00d : 00h : 00m : 00s".equals(countdownText)) {
+            countdownLabel.setText(cardAvailableText + "00d : 00h : 00m : 00s");
+            countdownTimer.stop();
+            deckController.getDecksObservable().notifyListeners(null);
+
+        } else {
+            countdownLabel.setText(cardAvailableText + countdownText);
         }
     }
+    @Override
+    public void notify(String countdown) {
+        this.countdownText = countdown;
+
+
+    }
+
 }

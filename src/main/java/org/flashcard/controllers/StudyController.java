@@ -12,7 +12,7 @@ public class StudyController {
 
     private final StudyService studyService;
 
-    public StudyController(StudyService studyService, DeckService deckService) { this.studyService = studyService; }
+    public StudyController(StudyService studyService) { this.studyService = studyService; }
 
     public Observable<FlashcardDTO> getCurrentCardObservable() {
         return studyService.getCurrentCardObservable();

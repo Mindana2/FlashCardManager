@@ -13,7 +13,7 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.List;
 
-public class HomeView extends JPanel implements Observer<List<DeckDTO>>, CountdownListener {
+public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
 
     private final DeckController deckController;
     private final UserController userController;
@@ -65,13 +65,6 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
         Integer userId = userController.getCurrentUserId();
         if (userId == null) return;
 
-        // Hämta dynamiskt beräknade decks med kort som är due today
-        //List<DeckDTO> decks = deckController.getDueDecksForUser(userId);
-
-        // Hämta ALLA decks med due-info
-
-
-
         // Applicera sökfilter om text finns
         allDecks = filterController.searchDecks(userId, text, tagId);
         // Sortera så att aktiva decks (med due cards) kommer först
@@ -95,14 +88,11 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
                 ));
             } else {
                 // Decks med kort men inga due cards -> utgråade med countdown
-                Duration timeLeft = deckController.timeUntilDue(deck.getId());
                 gridPanel.add(new DeckCard(
                         deck,
                         true,
-                        "Next Card available in: ",
-                        timeLeft,
-                        deckController,
-                        this
+                        deckController
+
                 ));
             }
         }
@@ -124,8 +114,4 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>, Countdo
     }
 
 
-    @Override
-    public void onCountdownFinished() {
-
-    }
 }
