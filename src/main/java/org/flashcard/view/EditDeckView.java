@@ -1,11 +1,10 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.FlashcardDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.controllers.observer.Observer;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -14,7 +13,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
 
     private final DeckController deckController;
     private final UserController userController;
-    private final AppFrame appFrame;
+    private final MainFrame mainFrame;
 
     private DeckDTO currentDeck;
 
@@ -34,11 +33,11 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
 
     public EditDeckView(DeckController deckController,
                         UserController userController,
-                        AppFrame appFrame) {
+                        MainFrame mainFrame) {
 
         this.deckController = deckController;
         this.userController = userController;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         deckController.getFlashcardsObservable().addListener(this);
 
@@ -55,7 +54,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
         top.setBorder(BorderFactory.createEmptyBorder(12, 16, 12, 16));
 
         backButton = new JButton("← Back");
-        backButton.addActionListener(e -> appFrame.navigateTo("MyDecks"));
+        backButton.addActionListener(e -> mainFrame.navigateTo("MyDecks"));
         top.add(backButton, BorderLayout.WEST);
 
         headerLabel = new JLabel("Edit Deck", SwingConstants.CENTER);
@@ -75,7 +74,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
         doneButton.setFont(new Font("SansSerif", Font.BOLD, 13));
         doneButton.setBackground(new Color(65, 105, 225));
         doneButton.setForeground(Color.WHITE);
-        doneButton.addActionListener(e -> appFrame.navigateTo("MyDecks"));
+        doneButton.addActionListener(e -> mainFrame.navigateTo("MyDecks"));
         topRight.add(doneButton);
 
         top.add(topRight, BorderLayout.EAST);
@@ -117,7 +116,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
             }
         });
 
-// Centrera knappen i panelen
+        // Centrera knappen i panelen
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(Color.WHITE);
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -261,7 +260,7 @@ public class EditDeckView extends JPanel implements Observer<List<FlashcardDTO>>
                 "Delete deck and all cards?",
                 "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             deckController.deleteDeck(currentDeck.getId());
-            appFrame.navigateTo("MyDecks");
+            mainFrame.navigateTo("MyDecks");
         }
     }
 

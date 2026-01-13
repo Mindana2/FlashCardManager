@@ -1,18 +1,12 @@
 package org.flashcard;
 
 import org.flashcard.controllers.*;
-import org.flashcard.models.dataclasses.Deck;
-import org.flashcard.models.dataclasses.User;
-
-import org.flashcard.testview.AppFrame;
+import org.flashcard.view.MainFrame;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-//import view.MainFrame;
-//import view.TestFrame;
-
 import javax.swing.*;
-import java.util.List;
+
 
 @SpringBootApplication
 public class Main {
@@ -33,12 +27,9 @@ public class Main {
             FilterController filterController = context.getBean(FilterController.class);
 
             // Start View
-            AppFrame frame = new AppFrame(userController, studyController, deckController,
+            MainFrame frame = new MainFrame(userController, studyController, deckController,
                     tagController, filterController);
             frame.setVisible(true);
-
-
-
         });
     }
 }

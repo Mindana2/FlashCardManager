@@ -1,13 +1,13 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.application.dto.TagDTO;
 import org.flashcard.controllers.TagController;
 import org.flashcard.controllers.UserController;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Consumer;
+
 
 public class Navbar extends JPanel {
 
@@ -87,8 +87,6 @@ public class Navbar extends JPanel {
         return tagDropdown.getSelectedTagId();
     }
 
-
-
     /** Called by ProfileDropdown when user changes */
     public void onUserChanged() {
         reloadTags();
@@ -97,12 +95,9 @@ public class Navbar extends JPanel {
         profileMenuButton.refreshUser();
     }
 
-
     private void reloadTags() {
         Integer userId = userController.getCurrentUserId();
         List<TagDTO> tags = userId == null ? List.of() : tagController.getTagsForUser(userId);
         tagDropdown.loadTags(tags);
     }
-
-
 }

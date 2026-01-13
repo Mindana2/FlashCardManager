@@ -2,21 +2,17 @@ package org.flashcard.models.dataclasses;
 
 import jakarta.persistence.*;
 
-import java.awt.*;
 
 /* Our dataclasses also take use of Spring Framework.
- *
  * @Entity denotes that this class represents the "Tags" table in the database.
- *
  * Spring can then use this class to map between Java objects and database rows:
- *
  * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
  *   1. Reads these annotations to know the table and columns.
  *   2. Generates the appropriate SQL.
  *   3. Maps database rows to Tag objects and vice versa.
- *
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
+
 @Entity
 @Table(name = "Tags",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"userId", "title"})}) // unique per user
@@ -36,7 +32,7 @@ public class Tag {
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    // Constructors
+    // Constructor
     public Tag() {}
 
     public Tag(String title, String color, User user) {
@@ -58,18 +54,4 @@ public class Tag {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
-    @Transient
-    public Color getColorObject() {
-        if (color == null || color.isBlank()) {
-            return Color.GRAY;
-        }
-
-        String hex = color.startsWith("#") ? color : ("#" + color);
-
-        try {
-            return Color.decode(hex);
-        } catch (NumberFormatException e) {
-            return Color.GRAY;
-        }
-    }
 }

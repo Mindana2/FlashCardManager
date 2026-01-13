@@ -1,4 +1,4 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.controllers.DeckController;
@@ -15,16 +15,16 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
     private final DeckController deckController;
     private final UserController userController;
     private final FilterController filterController;
-    private final AppFrame appFrame;
+    private final MainFrame mainFrame;
 
     private JPanel gridPanel;
 
     public MyDecksView(DeckController deckController, UserController userController, FilterController filtercontroller,
-                       AppFrame appFrame) {
+                       MainFrame mainFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.filterController = filtercontroller;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         deckController.getDecksObservable().addListener(this);
 
@@ -44,8 +44,8 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
         create.setForeground(Color.WHITE);
         create.setFocusPainted(false);
         create.addActionListener(e -> {
-            appFrame.getCreateDeckView().resetFormForNewDeck();
-            appFrame.navigateTo("CreateDeck");
+            mainFrame.getCreateDeckView().resetFormForNewDeck();
+            mainFrame.navigateTo("CreateDeck");
         });
 
         top.add(title, BorderLayout.WEST);
@@ -85,7 +85,7 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
                 wrapper.setOpaque(false);
 
                 DeckCard card = new DeckCard(d, DeckCard.DeckCardContext.MY_DECKS_VIEW,
-                        e -> appFrame.startStudySession(d.getId(), "all"), null);
+                        e -> mainFrame.startStudySession(d.getId(), "all"), null);
                 wrapper.add(card, BorderLayout.CENTER);
 
                 JButton editBtn = new JButton("Edit");
@@ -93,8 +93,8 @@ public class MyDecksView extends JPanel implements Observer<List<DeckDTO>> {
                 editBtn.setBackground(new Color(70, 130, 180));
                 editBtn.setForeground(Color.WHITE);
                 editBtn.addActionListener(e -> {
-                    appFrame.getEditDeckView().loadDeck(d.getId());
-                    appFrame.navigateTo("EditDeck");
+                    mainFrame.getEditDeckView().loadDeck(d.getId());
+                    mainFrame.navigateTo("EditDeck");
                 });
 
                 JPanel panel = new JPanel();

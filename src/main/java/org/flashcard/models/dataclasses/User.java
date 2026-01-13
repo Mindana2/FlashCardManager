@@ -5,20 +5,17 @@ import java.time.LocalDate;
 
 
 /* Our dataclasses also take use of Spring Framework.
- *
  * @Entity denotes that this class represents the "Users" table in the database.
- *
  * Spring can then use this class to map between Java objects and database rows:
-*
  * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
  *   1. Reads these annotations to know the table and columns.
  *   2. Generates the appropriate SQL.
  *   3. Maps database rows to User objects and vice versa.
- *
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
+
 @Entity
-@Table(name = "Users") // table name in PostgreSQL, now using camelCase
+@Table(name = "Users")
 public class User {
 
     @Id
@@ -46,8 +43,5 @@ public class User {
     public void setId(Integer id) { this.id = id; }
 
     public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
 
-    public LocalDate getDateCreated() { return dateCreated; }
-    public void setDateCreated(LocalDate dateCreated) { this.dateCreated = dateCreated; }
 }

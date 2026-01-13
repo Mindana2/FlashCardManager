@@ -1,20 +1,16 @@
 package org.flashcard.models.dataclasses;
 import jakarta.persistence.*;
-
-
 import java.time.LocalDate;
 import java.util.List;
+
+
 /* Our dataclasses also take use of Spring Framework.
- *
  * @Entity denotes that this class represents the "Decks" table in the database.
- *
  * Spring can then use this class to map between Java objects and database rows:
- *
  * When a repository like UserRepository calls save(), findById(), or delete(), Spring automatically:
  *   1. Reads these annotations to know the table and columns.
  *   2. Generates the appropriate SQL.
  *   3. Maps database rows to Deck objects and vice versa.
- *
  * This helps us reduce the amount of boilerplate SQL we need to write.
  */
 @Entity
@@ -64,8 +60,6 @@ public class Deck {
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public LocalDate getDateCreated() { return dateCreated; }
-    public void setDateCreated(LocalDate dateCreated) { this.dateCreated = dateCreated; }
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
@@ -79,5 +73,4 @@ public class Deck {
     public DeckProgress getDeckProgress() { return deckProgress; }
     public void setDeckProgress(DeckProgress deckProgress) { this.deckProgress = deckProgress; }
 
-    public void invalidateProgress() { this.deckProgress = null; }
 }

@@ -3,11 +3,11 @@ package org.flashcard.models.progress;
 import org.flashcard.models.dataclasses.CardLearningState;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Flashcard;
-
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 
 public class DeckProgression {
 

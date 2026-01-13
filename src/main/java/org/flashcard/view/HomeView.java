@@ -1,11 +1,10 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.controllers.FilterController;
 import org.flashcard.controllers.UserController;
 import org.flashcard.controllers.observer.Observer;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,19 +17,19 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
     private final DeckController deckController;
     private final UserController userController;
     private final FilterController filterController;
+    private final MainFrame mainFrame;
     private final Map<Integer, DeckCard> activeDeckCards = new HashMap<>();
-    private final AppFrame appFrame;
     private List<DeckDTO> allDecks;
 
 
     private JPanel gridPanel;
 
     public HomeView(DeckController deckController, UserController userController,
-                    FilterController filterController, AppFrame appFrame) {
+                    FilterController filterController, MainFrame mainFrame) {
         this.deckController = deckController;
         this.userController = userController;
         this.filterController = filterController;
-        this.appFrame = appFrame;
+        this.mainFrame = mainFrame;
 
         deckController.getDecksObservable().addListener(this);
         setDecks();
@@ -46,11 +45,10 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
         gridPanel.setBackground(Color.WHITE);
         gridPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // ⬇⬇⬇ NYTT: nu skapar vi scrollPane som variabel och tar bort border
+
         JScrollPane scrollPane = new JScrollPane(gridPanel);
         scrollPane.setBorder(null); // <-- tar bort tunna svarta linjen
         add(scrollPane, BorderLayout.CENTER);
-        // ⬆⬆⬆ END NEW
     }
     private void setDecks(){
         int userID = userController.getCurrentUserId();
@@ -92,7 +90,7 @@ public class HomeView extends JPanel implements Observer<List<DeckDTO>>{
                     deckcard = new DeckCard(
                             deck,
                             DeckCard.DeckCardContext.HOME_VIEW,
-                            e -> appFrame.startStudySession(deck.getId(),
+                            e -> mainFrame.startStudySession(deck.getId(),
                                     "today"),
                             null);
 

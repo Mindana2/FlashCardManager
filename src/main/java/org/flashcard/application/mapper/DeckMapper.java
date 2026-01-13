@@ -35,7 +35,5 @@ public class DeckMapper {
         return toDTO(deck, 0);
     }
 
-    public static List<DeckDTO> toDTOList(List<Deck> decks) {
-        return decks.stream().map(DeckMapper::toDTO).toList();
-    }
+
 }

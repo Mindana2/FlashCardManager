@@ -6,7 +6,12 @@ import org.flashcard.models.services.DeckService;
 import org.flashcard.models.services.StudyService;
 import org.springframework.stereotype.Controller;
 import org.flashcard.controllers.observer.Observable;
-
+/* We use Spring Data JPA to access the database.
+ * This class is annotated with @Controller, which tells Spring
+ * that it is a controller-layer component.
+ * Spring automatically detects it and creates a bean in the application context,
+ * so it can be injected wherever needed.(see main.java)
+ */
 @Controller
 public class StudyController {
 

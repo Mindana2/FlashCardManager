@@ -3,7 +3,6 @@ package org.flashcard.models.studysession;
 import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Flashcard;
 import org.flashcard.models.dataclasses.User;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

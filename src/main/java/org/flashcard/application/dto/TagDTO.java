@@ -29,7 +29,7 @@ public class TagDTO {
         return Color.decode(hex);
     }
 
-    public String getColorHex() { return colorHex; }
+
 
     public int getId() { return id; }
 

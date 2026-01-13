@@ -1,10 +1,9 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.application.dto.DeckDTO;
 import org.flashcard.application.dto.TagDTO;
 import org.flashcard.controllers.DeckController;
 import org.flashcard.models.timers.CountdownListener;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -14,6 +13,7 @@ public class DeckCard extends JPanel implements CountdownListener{
 
     private Runnable onFinishedCallback;
     private boolean disabled;
+
 
     public enum DeckCardContext {
         HOME_VIEW,
@@ -103,7 +103,7 @@ public class DeckCard extends JPanel implements CountdownListener{
         infoLabel.setForeground(new Color(100, 100, 100));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // --- Action Button ---
+        // Action Button
         studyButton = new JButton("Start");
         studyButton.setBackground(new Color(60, 120, 240));
         studyButton.setForeground(Color.WHITE);
@@ -121,7 +121,7 @@ public class DeckCard extends JPanel implements CountdownListener{
             studyButton.setCursor(Cursor.getDefaultCursor());
         }
 
-        // --- Center panel ---
+        //Center panel
         JPanel centerPanel = new JPanel(new GridLayout(2, 1));
         centerPanel.setOpaque(false);
         centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -181,5 +181,4 @@ public class DeckCard extends JPanel implements CountdownListener{
             SwingUtilities.invokeLater(onFinishedCallback);
         }
     }
-
 }

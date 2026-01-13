@@ -15,9 +15,6 @@ public class Observable<T> {
         listeners.add(l);
     }
 
-    public void removeListener(Observer<T> l) {
-        listeners.remove(l);
-    }
 
     // Metod för att notifiera alla listeners om en händelse
     public void notifyListeners(T data) {

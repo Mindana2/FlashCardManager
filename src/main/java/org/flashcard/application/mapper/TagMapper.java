@@ -1,8 +1,7 @@
 package org.flashcard.application.mapper;
 
-import org.flashcard.application.dto.DeckDTO;
+
 import org.flashcard.application.dto.TagDTO;
-import org.flashcard.models.dataclasses.Deck;
 import org.flashcard.models.dataclasses.Tag;
 
 import java.util.List;

@@ -1,11 +1,10 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import org.flashcard.controllers.*;
-
 import javax.swing.*;
 import java.awt.*;
 
-public class AppFrame extends JFrame {
+public class MainFrame extends JFrame {
 
     private final UserController userController;
     private final StudyController studyController;
@@ -24,8 +23,8 @@ public class AppFrame extends JFrame {
     private StudyView studyView;
     private EditDeckView editDeckView;
 
-    public AppFrame(UserController userController, StudyController studyController,
-                    DeckController deckController, TagController tagController, FilterController filterController) {
+    public MainFrame(UserController userController, StudyController studyController,
+                     DeckController deckController, TagController tagController, FilterController filterController) {
         this.userController = userController;
         this.studyController = studyController;
         this.deckController = deckController;
@@ -56,7 +55,6 @@ public class AppFrame extends JFrame {
     private void initComponents() {
 
         // Navbar med filter callbacks
-
         navbar = new Navbar(
                 this::navigateTo,
                 this::applyFilters,

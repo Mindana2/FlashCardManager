@@ -9,7 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+/* We use Spring Data JPA to access the database.
+ * This class is annotated with @Service, which tells Spring
+ * that it is a service-layer component.
+ * Spring automatically detects it and creates a bean in the application context,
+ * so it can be injected wherever needed.(see main.java)
+ * The @Transactional annotation ensures that no database transactions are left unfinished.
+ * It automatically aborts any transactions that result in an error.
+ * This allows us to write logic without manually handling database transactions.
+ */
 @Service
 @Transactional
 public class UserService {
@@ -22,7 +30,6 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    // --- User CRUD & Session ---
 
     public UserDTO createUser(String username) {
         if (userRepo.existsByUsername(username)) {
@@ -39,11 +46,6 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public UserDTO getUserById(Integer userId) {
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        return UserMapper.toDTO(user);
-    }
 
     public void deleteUser(Integer userId) {
         if (!userRepo.existsById(userId)) {

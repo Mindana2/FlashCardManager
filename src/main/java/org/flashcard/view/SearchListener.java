@@ -1,4 +1,4 @@
-package org.flashcard.testview;
+package org.flashcard.view;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
